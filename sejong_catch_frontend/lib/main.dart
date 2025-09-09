@@ -28,7 +28,29 @@ class _HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sejong Catch')),
-      body: const Center(child: Text('Hello, Sejong Catch!')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const WidgetShowcase()),
+            );
+          },
+          child: const Text('Go to Widget Showcase'),
+        ),
+      ),
+    );
+  }
+}
+
+class WidgetShowcase extends StatelessWidget {
+  const WidgetShowcase({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Widget Showcase')),
+      body: const Center(child: Text('Welcome to Widget Showcase!')),
     );
   }
 }
