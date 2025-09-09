@@ -1,2 +1,0 @@
-# sejong_catch
-
