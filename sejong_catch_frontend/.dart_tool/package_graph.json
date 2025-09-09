@@ -22,7 +22,8 @@
         "retrofit",
         "shimmer",
         "smooth_page_indicator",
-        "syncfusion_flutter_charts"
+        "syncfusion_flutter_charts",
+        "toggle_switch"
       ],
       "devDependencies": [
         "build_runner",
@@ -170,6 +171,13 @@
         "flutter_staggered_grid_view",
         "meta",
         "sliver_tools"
+      ]
+    },
+    {
+      "name": "toggle_switch",
+      "version": "2.3.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

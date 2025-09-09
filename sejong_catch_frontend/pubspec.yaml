@@ -41,6 +41,7 @@ dependencies:
   cached_network_image: ^3.4.1    # 네트워크 이미지 캐싱
   shimmer: ^3.0.0                 # 로딩 애니메이션 효과
   smooth_page_indicator: ^1.2.1   # 페이지 이동 인디케이터 UI
+  toggle_switch: ^2.3.0           # 토글 버튼 UI
 
   # 리스트 & 데이터 표시
   infinite_scroll_pagination: ^5.1.1 # 무한 스크롤 페이징 처리

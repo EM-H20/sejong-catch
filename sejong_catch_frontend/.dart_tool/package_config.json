@@ -716,6 +716,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "toggle_switch",
+      "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/toggle_switch-2.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "typed_data",
       "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
