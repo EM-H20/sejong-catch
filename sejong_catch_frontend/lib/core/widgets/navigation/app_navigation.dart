@@ -733,14 +733,9 @@ class AppMainBottomNav extends AppBottomNavigationBar {
              selectedIcon: Icons.search,
            ),
            AppBottomNavItem(
-             label: "북마크",
-             icon: Icons.bookmark_outline,
-             selectedIcon: Icons.bookmark,
-           ),
-           AppBottomNavItem(
-             label: "알림",
-             icon: Icons.notifications_outlined,
-             selectedIcon: Icons.notifications,
+             label: "줄서기",
+             icon: Icons.queue_outlined,
+             selectedIcon: Icons.queue,
            ),
            AppBottomNavItem(
              label: "내 정보",

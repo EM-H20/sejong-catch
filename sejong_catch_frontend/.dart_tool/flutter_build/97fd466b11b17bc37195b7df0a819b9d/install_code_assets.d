@@ -1,1 +1,0 @@
- /Users/luca/Documents/GitHub/sejong_catch/sejong_catch_frontend/.dart_tool/flutter_build/97fd466b11b17bc37195b7df0a819b9d/native_assets.json: 
