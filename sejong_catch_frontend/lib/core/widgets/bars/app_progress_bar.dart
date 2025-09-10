@@ -148,7 +148,7 @@ class AppProgressBar extends StatelessWidget {
                         value: value,
                         backgroundColor: Colors.transparent,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          color ?? AppColors.primary,
+                          color ?? AppColors.themePrimary(context),
                         ),
                       );
                     },
@@ -157,7 +157,7 @@ class AppProgressBar extends StatelessWidget {
                     value: progress,
                     backgroundColor: Colors.transparent,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      color ?? AppColors.primary,
+                      color ?? AppColors.themePrimary(context),
                     ),
                   ),
           ),
@@ -202,7 +202,7 @@ class AppProgressBar extends StatelessWidget {
                           strokeWidth: _getCircularStrokeWidth(),
                           backgroundColor: Colors.transparent,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            color ?? AppColors.primary,
+                            color ?? AppColors.themePrimary(context),
                           ),
                         );
                       },
@@ -212,7 +212,7 @@ class AppProgressBar extends StatelessWidget {
                       strokeWidth: _getCircularStrokeWidth(),
                       backgroundColor: Colors.transparent,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        color ?? AppColors.primary,
+                        color ?? AppColors.themePrimary(context),
                       ),
                     ),
               // 중앙 텍스트
@@ -267,7 +267,7 @@ class AppProgressBar extends StatelessWidget {
                   value: value,
                   backgroundColor: Colors.transparent,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    color ?? AppColors.primary,
+                    color ?? AppColors.themePrimary(context),
                   ),
                 );
               },
@@ -276,7 +276,7 @@ class AppProgressBar extends StatelessWidget {
               value: progress,
               backgroundColor: Colors.transparent,
               valueColor: AlwaysStoppedAnimation<Color>(
-                color ?? AppColors.primary,
+                color ?? AppColors.themePrimary(context),
               ),
             ),
     );
@@ -437,7 +437,7 @@ class AppStepProgressBar extends StatelessWidget {
       if (isCompleted) {
         return completedColor ?? AppColors.success;
       } else if (isCurrent) {
-        return color ?? AppColors.primary;
+        return color ?? AppColors.themePrimary(context);
       } else {
         return backgroundColor ?? AppColors.surfaceVariant(context);
       }
@@ -530,7 +530,7 @@ class _AppLoadingProgressBarState extends State<AppLoadingProgressBar>
             strokeWidth: widget.size == AppProgressBarSize.small ? 3.0 : 
                         widget.size == AppProgressBarSize.medium ? 4.0 : 5.0,
             valueColor: AlwaysStoppedAnimation<Color>(
-              widget.color ?? AppColors.primary,
+              widget.color ?? AppColors.themePrimary(context),
             ),
           ),
         );

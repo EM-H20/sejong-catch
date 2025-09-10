@@ -110,11 +110,11 @@ class AppTabBar extends StatelessWidget {
       padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
       child: TabBar(
         tabs: tabs.map((tab) => Tab(text: tab.label)).toList(),
-        labelColor: selectedColor ?? AppColors.primary,
+        labelColor: selectedColor ?? AppColors.themePrimary(context),
         unselectedLabelColor: unselectedColor ?? AppColors.textSecondary(context),
         labelStyle: AppTextStyles.regularMedium,
         unselectedLabelStyle: AppTextStyles.regularRegular,
-        indicatorColor: indicatorColor ?? AppColors.primary,
+        indicatorColor: indicatorColor ?? AppColors.themePrimary(context),
         indicatorWeight: 2.h,
         dividerColor: Colors.transparent,
       ),
@@ -148,7 +148,7 @@ class AppTabBar extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? (selectedColor ?? AppColors.primary)
+                      ? (selectedColor ?? AppColors.themePrimary(context))
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(isFirst ? 8.r : 0),
@@ -197,7 +197,7 @@ class AppTabBar extends StatelessWidget {
                         tab.icon,
                         size: 24.w,
                         color: isSelected
-                            ? (selectedColor ?? AppColors.primary)
+                            ? (selectedColor ?? AppColors.themePrimary(context))
                             : (unselectedColor ?? AppColors.textSecondary(context)),
                       ),
                       SizedBox(height: 4.h),
@@ -207,7 +207,7 @@ class AppTabBar extends StatelessWidget {
                       style: (isSelected ? AppTextStyles.tinyMedium : AppTextStyles.tinyRegular)
                           .copyWith(
                         color: isSelected
-                            ? (selectedColor ?? AppColors.primary)
+                            ? (selectedColor ?? AppColors.themePrimary(context))
                             : (unselectedColor ?? AppColors.textSecondary(context)),
                       ),
                     ),
@@ -240,7 +240,7 @@ class AppTabBar extends StatelessWidget {
                   tab.icon ?? Icons.circle,
                   size: 24.w,
                   color: isSelected
-                      ? (selectedColor ?? AppColors.primary)
+                      ? (selectedColor ?? AppColors.themePrimary(context))
                       : (unselectedColor ?? AppColors.textSecondary(context)),
                 ),
               ),
@@ -532,7 +532,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                             isSelected ? item.selectedIcon : item.icon,
                             size: 24.w,
                             color: isSelected
-                                ? (selectedColor ?? AppColors.primary)
+                                ? (selectedColor ?? AppColors.themePrimary(context))
                                 : (unselectedColor ?? AppColors.textSecondary(context)),
                           ),
                         ),
@@ -544,7 +544,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                             item.label,
                             style: AppTextStyles.tinyMedium.copyWith(
                               color: isSelected
-                                  ? (selectedColor ?? AppColors.primary)
+                                  ? (selectedColor ?? AppColors.themePrimary(context))
                                   : (unselectedColor ?? AppColors.textSecondary(context)),
                             ),
                           ),
@@ -629,7 +629,7 @@ class AppBreadcrumb extends StatelessWidget {
                 style: AppTextStyles.smallMedium.copyWith(
                   color: isLast
                       ? AppColors.textPrimary(context)
-                      : AppColors.primary,
+                      : AppColors.themePrimary(context),
                   decoration: isLast ? null : TextDecoration.underline,
                 ),
               ),

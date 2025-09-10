@@ -396,7 +396,7 @@ class _AppTextFieldState extends State<AppTextField> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(
-            color: AppColors.primary,
+            color: AppColors.themePrimary(context),
             width: 2,
           ),
         ),
@@ -483,7 +483,7 @@ class _AppTextFieldState extends State<AppTextField> {
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(
-            color: AppColors.primary,
+            color: AppColors.themePrimary(context),
             width: 2,
           ),
         ),
@@ -521,7 +521,7 @@ class _AppTextFieldState extends State<AppTextField> {
       widget.prefixIcon,
       size: 20.w,
       color: _isFocused
-          ? AppColors.primary
+          ? AppColors.themePrimary(context)
           : AppColors.textSecondary(context),
     );
   }
@@ -574,7 +574,7 @@ class _AppTextFieldState extends State<AppTextField> {
         widget.suffixIcon,
         size: 20.w,
         color: _isFocused
-            ? AppColors.primary
+            ? AppColors.themePrimary(context)
             : AppColors.textSecondary(context),
       );
     }
@@ -618,7 +618,7 @@ class _AppTextFieldState extends State<AppTextField> {
       return AppColors.error;
     }
     if (_isFocused) {
-      return AppColors.primary;
+      return AppColors.themePrimary(context);
     }
     return AppColors.border(context);
   }

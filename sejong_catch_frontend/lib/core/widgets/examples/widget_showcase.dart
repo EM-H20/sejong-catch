@@ -27,6 +27,7 @@ class _WidgetShowcaseState extends State<WidgetShowcase> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface(context), // 다크 테마 배경색 명시적 설정!
       appBar: AppBar(
         title: const Text("Nucleus UI Showcase"),
         centerTitle: true,
@@ -39,6 +40,14 @@ class _WidgetShowcaseState extends State<WidgetShowcase> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 세종대학교 로고 섹션
+              _buildLogoSection(),
+              
+              SizedBox(height: 24.h),
+              
+              _buildSectionTitle("🎨 Color Palette"),
+              _buildColorPaletteSection(),
+              
               _buildSectionTitle("🎯 Buttons"),
               _buildButtonSection(),
               
@@ -65,6 +74,236 @@ class _WidgetShowcaseState extends State<WidgetShowcase> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // ============================================================================
+  // COLOR PALETTE SECTION - 테마별 색상 시스템 표시
+  // ============================================================================
+  
+  Widget _buildColorPaletteSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 현재 테마 정보
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: AppColors.themePrimary(context).withAlpha(26), // 10% 투명도
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: AppColors.themePrimary(context).withAlpha(51), // 20% 투명도
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isDark ? '🌙 Dark Theme Colors' : '☀️ Light Theme Colors',
+                style: AppTextStyles.regularBold.copyWith(
+                  color: AppColors.themePrimary(context),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                isDark 
+                    ? 'Nucleus UI Purple 시스템 (개발자 친화적)'
+                    : '세종대학교 Crimson Red 시스템 (대학 정체성)',
+                style: AppTextStyles.smallRegular.copyWith(
+                  color: AppColors.textSecondary(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        SizedBox(height: 16.h),
+        
+        // 색상 칩들
+        Row(
+          children: [
+            Expanded(
+              child: _buildColorChip(
+                "Primary",
+                AppColors.themePrimary(context),
+                isDark ? "#6B4EFF" : "#DC143C",
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: _buildColorChip(
+                "Primary Dark", 
+                AppColors.themePrimaryDark(context),
+                isDark ? "#5538EE" : "#B0102F",
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: _buildColorChip(
+                "Primary Light",
+                AppColors.themePrimaryLight(context), 
+                isDark ? "#9990FF" : "#E85D75",
+              ),
+            ),
+          ],
+        ),
+        
+        SizedBox(height: 8.h),
+        
+        // 시스템 색상들
+        Row(
+          children: [
+            Expanded(
+              child: _buildColorChip(
+                "Success",
+                AppColors.success,
+                "#23C16B",
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: _buildColorChip(
+                "Warning",
+                AppColors.warning,
+                "#FFB323",
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: _buildColorChip(
+                "Error",
+                AppColors.error,
+                "#FF5247",
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildColorChip(String name, Color color, String hex) {
+    return Container(
+      height: 80.h,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: color.withAlpha(77), // 30% 투명도
+            blurRadius: 4.r,
+            offset: Offset(0, 2.h),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: AppColors.skyWhite.withAlpha(230), // 90% 투명도
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(8.r),
+                bottomRight: Radius.circular(8.r),
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  name,
+                  style: AppTextStyles.tinyBold.copyWith(
+                    color: AppColors.inkDarkest,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  hex,
+                  style: AppTextStyles.tinyRegular.copyWith(
+                    color: AppColors.inkLight,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================================
+  // LOGO SECTION - 세종대학교 브랜딩
+  // ============================================================================
+  
+  Widget _buildLogoSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Center(
+      child: Column(
+        children: [
+          // 세종대학교 로고 (그림자 제거하여 깔끔하게)
+          SizedBox(
+            width: 80.w,
+            height: 80.w,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: Image.asset(
+                'assets/sejong-logo.png',
+                fit: BoxFit.contain,
+                color: isDark ? AppColors.skyWhite.withAlpha(204) : null, // 다크모드에서 80% 투명도
+                colorBlendMode: isDark ? BlendMode.modulate : null,
+              ),
+            ),
+          ),
+          
+          SizedBox(height: 16.h),
+          
+          // 대학명 및 설명
+          Text(
+            'Sejong University',
+            style: AppTextStyles.title3.copyWith(
+              color: AppColors.textPrimary(context),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          
+          SizedBox(height: 4.h),
+          
+          Text(
+            'Nucleus UI Design System',
+            style: AppTextStyles.smallMedium.copyWith(
+              color: AppColors.textSecondary(context),
+            ),
+          ),
+          
+          SizedBox(height: 8.h),
+          
+          // 테마 표시 뱃지
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: AppColors.themePrimary(context).withAlpha(26), // 10% 투명도
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(
+                color: AppColors.themePrimary(context).withAlpha(51), // 20% 투명도
+                width: 1,
+              ),
+            ),
+            child: Text(
+              isDark ? '🌙 Dark Theme' : '☀️ Light Theme',
+              style: AppTextStyles.tinyMedium.copyWith(
+                color: AppColors.themePrimary(context),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

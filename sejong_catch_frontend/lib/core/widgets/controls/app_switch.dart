@@ -97,7 +97,7 @@ class AppSwitch extends StatelessWidget {
         value: value,
         onChanged: isDisabled ? null : onChanged,
         activeColor: thumbColor ?? AppColors.skyWhite,
-        activeTrackColor: activeColor ?? AppColors.primary,
+        activeTrackColor: activeColor ?? AppColors.themePrimary(context),
         inactiveThumbColor: thumbColor ?? AppColors.skyWhite,
         inactiveTrackColor: inactiveColor ?? AppColors.surfaceVariant(context),
       ),
@@ -115,7 +115,7 @@ class AppSwitch extends StatelessWidget {
         value: value,
         onChanged: isDisabled ? null : onChanged,
         activeColor: thumbColor ?? AppColors.skyWhite,
-        activeTrackColor: activeColor ?? AppColors.primary,
+        activeTrackColor: activeColor ?? AppColors.themePrimary(context),
         inactiveThumbColor: thumbColor ?? AppColors.surfaceVariant(context),
         inactiveTrackColor: inactiveColor ?? AppColors.border(context),
       ),
@@ -139,7 +139,7 @@ class AppSwitch extends StatelessWidget {
         height: trackHeight,
         decoration: BoxDecoration(
           color: value 
-              ? (activeColor ?? AppColors.primary)
+              ? (activeColor ?? AppColors.themePrimary(context))
               : (inactiveColor ?? AppColors.surfaceVariant(context)),
           borderRadius: BorderRadius.circular(trackHeight / 2),
           border: value ? null : Border.all(
@@ -396,7 +396,7 @@ class AppToggleButton extends StatelessWidget {
         padding: _getPadding(),
         decoration: BoxDecoration(
           color: value
-              ? (activeColor ?? AppColors.primary)
+              ? (activeColor ?? AppColors.themePrimary(context))
               : (inactiveColor ?? AppColors.surfaceVariant(context)),
           borderRadius: BorderRadius.circular(_getBorderRadius()),
           border: value ? null : Border.all(
@@ -518,7 +518,7 @@ class AppSegmentedToggle<T> extends StatelessWidget {
                 padding: _getPadding(),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? (activeColor ?? AppColors.primary)
+                      ? (activeColor ?? AppColors.themePrimary(context))
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(isFirst ? _getBorderRadius() : 0),

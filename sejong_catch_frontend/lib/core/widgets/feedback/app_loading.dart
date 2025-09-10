@@ -50,7 +50,7 @@ class AppLoadingIndicator extends StatelessWidget {
           child: CircularProgressIndicator(
             strokeWidth: strokeWidth ?? _getStrokeWidth(),
             valueColor: AlwaysStoppedAnimation<Color>(
-              color ?? AppColors.primary,
+              color ?? AppColors.themePrimary(context),
             ),
           ),
         ),

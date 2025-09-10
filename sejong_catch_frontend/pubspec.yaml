@@ -80,9 +80,8 @@ flutter:
 
   # 아래에 assets 또는 fonts 옵션 추가 가능
   # 예시:
-  # assets:
-  #   - images/
-  #   - assets/
+  assets:
+    - assets/
   # fonts:
   #   - family: Schyler
   #     fonts:

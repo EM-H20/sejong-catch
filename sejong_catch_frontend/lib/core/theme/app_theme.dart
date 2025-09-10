@@ -137,17 +137,17 @@ class AppTheme {
   // COLOR SCHEMES
   // ============================================================================
 
-  /// 라이트 모드 색상 스키마
+  /// 라이트 모드 색상 스키마 - 세종대 크림슨 레드 적용
   static ColorScheme _lightColorScheme() {
     return ColorScheme.fromSeed(
       brightness: Brightness.light,
-      seedColor: AppColors.primary,
+      seedColor: AppColors.crimsonRed, // 세종대 크림슨 레드 사용!
 
-      // Primary Colors
-      primary: AppColors.primary,
+      // Primary Colors - 크림슨 레드 시스템
+      primary: AppColors.crimsonRed,
       onPrimary: AppColors.skyWhite,
-      primaryContainer: AppColors.primaryLightest,
-      onPrimaryContainer: AppColors.inkDarkest,
+      primaryContainer: AppColors.crimsonRedLightest,
+      onPrimaryContainer: AppColors.crimsonRedDark,
 
       // Secondary Colors (Success Green 활용)
       secondary: AppColors.success,
@@ -190,13 +190,13 @@ class AppTheme {
     );
   }
 
-  /// 다크 모드 색상 스키마
+  /// 다크 모드 색상 스키마 - Nucleus Purple 유지 (가독성)
   static ColorScheme _darkColorScheme() {
     return ColorScheme.fromSeed(
       brightness: Brightness.dark,
-      seedColor: AppColors.primary,
+      seedColor: AppColors.primary, // Nucleus Purple 유지
 
-      // Primary Colors
+      // Primary Colors - 보라색 시스템 (다크모드 가독성)
       primary: AppColors.primaryLight,
       onPrimary: AppColors.inkDarkest,
       primaryContainer: AppColors.primaryDark,
@@ -220,11 +220,11 @@ class AppTheme {
       errorContainer: AppColors.errorDarkest,
       onErrorContainer: AppColors.errorLightest,
 
-      // Surface Colors
-      surface: AppColors.inkDarker,
+      // Surface Colors - 일관된 다크 배경색 적용
+      surface: AppColors.inkDarkest,              // inkDarker → inkDarkest 통일!
       onSurface: AppColors.skyWhite,
       surfaceContainerLowest: AppColors.inkDarkest,
-      surfaceContainerLow: AppColors.inkDarker,
+      surfaceContainerLow: AppColors.inkDarkest,  // inkDarker → inkDarkest 통일!
       surfaceContainer: AppColors.inkDark,
       surfaceContainerHigh: AppColors.inkBase,
       surfaceContainerHighest: AppColors.inkLight,
@@ -331,9 +331,14 @@ class AppTheme {
 
   /// Filled Button 테마 (주요 CTA)
   static FilledButtonThemeData _filledButtonTheme(Brightness brightness) {
+    // 테마별 Primary 색상 사용
+    final primaryColor = brightness == Brightness.light
+        ? AppColors.crimsonRed
+        : AppColors.primary;
+        
     return FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: primaryColor,
         foregroundColor: AppColors.skyWhite,
         disabledBackgroundColor: brightness == Brightness.light
             ? AppColors.skyDark

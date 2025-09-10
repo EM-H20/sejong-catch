@@ -132,7 +132,7 @@ class AppButton extends StatelessWidget {
     return FilledButton(
       onPressed: isEnabled ? _handlePress : null,
       style: FilledButton.styleFrom(
-        backgroundColor: isEnabled ? AppColors.primary : AppColors.buttonDisabled(context),
+        backgroundColor: isEnabled ? AppColors.themePrimary(context) : AppColors.buttonDisabled(context),
         foregroundColor: isEnabled ? AppColors.skyWhite : AppColors.textTertiary(context),
         disabledBackgroundColor: AppColors.buttonDisabled(context),
         disabledForegroundColor: AppColors.textTertiary(context),
@@ -147,10 +147,10 @@ class AppButton extends StatelessWidget {
       ).copyWith(
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.primaryDark.withValues(alpha: 0.1);
+            return AppColors.themePrimaryDark(context).withValues(alpha: 0.1);
           }
           if (states.contains(WidgetState.hovered)) {
-            return AppColors.primaryLight.withValues(alpha: 0.1);
+            return AppColors.themePrimaryLight(context).withValues(alpha: 0.1);
           }
           return null;
         }),
@@ -200,11 +200,11 @@ class AppButton extends StatelessWidget {
     return TextButton(
       onPressed: isEnabled ? _handlePress : null,
       style: TextButton.styleFrom(
-        foregroundColor: isEnabled ? AppColors.primary : AppColors.textTertiary(context),
+        foregroundColor: isEnabled ? AppColors.themePrimary(context) : AppColors.textTertiary(context),
         disabledForegroundColor: AppColors.textTertiary(context),
         textStyle: _getTextStyle().copyWith(
           decoration: TextDecoration.underline,
-          decorationColor: isEnabled ? AppColors.primary : AppColors.textTertiary(context),
+          decorationColor: isEnabled ? AppColors.themePrimary(context) : AppColors.textTertiary(context),
         ),
         padding: _getPadding(),
         minimumSize: Size(_getMinWidth(), _getHeight()),
@@ -214,10 +214,10 @@ class AppButton extends StatelessWidget {
       ).copyWith(
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.primary.withValues(alpha: 0.1);
+            return AppColors.themePrimary(context).withValues(alpha: 0.1);
           }
           if (states.contains(WidgetState.hovered)) {
-            return AppColors.primary.withValues(alpha: 0.05);
+            return AppColors.themePrimary(context).withValues(alpha: 0.05);
           }
           return null;
         }),
@@ -235,7 +235,7 @@ class AppButton extends StatelessWidget {
       icon: isLoading ? _buildLoadingSpinner(context) : Icon(icon ?? Icons.star),
       iconSize: _getIconSize(),
       style: IconButton.styleFrom(
-        foregroundColor: isEnabled ? AppColors.primary : AppColors.textTertiary(context),
+        foregroundColor: isEnabled ? AppColors.themePrimary(context) : AppColors.textTertiary(context),
         disabledForegroundColor: AppColors.textTertiary(context),
         minimumSize: Size(_getHeight(), _getHeight()), // 정사각형
         padding: EdgeInsets.all(_getIconPadding()),
@@ -245,10 +245,10 @@ class AppButton extends StatelessWidget {
       ).copyWith(
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.primary.withValues(alpha: 0.1);
+            return AppColors.themePrimary(context).withValues(alpha: 0.1);
           }
           if (states.contains(WidgetState.hovered)) {
-            return AppColors.primary.withValues(alpha: 0.05);
+            return AppColors.themePrimary(context).withValues(alpha: 0.05);
           }
           return null;
         }),

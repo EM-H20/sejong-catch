@@ -281,7 +281,7 @@ class AppAvatar extends StatelessWidget {
     // 이름을 해시해서 일관된 색상 생성
     final hash = name.hashCode;
     final colors = [
-      AppColors.primary,
+      AppColors.themePrimary(context),
       AppColors.success,
       AppColors.info,
       AppColors.warning,

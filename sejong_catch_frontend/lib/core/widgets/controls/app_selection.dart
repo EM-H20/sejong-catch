@@ -67,14 +67,14 @@ class AppCheckbox extends StatelessWidget {
       child: Checkbox(
         value: value,
         onChanged: isDisabled ? null : onChanged,
-        activeColor: activeColor ?? AppColors.primary,
+        activeColor: activeColor ?? AppColors.themePrimary(context),
         checkColor: checkColor ?? AppColors.skyWhite,
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
             return AppColors.surfaceVariant(context);
           }
           if (states.contains(WidgetState.selected)) {
-            return activeColor ?? AppColors.primary;
+            return activeColor ?? AppColors.themePrimary(context);
           }
           return AppColors.surfaceContainer(context);
         }),
@@ -340,13 +340,13 @@ class AppRadio<T> extends StatelessWidget {
         value: value,
         groupValue: groupValue,
         onChanged: isDisabled ? null : onChanged,
-        activeColor: activeColor ?? AppColors.primary,
+        activeColor: activeColor ?? AppColors.themePrimary(context),
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
             return AppColors.textTertiary(context);
           }
           if (states.contains(WidgetState.selected)) {
-            return activeColor ?? AppColors.primary;
+            return activeColor ?? AppColors.themePrimary(context);
           }
           return AppColors.border(context);
         }),

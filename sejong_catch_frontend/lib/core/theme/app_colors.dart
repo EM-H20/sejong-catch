@@ -15,6 +15,17 @@ class AppColors {
   static const Color primaryLightest = Color(0xFFE7E7FF); // Primary/Lightest
 
   // ============================================================================
+  // SEJONG CRIMSON RED SYSTEM - 세종대학교 대표 색상
+  // ============================================================================
+  
+  /// 세종대학교 크림슨 레드 - 공식 브랜드 컬러
+  static const Color crimsonRed = Color(0xFFDC143C);      // Crimson/Base
+  static const Color crimsonRedDark = Color(0xFFB0102F);  // Crimson/Dark  
+  static const Color crimsonRedLight = Color(0xFFE85D75); // Crimson/Light
+  static const Color crimsonRedLighter = Color(0xFFF4A6B7); // Crimson/Lighter
+  static const Color crimsonRedLightest = Color(0xFFFDE8EC); // Crimson/Lightest
+
+  // ============================================================================
   // STATUS COLORS - Nucleus UI Semantic Colors
   // ============================================================================
 
@@ -82,8 +93,8 @@ class AppColors {
   /// 메인 배경 색상
   static Color surface(BuildContext context) {
     return Theme.of(context).brightness == Brightness.light
-        ? skyLightest    // F7F9FA - 부드러운 배경
-        : inkDarker;     // 202325 - 다크 배경
+        ? skyLightest    // F7F9FA - 부드러운 라이트 배경
+        : inkDarkest;    // 090A0A - 진짜 다크 배경 (더 어둡게!)
   }
 
   /// 카드나 컨테이너 배경
@@ -218,11 +229,37 @@ class AppColors {
   }
 
   // ============================================================================
+  // THEME-AWARE PRIMARY COLORS - 테마별 Primary 색상
+  // ============================================================================
+
+  /// 테마에 따른 Primary 색상
+  /// 라이트 테마: 세종대 크림슨 레드 / 다크 테마: Nucleus Purple
+  static Color themePrimary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.light
+        ? crimsonRed     // 라이트 모드: 세종대 정체성
+        : primary;       // 다크 모드: 보라색 (가독성)
+  }
+
+  /// 테마에 따른 Primary Dark 색상
+  static Color themePrimaryDark(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.light
+        ? crimsonRedDark // 라이트 모드: 어두운 크림슨
+        : primaryDark;   // 다크 모드: 어두운 보라
+  }
+
+  /// 테마에 따른 Primary Light 색상
+  static Color themePrimaryLight(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.light
+        ? crimsonRedLight // 라이트 모드: 밝은 크림슨
+        : primaryLight;   // 다크 모드: 밝은 보라
+  }
+
+  // ============================================================================
   // PRIORITY COLORS - 세종캐치 우선순위 시스템
   // ============================================================================
 
   /// 높은 우선순위 (마감임박, 중요)
-  static Color priorityHigh(BuildContext context) => primary;
+  static Color priorityHigh(BuildContext context) => themePrimary(context);
 
   /// 중간 우선순위 (일반적)
   static Color priorityMedium(BuildContext context) {

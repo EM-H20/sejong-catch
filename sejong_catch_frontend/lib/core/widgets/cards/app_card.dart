@@ -267,7 +267,7 @@ class AppCard extends StatelessWidget {
     if (borderColor != null) return borderColor!;
     
     if (isSelected) {
-      return AppColors.primary;
+      return AppColors.themePrimary(context);
     }
     
     return AppColors.border(context);
@@ -400,7 +400,7 @@ class InfoCard extends StatelessWidget {
               isBookmarked ? Icons.bookmark : Icons.bookmark_border,
               size: 20.w,
               color: isBookmarked 
-                  ? AppColors.primary 
+                  ? AppColors.themePrimary(context) 
                   : AppColors.textSecondary(context),
             ),
             padding: EdgeInsets.zero,
@@ -648,7 +648,7 @@ class TrustBadge extends StatelessWidget {
   Color _getBorderColor(BuildContext context) {
     switch (level) {
       case TrustLevel.official:
-        return AppColors.primary;
+        return AppColors.themePrimary(context);
       case TrustLevel.academic:
         return AppColors.trustAcademic(context);
       case TrustLevel.press:
