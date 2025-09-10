@@ -20,32 +20,60 @@
 
 ⚠️ 알림(firebase_messaging, awesome_notifications), 실시간(web_socket_channel), 분석(firebase_analytics, crashlytics) 제외
 
-폴더 구조 (예시)
+폴더 구조
 
 lib/
-  core/
-    config/        # 상수, 환경
-    theme/         # ColorScheme, TextTheme, ThemeData
-    routing/       # GoRouter, route guard (RBAC)
-    utils/         # 공통 유틸
-    widgets/       # 공용 위젯(CTAButton, AppCard, Empty/Error/Skeleton)
-  data/
-    models/        # freezed 모델
-    sources/       # remote(dio/retrofit)
-    repository/    # 도메인별 Repo
-  domain/
-    services/      # 비즈 로직(우선순위, 중복 병합, 신뢰도 산정)
-  features/
-    onboarding/    # 온보딩
-    auth/          # 로그인/인증
-    feed/          # 홈 피드
-    search/        # 검색/필터
-    detail/        # 상세
-    bookmarks/     # 북마크
-    profile/       # 내 정보/관심사/권한 표시
-    console/       # 운영/관리 콘솔
-
-
+ ├─ core/                        # 전역 공통 코드
+ │   ├─ config/                  # 환경변수, 앱 상수
+ │   ├─ theme/                   # AppTheme, ColorScheme, TextTheme
+ │   ├─ routing/                 # GoRouter 설정, route guard
+ │   ├─ utils/                   # 헬퍼 함수, validator, formatter
+ │   └─ widgets/                 # 재사용 위젯 (AppCard, CTAButton 등)
+ │
+ ├─ data/                        # 데이터 계층
+ │   ├─ models/                  # 모델 정의 (freezed/json_serializable or 일반 모델)
+ │   │   └─ contest_item.dart
+ │   ├─ sources/                 # 원천 데이터
+ │   │   ├─ remote/              # Retrofit/Dio API
+ │   │   └─ local/               # shared_preferences 등 (캐시 X → 최소화)
+ │   └─ repository/              # Repository 패턴 (FeedRepo, AuthRepo 등)
+ │
+ ├─ domain/                      # 비즈니스 로직 (Service/UseCase)
+ │   ├─ services/                # 우선순위, 신뢰도, 중복제거 로직
+ │   └─ controllers/             # Provider 기반 컨트롤러 (FeedController, AuthController)
+ │
+ ├─ features/                    # 기능별 화면/상태/위젯
+ │   ├─ feed/                    # 피드(홈 대체)
+ │   │   ├─ pages/               # 화면 단위
+ │   │   │   └─ feed_page.dart
+ │   │   ├─ widgets/             # 피드 전용 위젯
+ │   │   └─ feed_controller.dart # Provider 상태 관리
+ │   │
+ │   ├─ search/                  # 검색
+ │   │   ├─ pages/
+ │   │   ├─ widgets/
+ │   │   └─ search_controller.dart
+ │   │
+ │   ├─ queue/                   # 줄서기(큐잉)
+ │   │   ├─ pages/
+ │   │   ├─ widgets/
+ │   │   └─ queue_controller.dart
+ │   │
+ │   ├─ profile/                 # 프로필/설정
+ │   │   ├─ pages/
+ │   │   ├─ widgets/
+ │   │   └─ profile_controller.dart
+ │   │
+ │   ├─ onboarding/              # 온보딩
+ │   │   ├─ pages/
+ │   │   └─ onboarding_controller.dart
+ │   │
+ │   └─ console/                 # 운영자/관리자 콘솔 (optional)
+ │       ├─ pages/
+ │       ├─ widgets/
+ │       └─ console_controller.dart
+ │
+ └─ main.dart                    # 앱 진입점
 ⸻
 
 2) 라우팅 & 권한(RBAC)
@@ -63,12 +91,11 @@ GoRouter 가드
 ⸻
 
 3) 화면 구성(IA) & 핵심 UX
-	•	하단 탭 (5개)
-	1.	홈 – 추천/마감임박/최신 탭 + 무한 스크롤
+	•	하단 탭 (4개)
+	1.	피드 – 추천/마감임박/최신 탭 + 무한 스크롤
 	2.	검색 – 검색바 + 저장필터칩 + 고급 필터 바텀시트
-	3.	북마크 – 저장 항목 + 마감 임박 정렬
-	4.	알림 – (향후 필요 시 구현)
-	5.	내 정보 – 권한, 학과·관심사, 설정
+	3.	줄서기 – 대기열 관리 + 순번 확인 + 알림 설정
+	4.	프로필 – 권한, 학과·관심사, 설정
 	•	상세 화면
 	•	제목, 출처 로고, 신뢰 뱃지, 마감 D-n, 요약, 외부 링크, 액션 버튼
 	•	중복 통합 칩 → 출처별 리스트 펼치기
@@ -78,12 +105,11 @@ GoRouter 가드
 
 ⸻
 
-4) 온보딩 플로우 (5화면)
-	1.	Intro – “세종인을 위한 단 하나의 정보 허브”
-	2.	수집·필터링 – “자동 수집 & 중복 제거, 신뢰도 반영”
+4) 온보딩 플로우 (4화면)
+	1.	Intro – "세종인을 위한 단 하나의 정보 허브"
+	2.	수집·필터링 – "자동 수집 & 중복 제거, 신뢰도 반영"
 	3.	권한 안내 – 학생/게스트/운영자/관리자
 	4.	개인화 – 학과 선택, 관심사 칩
-	5.	(향후) 알림 권한 요청 – 현재는 제외 가능
 
 패턴: PageView + dot indicator, 상단 Skip, 최초 실행 시에만 노출(shared_preferences)
 
@@ -137,7 +163,22 @@ GoRouter 가드
 
 ⸻
 
-8) Flutter 테마 매핑 (핵심 코드)
+8) 줄서기 기능 명세
+	•	핵심 목적: 인기 공모전/취업 정보의 대기열 시스템
+	•	주요 기능
+	•	관심 정보 대기열 등록 (공모전 마감 전 알림, 채용 정보 오픈 알림)
+	•	실시간 순번 확인 및 예상 대기시간 표시
+	•	대기열 상태별 분류: 대기중/진행중/완료
+	•	우선순위 시스템: 마감 임박도, 관심도, 신뢰도 기반
+	•	UX 요소
+	•	대기 순번 카드 (D-day, 현재 순위, 예상 알림 시간)
+	•	진행 상황 프로그레스바
+	•	대기열 해제/알림 설정 토글
+	•	완료된 항목 히스토리 관리
+
+⸻
+
+9) Flutter 테마 매핑 (핵심 코드)
 
 class AppTheme {
   static const _crimson = Color(0xFFDC143C);

@@ -6,9 +6,9 @@ GoRouter
    ├─ /onboarding        -> OnboardingFlowPage     [guard: firstRunGuard]
    ├─ /auth              -> AuthPage
    ├─ /                  -> RootShell (BottomNav)
-   │   ├─ /home          -> HomeFeedPage
+   │   ├─ /feed          -> FeedPage
    │   ├─ /search        -> SearchPage
-   │   ├─ /bookmarks     -> BookmarksPage         [guard: role>=Student]
+   │   ├─ /queue         -> QueuePage             [guard: role>=Student]
    │   └─ /profile       -> ProfilePage
    ├─ /detail/:id        -> DetailPage
    ├─ /console           -> ConsoleShell           [guard: role>=Operator]
@@ -38,9 +38,9 @@ App (MaterialApp.router with AppTheme)
    └─ Router (GoRouter)
       └─ RootShell (Scaffold)
          ├─ body: IndexedStack
-         │  ├─ HomeFeedPage
+         │  ├─ FeedPage
          │  ├─ SearchPage
-         │  ├─ BookmarksPage
+         │  ├─ QueuePage
          │  └─ ProfilePage
          └─ bottomNavigationBar: *AppBottomNav
 ```
@@ -66,7 +66,7 @@ App (MaterialApp.router with AppTheme)
 
 ---
 
-# **2) 온보딩 플로우 (4화면로 단축)**
+# **2) 온보딩 플로우 (4화면)**
 
 ```
 OnboardingFlowPage
@@ -85,18 +85,18 @@ OnboardingFlowPage
 
 상태/저장: **#OnboardingState**, **shared_preferences(완료 플래그)**, **#ProfilePref(학과/관심사)**
 
-> 변경점: 알림 권한 단계
+> 변경점: 알림 권한 단계 삭제
 > 
 > 
-> **삭제**
+> **4화면으로 단축**
 > 
 
 ---
 
-# **3) 홈 피드(추천/마감임박/최신)**
+# **3) 피드(추천/마감임박/최신)**
 
 ```
-HomeFeedPage
+FeedPage
 └─ Scaffold
    ├─ appBar: *SearchAppBar (readonly, 탭 이동/검색 진입)
    └─ Column
@@ -190,24 +190,30 @@ DetailPage(itemId)
 
 ---
 
-# **6) 북마크**
+# **6) 줄서기**
 
 ```
-BookmarksPage
+QueuePage
 └─ Scaffold
-   ├─ appBar: AppBar(title: "북마크")
-   └─ *PagedListView<Item>
-      ├─ sort: DeadlineFirst
-      ├─ itemBuilder: *AppCard
-      └─ swipeActions: Remove / Share
+   ├─ appBar: AppBar(title: "줄서기")
+   └─ Column
+      ├─ *SegmentedTabs(대기중 | 진행중 | 완료)
+      └─ Expanded
+         └─ TabBarView
+            ├─ _WaitingList
+            │   └─ *PagedListView<QueueItem>
+            │      ├─ itemBuilder: *QueueCard(순번, D-day, 진행률)
+            │      └─ swipeActions: Remove / Settings
+            ├─ _InProgressList (동일)
+            └─ _CompletedList (동일)
 ```
 
-의존성: **#BookmarkService** *(원격 저장 또는 세션 메모리 — 로컬 DB 미사용)*
+의존성: **#QueueService** *(대기열 관리, 순번 계산, 알림 스케줄링)*
 
-> 변경점: “local+remote sync” 문구 제거 →
+> 변경점: 북마크 → 줄서기로 완전 전환
 > 
 > 
-> **원격 우선/메모리 보조**
+> **대기열 시스템 도입**
 > 
 
 ---
@@ -311,14 +317,14 @@ StatsDashboardPage (role>=Admin)
 - **#AuthState → #RoleService → Router Guards**
 - **#FeedController → #ItemRepo(remote: dio)** *(로컬 DB 미사용)*
 - **#SearchController ↔ #FilterState ↔ #SavedFilterRepo**
-- **#BookmarkService** *(원격 저장 또는 세션 메모리)*
+- **#QueueService** *(대기열 관리, 순번 계산, 알림 스케줄링)*
 - **#PriorityService / #TrustService / #DedupService** *(도메인 로직)*
 - **#StatsRepo(관리 대시보드)**
 
-> 변경점: #NotificationRepo, FCM/Prefs, local hive/sqflite
+> 변경점: #BookmarkService → #QueueService 전환
 > 
 > 
-> **제거**
+> **대기열 시스템 도입**
 > 
 
 ---
@@ -334,9 +340,9 @@ StatsDashboardPage (role>=Admin)
 ## **보너스: 구현 우선순위(스프린트 제안)**
 
 1. 온보딩(4화면) + shared_preferences 플래그
-2. 하단 탭/라우팅 가드 + 홈 피드 infinite_scroll_pagination
+2. 하단 탭/라우팅 가드 + 피드 페이지 infinite_scroll_pagination
 3. 검색/필터 바텀시트 + shimmer 로딩
-4. 상세/북마크 흐름(서버 연동)
+4. 상세/줄서기 흐름(서버 연동)
 5. 콘솔 Rules/Stats 목업 → 실제 API 연결
 
 ---
