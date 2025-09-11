@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
 import '../../routing/routes.dart';
-import '../../routing/route_guards.dart';
+import '../../config/constants.dart';
+import '../../../domain/controllers/auth_controller.dart';
 
 /// 세종 캐치 앱의 바텀 네비게이션 바
-/// 
+///
 /// 역할 기반 접근 제어를 지원하며,
 /// 사용자의 권한에 따라 탭을 동적으로 표시합니다.
 class AppBottomNav extends StatelessWidget {
   /// 현재 선택된 탭 인덱스
   final int currentIndex;
-  
+
   /// 탭 선택 콜백
   final ValueChanged<int> onTap;
-  
+
   /// 배지 정보 (탭별 알림 개수)
   final Map<int, int>? badges;
-  
+
   /// 커스텀 배경색
   final Color? backgroundColor;
-  
+
   /// 커스텀 선택된 아이템 색상
   final Color? selectedItemColor;
-  
+
   /// 커스텀 선택되지 않은 아이템 색상
   final Color? unselectedItemColor;
 
@@ -40,13 +42,13 @@ class AppBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 사용자가 접근 가능한 탭들만 필터링
-    final availableTabs = _getAvailableTabs();
-    
+    final availableTabs = _getAvailableTabs(context);
+
     // 접근 가능한 탭이 2개 미만이면 바텀 네비게이션 숨기기
     if (availableTabs.length < 2) {
       return const SizedBox.shrink();
     }
-    
+
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
@@ -59,8 +61,9 @@ class AppBottomNav extends StatelessWidget {
         ],
       ),
       child: SafeArea(
-        child: SizedBox(
-          height: 60.h,
+        child: Container(
+          height: 70.h,
+          padding: EdgeInsets.symmetric(vertical: 8.h),
           child: Row(
             children: availableTabs.map((tabInfo) {
               final isSelected = currentIndex == tabInfo.originalIndex;
@@ -76,28 +79,60 @@ class AppBottomNav extends StatelessWidget {
       ),
     );
   }
-  
+
   /// 사용자가 접근 가능한 탭 정보 조회
-  List<_TabInfo> _getAvailableTabs() {
+  List<_TabInfo> _getAvailableTabs(BuildContext context) {
     final allTabs = _getAllTabs();
     final availableTabs = <_TabInfo>[];
-    
+    final authController = context.read<AuthController>();
+    final userRole = authController.currentRole.code;
+
     for (int i = 0; i < allTabs.length; i++) {
       final tab = allTabs[i];
-      if (RouteGuards.canAccessRoute(tab.route)) {
-        availableTabs.add(_TabInfo(
-          originalIndex: i,
-          route: tab.route,
-          icon: tab.icon,
-          activeIcon: tab.activeIcon,
-          label: tab.label,
-        ));
+      if (_canAccessTab(tab.route, userRole)) {
+        availableTabs.add(
+          _TabInfo(
+            originalIndex: i,
+            route: tab.route,
+            icon: tab.icon,
+            activeIcon: tab.activeIcon,
+            label: tab.label,
+          ),
+        );
       }
     }
-    
+
     return availableTabs;
   }
-  
+
+  /// 탭 접근 권한 체크 (간단한 버전)
+  bool _canAccessTab(String route, String userRole) {
+    // 메인 4개 탭(피드, 검색, 큐, 프로필)은 항상 표시
+    // 권한이 없으면 클릭 시 로그인 유도 처리
+    if (route == AppRoutes.feed || 
+        route == AppRoutes.search || 
+        route == AppRoutes.queue || 
+        route == AppRoutes.profile) {
+      return true; // 항상 탭 표시
+    }
+
+    // 콘솔 페이지는 운영자 이상만 표시
+    if (route.startsWith(AppRoutes.console) &&
+        !_hasRoleOrHigher(userRole, AppConstants.roleOperator)) {
+      return false;
+    }
+
+    // 기본적으로 접근 허용
+    return true;
+  }
+
+  /// 특정 역할 이상의 권한을 가지고 있는지 확인
+  bool _hasRoleOrHigher(String currentRole, String requiredRole) {
+    final currentLevel = AppConstants.roleHierarchy[currentRole] ?? 0;
+    final requiredLevel = AppConstants.roleHierarchy[requiredRole] ?? 999;
+    return currentLevel >= requiredLevel;
+  }
+
   /// 모든 탭 정보 정의
   List<_TabInfo> _getAllTabs() {
     return [
@@ -131,7 +166,7 @@ class AppBottomNav extends StatelessWidget {
       ),
     ];
   }
-  
+
   /// 개별 네비게이션 아이템 구성
   Widget _buildNavItem(
     BuildContext context,
@@ -140,8 +175,9 @@ class AppBottomNav extends StatelessWidget {
     int totalTabs,
   ) {
     final effectiveSelectedColor = selectedItemColor ?? AppColors.brandCrimson;
-    final effectiveUnselectedColor = unselectedItemColor ?? AppColors.textSecondary;
-    
+    final effectiveUnselectedColor =
+        unselectedItemColor ?? AppColors.textSecondary;
+
     return Expanded(
       child: Material(
         color: Colors.transparent,
@@ -149,7 +185,7 @@ class AppBottomNav extends StatelessWidget {
           onTap: () => onTap(tabInfo.originalIndex),
           borderRadius: BorderRadius.circular(8.r),
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 8.h),
+            padding: EdgeInsets.symmetric(vertical: 4.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -160,9 +196,9 @@ class AppBottomNav extends StatelessWidget {
                   effectiveSelectedColor,
                   effectiveUnselectedColor,
                 ),
-                
+
                 SizedBox(height: 4.h),
-                
+
                 // 라벨
                 _buildLabel(
                   tabInfo.label,
@@ -177,7 +213,7 @@ class AppBottomNav extends StatelessWidget {
       ),
     );
   }
-  
+
   /// 아이콘과 배지 구성
   Widget _buildIconWithBadge(
     _TabInfo tabInfo,
@@ -194,7 +230,7 @@ class AppBottomNav extends StatelessWidget {
         color: isSelected ? selectedColor : unselectedColor,
       ),
     );
-    
+
     // 배지가 있는 경우
     final badgeCount = badges?[tabInfo.originalIndex];
     if (badgeCount != null && badgeCount > 0) {
@@ -202,18 +238,14 @@ class AppBottomNav extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           iconWidget,
-          Positioned(
-            right: -6.w,
-            top: -6.h,
-            child: _buildBadge(badgeCount),
-          ),
+          Positioned(right: -6.w, top: -6.h, child: _buildBadge(badgeCount)),
         ],
       );
     }
-    
+
     return iconWidget;
   }
-  
+
   /// 배지 위젯 구성
   Widget _buildBadge(int count) {
     return Container(
@@ -224,10 +256,7 @@ class AppBottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.error,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: Colors.white,
-          width: 1.w,
-        ),
+        border: Border.all(color: Colors.white, width: 1.w),
       ),
       child: Text(
         count > 99 ? '99+' : count.toString(),
@@ -240,7 +269,7 @@ class AppBottomNav extends StatelessWidget {
       ),
     );
   }
-  
+
   /// 라벨 텍스트 구성
   Widget _buildLabel(
     String label,
@@ -273,16 +302,16 @@ class AppBottomNav extends StatelessWidget {
 class _TabInfo {
   /// 원본 인덱스 (전체 탭 목록에서의 위치)
   final int originalIndex;
-  
+
   /// 라우트 경로
   final String route;
-  
+
   /// 기본 아이콘
   final IconData icon;
-  
+
   /// 활성화된 아이콘
   final IconData activeIcon;
-  
+
   /// 라벨 텍스트
   final String label;
 
@@ -303,13 +332,13 @@ class _TabInfo {
 class AppScaffoldWithBottomNav extends StatelessWidget {
   /// 현재 페이지 위젯
   final Widget child;
-  
+
   /// 현재 라우트 경로
   final String currentRoute;
-  
+
   /// 배지 정보
   final Map<int, int>? badges;
-  
+
   /// 라우트 변경 콜백
   final ValueChanged<String>? onRouteChanged;
 
@@ -341,16 +370,16 @@ class AppScaffoldWithBottomNav extends StatelessWidget {
 class AppBottomNavWithFAB extends StatelessWidget {
   /// 현재 선택된 탭 인덱스
   final int currentIndex;
-  
+
   /// 탭 선택 콜백
   final ValueChanged<int> onTap;
-  
+
   /// 플로팅 액션 버튼
   final Widget floatingActionButton;
-  
+
   /// FAB 위치
   final FloatingActionButtonLocation fabLocation;
-  
+
   /// 배지 정보
   final Map<int, int>? badges;
 
@@ -368,20 +397,14 @@ class AppBottomNavWithFAB extends StatelessWidget {
     return Stack(
       children: [
         // 바텀 네비게이션
-        AppBottomNav(
-          currentIndex: currentIndex,
-          onTap: onTap,
-          badges: badges,
-        ),
-        
+        AppBottomNav(currentIndex: currentIndex, onTap: onTap, badges: badges),
+
         // 플로팅 액션 버튼
         Positioned(
           bottom: 20.h,
           left: 0,
           right: 0,
-          child: Center(
-            child: floatingActionButton,
-          ),
+          child: Center(child: floatingActionButton),
         ),
       ],
     );
@@ -391,7 +414,7 @@ class AppBottomNavWithFAB extends StatelessWidget {
 /// 배지 업데이트를 위한 헬퍼 클래스
 class BottomNavBadgeManager {
   static final Map<int, int> _badges = {};
-  
+
   /// 배지 설정
   static void setBadge(int tabIndex, int count) {
     if (count > 0) {
@@ -400,12 +423,12 @@ class BottomNavBadgeManager {
       _badges.remove(tabIndex);
     }
   }
-  
+
   /// 배지 증가
   static void incrementBadge(int tabIndex) {
     _badges[tabIndex] = (_badges[tabIndex] ?? 0) + 1;
   }
-  
+
   /// 배지 감소
   static void decrementBadge(int tabIndex) {
     final current = _badges[tabIndex] ?? 0;
@@ -415,27 +438,27 @@ class BottomNavBadgeManager {
       _badges.remove(tabIndex);
     }
   }
-  
+
   /// 배지 클리어
   static void clearBadge(int tabIndex) {
     _badges.remove(tabIndex);
   }
-  
+
   /// 모든 배지 클리어
   static void clearAllBadges() {
     _badges.clear();
   }
-  
+
   /// 현재 배지 상태 반환
   static Map<int, int> getBadges() {
     return Map.from(_badges);
   }
-  
+
   /// 특정 탭의 배지 개수 반환
   static int getBadgeCount(int tabIndex) {
     return _badges[tabIndex] ?? 0;
   }
-  
+
   /// 전체 배지 개수 반환
   static int getTotalBadgeCount() {
     return _badges.values.fold(0, (sum, count) => sum + count);

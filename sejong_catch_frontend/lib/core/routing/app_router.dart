@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'routes.dart';
 import 'route_guards.dart';
+import '../config/constants.dart';
+import '../../domain/controllers/auth_controller.dart';
+
+// Feature page imports
+import '../../features/shell/pages/root_shell_page.dart';
+import '../../features/feed/pages/feed_page.dart';
+import '../../features/search/pages/search_page.dart';
+import '../../features/queue/pages/queue_page.dart';
+import '../../features/profile/pages/profile_page.dart';
+import '../../features/onboarding/pages/onboarding_flow_page.dart';
 
 /// 세종 캐치 앱의 메인 라우터 설정
 /// 
@@ -53,7 +64,7 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.onboarding,
           name: 'onboarding',
-          builder: (context, state) => const OnboardingPlaceholder(),
+          builder: (context, state) => const OnboardingFlowPage(),
         ),
         
         GoRoute(
@@ -72,39 +83,35 @@ class AppRouter {
         
         ShellRoute(
           builder: (context, state, child) {
-            return MainShell(child: child);
+            return RootShellPage(child: child);
           },
           routes: [
             // 피드 페이지 (메인 홈)
             GoRoute(
               path: AppRoutes.feed,
               name: 'feed',
-              builder: (context, state) => const FeedPlaceholder(),
+              builder: (context, state) => const FeedPage(),
             ),
             
             // 검색 페이지
             GoRoute(
               path: AppRoutes.search,
               name: 'search',
-              builder: (context, state) {
-                // 초기 검색어 파라미터 처리
-                final query = state.uri.queryParameters['q'];
-                return SearchPlaceholder(initialQuery: query);
-              },
+              builder: (context, state) => const SearchPage(),
             ),
             
             // 대기열 페이지 (학생 이상만 접근)
             GoRoute(
               path: AppRoutes.queue,
               name: 'queue',
-              builder: (context, state) => const QueuePlaceholder(),
+              builder: (context, state) => const QueuePage(),
             ),
             
             // 프로필 페이지 (학생 이상만 접근)
             GoRoute(
               path: AppRoutes.profile,
               name: 'profile',
-              builder: (context, state) => const ProfilePlaceholder(),
+              builder: (context, state) => const ProfilePage(),
             ),
           ],
         ),
@@ -311,58 +318,7 @@ class AuthPlaceholder extends StatelessWidget {
   }
 }
 
-/// 메인 쉘 (바텀 네비게이션)
-class MainShell extends StatelessWidget {
-  final Widget child;
-  
-  const MainShell({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _getCurrentIndex(context),
-        onTap: (index) => _onTabTapped(context, index),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '피드',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: '검색',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.queue),
-            label: '대기열',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '프로필',
-          ),
-        ],
-      ),
-    );
-  }
-  
-  int _getCurrentIndex(BuildContext context) {
-    final location = GoRouterState.of(context).matchedLocation;
-    return AppRoutes.getTabIndex(location);
-  }
-  
-  void _onTabTapped(BuildContext context, int index) {
-    if (RouteGuards.canAccessBottomNavTab(index)) {
-      AppRouter.goToTab(context, index);
-    } else {
-      // 권한 없음 알림
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('접근 권한이 없습니다')),
-      );
-    }
-  }
-}
+// MainShell 클래스는 RootShellPage로 대체되어 제거됨
 
 /// 관리자 콘솔 쉘
 class ConsoleShell extends StatelessWidget {
@@ -383,55 +339,7 @@ class ConsoleShell extends StatelessWidget {
   }
 }
 
-// 기본 플레이스홀더 위젯들
-class FeedPlaceholder extends StatelessWidget {
-  const FeedPlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('피드 페이지')),
-    );
-  }
-}
-
-class SearchPlaceholder extends StatelessWidget {
-  final String? initialQuery;
-  const SearchPlaceholder({super.key, this.initialQuery});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('검색 페이지'),
-            if (initialQuery != null) Text('초기 검색어: $initialQuery'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class QueuePlaceholder extends StatelessWidget {
-  const QueuePlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('대기열 페이지')),
-    );
-  }
-}
-
-class ProfilePlaceholder extends StatelessWidget {
-  const ProfilePlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('프로필 페이지')),
-    );
-  }
-}
+// 메인 4개 페이지는 features/ 폴더의 실제 페이지로 대체됨
 
 class DetailPlaceholder extends StatelessWidget {
   final String itemId;

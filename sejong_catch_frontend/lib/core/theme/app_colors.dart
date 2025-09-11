@@ -31,7 +31,7 @@ class AppColors {
   /// 순수 흰색 - 카드 배경, 텍스트
   static const Color white = Color(0xFFFFFFFF);
   
-  /// 메인 배경 색상 (라이트 모드)
+  /// 메인 배경 색상
   /// 앱 전체 배경, AppBar 배경에 사용
   static const Color surface = Color(0xFFF7F7F8);
 
@@ -39,7 +39,7 @@ class AppColors {
   // Text Colors
   // ============================================================================
   
-  /// 주요 텍스트 색상 (라이트 모드)
+  /// 주요 텍스트 색상
   /// 제목, 중요한 텍스트에 사용
   static const Color textPrimary = Color(0xFF111111);
   
