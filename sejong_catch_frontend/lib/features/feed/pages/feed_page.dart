@@ -76,14 +76,14 @@ class FeedPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 아이콘
-          Container(
-            width: 48.w,
-            height: 48.h,
-            decoration: BoxDecoration(
-              color: AppColors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12.r),
+          SizedBox(
+            width: 52.w,
+            height: 52.h,
+            child: Image.asset(
+              'assets/sejong-logo.png',
+              fit: BoxFit.contain,
+              color: AppColors.white, // 필요하면 흰색 필터 입히기
             ),
-            child: Icon(Icons.school, size: 24.w, color: AppColors.white),
           ),
           SizedBox(height: 16.h),
 
