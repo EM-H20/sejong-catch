@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +12,13 @@ import '../../../core/utils/validators.dart';
 import '../../../core/utils/ui_utils.dart';
 import '../../../core/routing/routes.dart';
 import '../../../domain/controllers/auth_controller.dart';
+
+/// 전화번호 인증 진행 단계
+enum VerificationStep {
+  inputInfo, // 정보 입력 단계
+  verifyPhone, // 전화번호 인증 단계
+  completed, // 인증 완료 단계
+}
 
 /// 세종 캐치의 세련된 로그인 페이지
 ///
@@ -40,8 +49,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late Animation<Offset> _slideAnimation;
 
   // UI 상태 변수들
-  bool _isEmailLogin = true; // true: 이메일 로그인, false: 학생 인증
+  bool _isStudentLogin = true; // true: 학번 로그인, false: 게스트 로그인
   bool _rememberMe = false;
+
+  // 게스트 로그인용 추가 컨트롤러들
+  final _phoneController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _verificationCodeController = TextEditingController();
+  final _phoneFocusNode = FocusNode();
+  final _nameFocusNode = FocusNode();
+  final _verificationFocusNode = FocusNode();
+
+  // 전화번호 인증 상태 관리
+  VerificationStep _currentStep = VerificationStep.inputInfo;
+  int _remainingSeconds = 180; // 3분 = 180초
+  Timer? _verificationTimer;
 
   @override
   void initState() {
@@ -57,8 +79,19 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _passwordController.dispose();
     _studentIdFocusNode.dispose();
     _passwordFocusNode.dispose();
+
+    // 게스트 로그인 관련 컨트롤러들 정리
+    _phoneController.dispose();
+    _nameController.dispose();
+    _verificationCodeController.dispose();
+    _phoneFocusNode.dispose();
+    _nameFocusNode.dispose();
+    _verificationFocusNode.dispose();
+
+    // 애니메이션 및 타이머 정리
     _fadeController.dispose();
     _slideController.dispose();
+    _verificationTimer?.cancel();
     super.dispose();
   }
 
@@ -136,33 +169,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
   }
 
-  /// 세종대 학생 인증 로그인 처리 - 원터치의 마법! ⚡
-  Future<void> _handleStudentAuth() async {
-    final authController = context.read<AuthController>();
-
-    try {
-      final success = await authController.loginWithStudentAuth();
-
-      if (!mounted) return;
-
-      if (success) {
-        UiUtils.showSuccessSnackBar(
-          context,
-          '세종대학교 학생 인증 완료! 🎓 이제 모든 기능을 사용할 수 있어요!',
-        );
-        _navigateAfterLogin();
-      } else {
-        UiUtils.showErrorSnackBar(
-          context,
-          authController.errorMessage ?? '학생 인증에 실패했습니다.',
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      UiUtils.showErrorSnackBar(context, '학생 인증 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    }
-  }
-
   /// 로그인 후 적절한 페이지로 네비게이션
   void _navigateAfterLogin() {
     if (widget.redirectUrl != null && widget.redirectUrl!.isNotEmpty) {
@@ -174,13 +180,172 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
   }
 
-  /// 로그인 방식 토글 (학번 ↔ 학생인증)
+  // ===== 게스트 로그인 관련 검증 메서드들 =====
+
+  /// 전화번호 검증 - 한국 형식 (010-0000-0000)
+  String? _validatePhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return '전화번호를 입력해주세요 📱';
+    }
+
+    // 하이픈 제거 후 검증
+    final cleanPhone = value.replaceAll('-', '').replaceAll(' ', '');
+
+    if (!RegExp(r'^010[0-9]{8}$').hasMatch(cleanPhone)) {
+      return '올바른 전화번호 형식을 입력해주세요 (010-0000-0000)';
+    }
+
+    return null;
+  }
+
+  /// 한글 이름 검증 (2~4글자)
+  String? _validateKoreanName(String? value) {
+    if (value == null || value.isEmpty) {
+      return '이름을 입력해주세요 😊';
+    }
+
+    if (value.length < 2 || value.length > 4) {
+      return '2~4글자의 이름을 입력해주세요';
+    }
+
+    if (!RegExp(r'^[가-힣]+$').hasMatch(value)) {
+      return '한글 이름을 입력해주세요';
+    }
+
+    return null;
+  }
+
+  /// 인증번호 검증 (6자리 숫자)
+  String? _validateVerificationCode(String? value) {
+    if (value == null || value.isEmpty) {
+      return '인증번호를 입력해주세요 🔢';
+    }
+
+    if (value.length != 6) {
+      return '6자리 인증번호를 입력해주세요';
+    }
+
+    if (!RegExp(r'^[0-9]{6}$').hasMatch(value)) {
+      return '숫자만 입력 가능해요';
+    }
+
+    return null;
+  }
+
+  /// 시간 포맷 (초 → MM:SS)
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  // ===== 게스트 로그인 관련 핸들러 메서드들 =====
+
+  /// 인증번호 발송 처리 - SMS의 마법! ✨
+  Future<void> _handleSendVerificationCode() async {
+    // 폼 검증부터 확인
+    if (!_formKey.currentState!.validate()) {
+      if (!mounted) return;
+      UiUtils.showErrorSnackBar(context, '입력하신 정보를 다시 확인해주세요! 📝');
+      return;
+    }
+
+    try {
+      // 실제 SMS 발송 로직은 향후 AuthController에 위임 예정
+      // 현재는 UI 플로우만 구현 - SMS API 연동 예정
+      await Future.delayed(Duration(seconds: 2)); // API 호출 시뮬레이션
+
+      if (!mounted) return;
+
+      // 성공적으로 발송됐다고 가정
+      setState(() {
+        _currentStep = VerificationStep.verifyPhone;
+        _remainingSeconds = 180; // 3분 타이머 시작
+      });
+
+      // 타이머 시작
+      _startVerificationTimer();
+
+      UiUtils.showSuccessSnackBar(
+        context,
+        '📱 ${_phoneController.text}로 인증번호를 발송했어요!',
+      );
+
+      // 인증번호 입력 필드로 포커스 이동
+      _verificationFocusNode.requestFocus();
+    } catch (e) {
+      if (!mounted) return;
+      UiUtils.showErrorSnackBar(context, '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요! 📶');
+    }
+  }
+
+  /// 전화번호 인증 처리 - 숫자 6자리의 마법! 🔢
+  Future<void> _handleVerifyPhone() async {
+    // 인증번호 검증
+    if (_verificationCodeController.text.length != 6) {
+      UiUtils.showErrorSnackBar(context, '6자리 인증번호를 입력해주세요! 🔢');
+      return;
+    }
+
+    try {
+      // 실제 인증 확인 로직은 향후 AuthController에 위임 예정
+      // 현재는 UI 플로우만 구현 - SMS 인증 API 연동 예정
+      await Future.delayed(Duration(seconds: 2)); // API 호출 시뮬레이션
+
+      if (!mounted) return;
+
+      // 타이머 정리
+      _verificationTimer?.cancel();
+
+      // 인증 성공
+      setState(() {
+        _currentStep = VerificationStep.completed;
+      });
+
+      UiUtils.showSuccessSnackBar(
+        context,
+        '🎉 인증이 완료되었습니다! ${_nameController.text}님 환영해요!',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      UiUtils.showErrorSnackBar(context, '인증번호가 올바르지 않습니다. 다시 확인해주세요! 🔍');
+    }
+  }
+
+  /// 인증 타이머 시작
+  void _startVerificationTimer() {
+    _verificationTimer?.cancel(); // 기존 타이머 정리
+
+    _verificationTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        setState(() {
+          _remainingSeconds--;
+        });
+      } else {
+        timer.cancel();
+        // 타이머 종료 시 재전송 가능하다고 안내
+        if (mounted) {
+          UiUtils.showErrorSnackBar(context, '⏰ 인증 시간이 만료되었습니다. 재전송을 눌러주세요!');
+        }
+      }
+    });
+  }
+
+  /// 로그인 방식 토글 (학번 ↔ 게스트)
   void _toggleLoginMode() {
     setState(() {
-      _isEmailLogin = !_isEmailLogin;
+      _isStudentLogin = !_isStudentLogin;
       // 모드 변경 시 폼 초기화
       _studentIdController.clear();
       _passwordController.clear();
+      _phoneController.clear();
+      _nameController.clear();
+      _verificationCodeController.clear();
+
+      // 게스트 모드 상태 초기화
+      _currentStep = VerificationStep.inputInfo;
+      _remainingSeconds = 180;
+      _verificationTimer?.cancel();
     });
 
     // 부드러운 전환을 위한 미세 애니메이션
@@ -282,7 +447,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
         // 서브 타이틀
         Text(
-          _isEmailLogin ? '학번과 비밀번호로 로그인하세요' : '세종대학교 학생 인증으로 간편하게',
+          _isStudentLogin ? '학번과 비밀번호로 로그인하세요' : '전화번호로 간편하게 시작하세요',
           style: TextStyle(
             fontSize: 16.sp,
             color: AppColors.textSecondary,
@@ -310,9 +475,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ],
       ),
-      child: _isEmailLogin
+      child: _isStudentLogin
           ? _buildStudentIdLoginForm(authController)
-          : _buildStudentAuthContent(authController),
+          : _buildGuestLoginForm(authController),
     );
   }
 
@@ -405,15 +570,121 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  /// 세종대 학생 인증 콘텐츠 - 원터치의 편리함!
-  Widget _buildStudentAuthContent(AuthController authController) {
+  /// 게스트 로그인 폼 - 전화번호로 간편하게! 📱
+  Widget _buildGuestLoginForm(AuthController authController) {
     final isLoading = authController.status == AuthStatus.authenticating;
 
+    switch (_currentStep) {
+      case VerificationStep.inputInfo:
+        return _buildGuestInfoStep(isLoading);
+      case VerificationStep.verifyPhone:
+        return _buildVerificationStep(isLoading);
+      case VerificationStep.completed:
+        return _buildCompletionStep(isLoading);
+    }
+  }
+
+  /// 1단계: 전화번호와 이름 입력
+  Widget _buildGuestInfoStep(bool isLoading) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // 게스트 로그인 타이틀
+          Text(
+            '게스트로 시작하기',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          SizedBox(height: 24.h),
+
+          // 전화번호 입력 필드
+          AppTextField(
+            controller: _phoneController,
+            focusNode: _phoneFocusNode,
+            enabled: !isLoading,
+            labelText: '전화번호',
+            hintText: '010-0000-0000',
+            prefixIcon: Icons.phone,
+            keyboardType: TextInputType.phone,
+            validator: _validatePhoneNumber,
+            onSubmitted: (_) => _nameFocusNode.requestFocus(),
+          ),
+
+          SizedBox(height: 16.h),
+
+          // 이름 입력 필드
+          AppTextField(
+            controller: _nameController,
+            focusNode: _nameFocusNode,
+            enabled: !isLoading,
+            labelText: '이름',
+            hintText: '홍길동',
+            prefixIcon: Icons.person_outline,
+            keyboardType: TextInputType.name,
+            validator: _validateKoreanName,
+            onSubmitted: (_) => _handleSendVerificationCode(),
+          ),
+
+          SizedBox(height: 24.h),
+
+          // 인증번호 발송 버튼
+          AppButton.primary(
+            text: '인증번호 받기',
+            onPressed: isLoading ? null : _handleSendVerificationCode,
+            isLoading: isLoading,
+            isExpanded: true,
+            size: AppButtonSize.large,
+          ),
+
+          SizedBox(height: 16.h),
+
+          // 게스트 안내
+          Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: AppColors.brandCrimsonLight,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 24.w,
+                  color: AppColors.brandCrimson,
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  '📱 게스트로 가입하시면 기본 정보를 볼 수 있어요!\n더 많은 기능을 원하시면 학번 로그인을 이용해주세요',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: AppColors.brandCrimson,
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 2단계: 인증번호 입력
+  Widget _buildVerificationStep(bool isLoading) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // 학생 인증 타이틀
+        // 인증 단계 타이틀
         Text(
-          '세종대학교 학생 인증',
+          '인증번호를 입력해주세요',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
@@ -424,59 +695,134 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
         SizedBox(height: 16.h),
 
-        // 인증 설명
-        Container(
-          padding: EdgeInsets.all(16.w),
-          decoration: BoxDecoration(
-            color: AppColors.brandCrimsonLight,
-            borderRadius: BorderRadius.circular(12.r),
+        // 인증번호 발송 안내
+        Text(
+          '${_phoneController.text}로\n인증번호를 발송했어요! 📱',
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: AppColors.textSecondary,
+            height: 1.4,
           ),
-          child: Column(
-            children: [
-              Icon(
-                Icons.verified_user,
-                size: 32.w,
-                color: AppColors.brandCrimson,
+          textAlign: TextAlign.center,
+        ),
+
+        SizedBox(height: 24.h),
+
+        // 인증번호 입력 필드
+        AppTextField(
+          controller: _verificationCodeController,
+          focusNode: _verificationFocusNode,
+          enabled: !isLoading,
+          labelText: '인증번호',
+          hintText: '6자리 숫자를 입력하세요',
+          prefixIcon: Icons.lock_outline,
+          keyboardType: TextInputType.number,
+          validator: _validateVerificationCode,
+          maxLength: 6,
+          onSubmitted: (_) => _handleVerifyPhone(),
+        ),
+
+        SizedBox(height: 16.h),
+
+        // 타이머 표시
+        if (_remainingSeconds > 0)
+          Text(
+            '남은 시간: ${_formatTime(_remainingSeconds)}',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: AppColors.error,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+        SizedBox(height: 24.h),
+
+        // 인증 확인 버튼
+        AppButton.primary(
+          text: '인증 완료',
+          onPressed: isLoading ? null : _handleVerifyPhone,
+          isLoading: isLoading,
+          isExpanded: true,
+          size: AppButtonSize.large,
+        ),
+
+        SizedBox(height: 16.h),
+
+        // 재전송 버튼
+        Center(
+          child: TextButton(
+            onPressed: _remainingSeconds == 0
+                ? _handleSendVerificationCode
+                : null,
+            child: Text(
+              _remainingSeconds > 0 ? '인증번호가 오지 않았나요?' : '인증번호 재전송',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: _remainingSeconds == 0
+                    ? AppColors.brandCrimson
+                    : AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
               ),
-              SizedBox(height: 12.h),
-              Text(
-                '세종대학교 포털과 연동하여\n안전하고 간편하게 인증해요',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.brandCrimson,
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 3단계: 인증 완료
+  Widget _buildCompletionStep(bool isLoading) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 완료 아이콘
+        Center(
+          child: Container(
+            width: 80.w,
+            height: 80.h,
+            decoration: BoxDecoration(
+              color: AppColors.success,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.check, size: 40.w, color: Colors.white),
           ),
         ),
 
         SizedBox(height: 24.h),
 
-        // 학생 인증 버튼
-        AppButton(
-          text: '세종대 학생 인증하기',
-          onPressed: isLoading ? null : _handleStudentAuth,
-          isLoading: isLoading,
-          isExpanded: true,
-          size: AppButtonSize.large,
-          leftIcon: Icons.school,
-          backgroundColor: AppColors.brandCrimson,
-          textColor: Colors.white,
+        // 완료 메시지
+        Text(
+          '인증이 완료되었습니다!',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+          textAlign: TextAlign.center,
         ),
 
         SizedBox(height: 16.h),
 
-        // 인증 혜택 안내
         Text(
-          '🎓 학생 인증 시 맞춤형 추천과\n대기열 기능을 모두 이용할 수 있어요!',
+          '🎉 ${_nameController.text}님, 환영합니다!\n이제 세종 캐치를 이용하실 수 있어요',
           style: TextStyle(
-            fontSize: 12.sp,
+            fontSize: 14.sp,
             color: AppColors.textSecondary,
             height: 1.4,
           ),
           textAlign: TextAlign.center,
+        ),
+
+        SizedBox(height: 32.h),
+
+        // 시작하기 버튼
+        AppButton.primary(
+          text: '세종 캐치 시작하기',
+          onPressed: isLoading ? null : () => _navigateAfterLogin(),
+          isLoading: isLoading,
+          isExpanded: true,
+          size: AppButtonSize.large,
         ),
       ],
     );
@@ -529,14 +875,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           _buildToggleButton(
             text: '학번 로그인',
             icon: Icons.person,
-            isSelected: _isEmailLogin,
-            onTap: () => _isEmailLogin ? null : _toggleLoginMode(),
+            isSelected: _isStudentLogin,
+            onTap: () => _isStudentLogin ? null : _toggleLoginMode(),
           ),
           _buildToggleButton(
-            text: '학생 인증',
-            icon: Icons.school,
-            isSelected: !_isEmailLogin,
-            onTap: () => !_isEmailLogin ? null : _toggleLoginMode(),
+            text: '게스트',
+            icon: Icons.phone,
+            isSelected: !_isStudentLogin,
+            onTap: () => !_isStudentLogin ? null : _toggleLoginMode(),
           ),
         ],
       ),
