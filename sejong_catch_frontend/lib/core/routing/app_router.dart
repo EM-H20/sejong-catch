@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'routes.dart';
 import 'route_guards.dart';
-import '../config/constants.dart';
-import '../../domain/controllers/auth_controller.dart';
 
 // Feature page imports
 import '../../features/shell/pages/root_shell_page.dart';
@@ -15,7 +12,7 @@ import '../../features/profile/pages/profile_page.dart';
 import '../../features/onboarding/pages/onboarding_flow_page.dart';
 
 /// 세종 캐치 앱의 메인 라우터 설정
-/// 
+///
 /// GoRouter를 사용해서 전체 앱의 네비게이션을 관리합니다.
 /// 역할 기반 접근 제어, 딥링크, 상태 복원 등을 지원해요.
 class AppRouter {
@@ -24,13 +21,13 @@ class AppRouter {
 
   /// GoRouter 인스턴스 (싱글톤)
   static GoRouter? _router;
-  
+
   /// GoRouter 인스턴스 반환
   static GoRouter get instance {
     _router ??= _createRouter();
     return _router!;
   }
-  
+
   /// 라우터 재설정 (테스트용)
   static void reset() {
     _router = null;
@@ -39,34 +36,33 @@ class AppRouter {
   // ============================================================================
   // 라우터 생성 (Router Creation)
   // ============================================================================
-  
+
   /// GoRouter 인스턴스 생성
   static GoRouter _createRouter() {
     return GoRouter(
       // 라우트 가드 설정 - 모든 라우트 변경 시 권한 체크
       redirect: RouteGuards.routeGuard,
-      
+
       // 초기 라우트 (앱 시작 시 표시할 페이지)
       initialLocation: AppRoutes.feed,
-      
+
       // 딥링크 처리를 위한 라우트 매칭 전략
       routerNeglect: false,
-      
+
       // 디버그 로그 활성화 (개발 모드에서만)
       debugLogDiagnostics: true,
-      
+
       // 라우트 정의
       routes: [
         // ======================================================================
         // 온보딩 & 인증 라우트
         // ======================================================================
-        
         GoRoute(
           path: AppRoutes.onboarding,
           name: 'onboarding',
           builder: (context, state) => const OnboardingFlowPage(),
         ),
-        
+
         GoRoute(
           path: AppRoutes.auth,
           name: 'auth',
@@ -76,11 +72,10 @@ class AppRouter {
             return AuthPlaceholder(redirectUrl: redirectUrl);
           },
         ),
-        
+
         // ======================================================================
         // 메인 쉘 라우트 (바텀 네비게이션)
         // ======================================================================
-        
         ShellRoute(
           builder: (context, state, child) {
             return RootShellPage(child: child);
@@ -92,21 +87,21 @@ class AppRouter {
               name: 'feed',
               builder: (context, state) => const FeedPage(),
             ),
-            
+
             // 검색 페이지
             GoRoute(
               path: AppRoutes.search,
               name: 'search',
               builder: (context, state) => const SearchPage(),
             ),
-            
+
             // 대기열 페이지 (학생 이상만 접근)
             GoRoute(
               path: AppRoutes.queue,
               name: 'queue',
               builder: (context, state) => const QueuePage(),
             ),
-            
+
             // 프로필 페이지 (학생 이상만 접근)
             GoRoute(
               path: AppRoutes.profile,
@@ -115,11 +110,10 @@ class AppRouter {
             ),
           ],
         ),
-        
+
         // ======================================================================
         // 상세 & 하위 페이지 라우트
         // ======================================================================
-        
         GoRoute(
           path: '${AppRoutes.detail}/:id',
           name: 'detail',
@@ -128,23 +122,22 @@ class AppRouter {
             return DetailPlaceholder(itemId: itemId);
           },
         ),
-        
+
         GoRoute(
           path: AppRoutes.settings,
           name: 'settings',
           builder: (context, state) => const SettingsPlaceholder(),
         ),
-        
+
         GoRoute(
           path: AppRoutes.bookmarks,
           name: 'bookmarks',
           builder: (context, state) => const BookmarksPlaceholder(),
         ),
-        
+
         // ======================================================================
         // 관리자 콘솔 라우트
         // ======================================================================
-        
         ShellRoute(
           builder: (context, state, child) {
             return ConsoleShell(child: child);
@@ -155,19 +148,19 @@ class AppRouter {
               name: 'console',
               builder: (context, state) => const ConsolePlaceholder(),
             ),
-            
+
             GoRoute(
               path: AppRoutes.consoleRules,
               name: 'console-rules',
               builder: (context, state) => const ConsoleRulesPlaceholder(),
             ),
-            
+
             GoRoute(
               path: AppRoutes.consoleStats,
               name: 'console-stats',
               builder: (context, state) => const ConsoleStatsPlaceholder(),
             ),
-            
+
             GoRoute(
               path: AppRoutes.consoleUsers,
               name: 'console-users',
@@ -175,36 +168,35 @@ class AppRouter {
             ),
           ],
         ),
-        
+
         // ======================================================================
         // 기타 유틸리티 라우트
         // ======================================================================
-        
         GoRoute(
           path: AppRoutes.help,
           name: 'help',
           builder: (context, state) => const HelpPlaceholder(),
         ),
-        
+
         GoRoute(
           path: AppRoutes.privacy,
           name: 'privacy',
           builder: (context, state) => const PrivacyPlaceholder(),
         ),
-        
+
         GoRoute(
           path: AppRoutes.terms,
           name: 'terms',
           builder: (context, state) => const TermsPlaceholder(),
         ),
-        
+
         GoRoute(
           path: AppRoutes.about,
           name: 'about',
           builder: (context, state) => const AboutPlaceholder(),
         ),
       ],
-      
+
       // 에러 페이지 처리
       errorBuilder: (context, state) => ErrorPlaceholder(
         error: state.error.toString(),
@@ -216,35 +208,35 @@ class AppRouter {
   // ============================================================================
   // 네비게이션 헬퍼 메서드들 (Navigation Helpers)
   // ============================================================================
-  
+
   /// 현재 컨텍스트에서 라우트로 이동
   static void go(BuildContext context, String route) {
     context.go(route);
   }
-  
+
   /// 현재 컨텍스트에서 라우트를 푸시 (뒤로가기 가능)
   static void push(BuildContext context, String route) {
     context.push(route);
   }
-  
+
   /// 현재 컨텍스트에서 뒤로가기
   static void pop(BuildContext context) {
     context.pop();
   }
-  
+
   /// 상세 페이지로 이동
   static void goToDetail(BuildContext context, String itemId) {
     context.go(AppRoutes.detailPath(itemId));
   }
-  
+
   /// 검색 페이지로 이동 (초기 검색어 포함)
   static void goToSearch(BuildContext context, {String? query}) {
-    final route = query != null 
+    final route = query != null
         ? '${AppRoutes.search}?q=${Uri.encodeComponent(query)}'
         : AppRoutes.search;
     context.go(route);
   }
-  
+
   /// 인증 페이지로 이동 (리다이렉트 URL 포함)
   static void goToAuth(BuildContext context, {String? redirectUrl}) {
     final route = redirectUrl != null
@@ -252,7 +244,7 @@ class AppRouter {
         : AppRoutes.auth;
     context.go(route);
   }
-  
+
   /// 바텀 네비게이션 탭으로 이동
   static void goToTab(BuildContext context, int tabIndex) {
     final route = AppRoutes.getRouteFromIndex(tabIndex);
@@ -293,7 +285,7 @@ class OnboardingPlaceholder extends StatelessWidget {
 /// 인증 페이지 플레이스홀더
 class AuthPlaceholder extends StatelessWidget {
   final String? redirectUrl;
-  
+
   const AuthPlaceholder({super.key, this.redirectUrl});
 
   @override
@@ -323,7 +315,7 @@ class AuthPlaceholder extends StatelessWidget {
 /// 관리자 콘솔 쉘
 class ConsoleShell extends StatelessWidget {
   final Widget child;
-  
+
   const ConsoleShell({super.key, required this.child});
 
   @override
@@ -357,9 +349,7 @@ class SettingsPlaceholder extends StatelessWidget {
   const SettingsPlaceholder({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('설정 페이지')),
-    );
+    return const Scaffold(body: Center(child: Text('설정 페이지')));
   }
 }
 
@@ -367,9 +357,7 @@ class BookmarksPlaceholder extends StatelessWidget {
   const BookmarksPlaceholder({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('북마크 페이지')),
-    );
+    return const Scaffold(body: Center(child: Text('북마크 페이지')));
   }
 }
 
@@ -409,9 +397,7 @@ class HelpPlaceholder extends StatelessWidget {
   const HelpPlaceholder({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('도움말 페이지')),
-    );
+    return const Scaffold(body: Center(child: Text('도움말 페이지')));
   }
 }
 
@@ -419,9 +405,7 @@ class PrivacyPlaceholder extends StatelessWidget {
   const PrivacyPlaceholder({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('개인정보 처리방침')),
-    );
+    return const Scaffold(body: Center(child: Text('개인정보 처리방침')));
   }
 }
 
@@ -429,9 +413,7 @@ class TermsPlaceholder extends StatelessWidget {
   const TermsPlaceholder({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('이용약관')),
-    );
+    return const Scaffold(body: Center(child: Text('이용약관')));
   }
 }
 
@@ -439,16 +421,14 @@ class AboutPlaceholder extends StatelessWidget {
   const AboutPlaceholder({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('앱 정보')),
-    );
+    return const Scaffold(body: Center(child: Text('앱 정보')));
   }
 }
 
 class ErrorPlaceholder extends StatelessWidget {
   final String error;
   final String location;
-  
+
   const ErrorPlaceholder({
     super.key,
     required this.error,

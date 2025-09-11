@@ -8,24 +8,21 @@ import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// 메인 쉘 페이지
-/// 
+///
 /// 바텀 네비게이션이 포함된 메인 앱 구조를 담당합니다.
 /// 각 탭 페이지들을 자식으로 받아서 표시하며,
 /// 네비게이션 상태를 관리합니다.
 class RootShellPage extends StatelessWidget {
   /// 현재 표시할 페이지 위젯
   final Widget child;
-  
-  const RootShellPage({
-    super.key,
-    required this.child,
-  });
+
+  const RootShellPage({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     // 현재 라우트 경로 가져오기
     final String currentRoute = GoRouterState.of(context).matchedLocation;
-    
+
     return Scaffold(
       // 메인 콘텐츠 영역
       body: AnimatedSwitcher(
@@ -33,16 +30,13 @@ class RootShellPage extends StatelessWidget {
         duration: Duration(milliseconds: 200),
         // 페이지가 바뀔 때 부드러운 페이드 전환
         transitionBuilder: (child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
+          return FadeTransition(opacity: animation, child: child);
         },
         child: child,
       ),
-      
+
       // 바텀 네비게이션 (조건부 표시)
-      bottomNavigationBar: _shouldShowBottomNav(currentRoute) 
+      bottomNavigationBar: _shouldShowBottomNav(currentRoute)
           ? Container(
               // 바텀 네비게이션 그림자 효과
               decoration: BoxDecoration(
@@ -64,68 +58,68 @@ class RootShellPage extends StatelessWidget {
           : null,
     );
   }
-  
+
   /// 바텀 네비게이션을 표시할지 결정
-  /// 
+  ///
   /// 메인 탭 라우트에서만 바텀 네비게이션을 표시하고,
   /// 상세 페이지나 설정 페이지에서는 숨깁니다.
   bool _shouldShowBottomNav(String route) {
     // 메인 탭 라우트에서만 바텀 네비게이션 표시
     return AppRoutes.isBottomNavRoute(route);
   }
-  
+
   /// 탭 선택 시 처리
-  /// 
+  ///
   /// GoRouter를 사용해서 해당 탭의 라우트로 이동합니다.
   /// 애니메이션과 함께 자연스러운 전환을 제공해요.
   void _onTabTapped(BuildContext context, int index) {
     final route = AppRoutes.getRouteFromIndex(index);
-    
+
     // 현재 페이지와 같으면 아무것도 하지 않음
     final currentRoute = GoRouterState.of(context).matchedLocation;
     if (currentRoute == route) return;
-    
+
     // 해당 탭으로 이동
     context.go(route);
-    
+
     // 탭 변경 시 부드러운 햅틱 피드백
     _triggerHapticFeedback();
   }
-  
+
   /// 햅틱 피드백 트리거
-  /// 
+  ///
   /// 탭 전환 시 미세한 진동으로 사용자 경험을 향상시켜요.
   void _triggerHapticFeedback() {
     // TODO: HapticFeedback.lightImpact() 추가
     // HapticFeedback.lightImpact();
   }
-  
+
   /// 임시 배지 데이터
-  /// 
+  ///
   /// 실제 앱에서는 Provider나 서버에서 데이터를 가져와야 해요.
   Map<int, int>? _getMockBadges() {
     return {
-      1: 3,  // 검색 탭에 3개 알림 (예: 새로운 키워드 결과)
-      2: 1,  // 대기열 탭에 1개 알림 (예: 대기 순서 변경)
+      1: 3, // 검색 탭에 3개 알림 (예: 새로운 키워드 결과)
+      2: 1, // 대기열 탭에 1개 알림 (예: 대기 순서 변경)
       // 0(피드), 3(프로필)은 배지 없음
     };
   }
 }
 
 /// 바텀 네비게이션이 없는 풀스크린 쉘
-/// 
+///
 /// 온보딩, 인증, 상세 페이지 등에서 사용할
 /// 바텀 네비게이션이 없는 버전입니다.
 class FullScreenShell extends StatelessWidget {
   /// 현재 표시할 페이지 위젯
   final Widget child;
-  
+
   /// 뒤로가기 버튼 표시 여부
   final bool showBackButton;
-  
+
   /// 커스텀 AppBar (선택사항)
   final PreferredSizeWidget? appBar;
-  
+
   const FullScreenShell({
     super.key,
     required this.child,
@@ -138,12 +132,12 @@ class FullScreenShell extends StatelessWidget {
     return Scaffold(
       // 커스텀 AppBar가 있으면 사용, 없으면 기본 AppBar
       appBar: appBar ?? (showBackButton ? _buildDefaultAppBar(context) : null),
-      
+
       // 메인 콘텐츠
       body: child,
     );
   }
-  
+
   /// 기본 AppBar 구성
   PreferredSizeWidget _buildDefaultAppBar(BuildContext context) {
     return AppBar(
@@ -151,7 +145,7 @@ class FullScreenShell extends StatelessWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
-      
+
       // 뒤로가기 버튼
       leading: IconButton(
         icon: Icon(
@@ -173,16 +167,16 @@ class FullScreenShell extends StatelessWidget {
 }
 
 /// 에러 바운더리 쉘
-/// 
+///
 /// 예상치 못한 에러가 발생했을 때 사용자에게
 /// 친화적인 에러 화면을 보여주는 쉘입니다.
 class ErrorBoundaryShell extends StatelessWidget {
   /// 에러 메시지
   final String errorMessage;
-  
+
   /// 재시도 콜백
   final VoidCallback? onRetry;
-  
+
   const ErrorBoundaryShell({
     super.key,
     required this.errorMessage,
@@ -192,10 +186,7 @@ class ErrorBoundaryShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('문제가 발생했어요'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('문제가 발생했어요'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(24.w),
@@ -203,13 +194,9 @@ class ErrorBoundaryShell extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 에러 아이콘
-              Icon(
-                Icons.error_outline,
-                size: 64.w,
-                color: AppColors.error,
-              ),
+              Icon(Icons.error_outline, size: 64.w, color: AppColors.error),
               SizedBox(height: 24.h),
-              
+
               // 에러 제목
               Text(
                 '앗! 문제가 발생했어요',
@@ -221,7 +208,7 @@ class ErrorBoundaryShell extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 12.h),
-              
+
               // 에러 설명
               Text(
                 '잠시 후 다시 시도해보시거나\n홈으로 돌아가주세요.',
@@ -232,7 +219,7 @@ class ErrorBoundaryShell extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 32.h),
-              
+
               // 액션 버튼들
               Column(
                 children: [
@@ -244,15 +231,12 @@ class ErrorBoundaryShell extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onRetry,
                         icon: Icon(Icons.refresh, size: 20.w),
-                        label: Text(
-                          '다시 시도',
-                          style: TextStyle(fontSize: 16.sp),
-                        ),
+                        label: Text('다시 시도', style: TextStyle(fontSize: 16.sp)),
                       ),
                     ),
-                  
+
                   SizedBox(height: 12.h),
-                  
+
                   // 홈으로 가기 버튼
                   SizedBox(
                     width: double.infinity,
@@ -268,7 +252,7 @@ class ErrorBoundaryShell extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               // 개발 모드에서만 에러 상세 정보 표시
               if (_isDebugMode) ...[
                 SizedBox(height: 24.h),
@@ -309,7 +293,7 @@ class ErrorBoundaryShell extends StatelessWidget {
       ),
     );
   }
-  
+
   /// 디버그 모드 확인
   bool get _isDebugMode {
     // assert는 디버그 모드에서만 실행됨
