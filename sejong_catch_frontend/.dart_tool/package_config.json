@@ -357,9 +357,9 @@
     },
     {
       "name": "intl",
-      "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/intl-0.20.2",
+      "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/intl-0.19.0",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.0"
     },
     {
       "name": "io",
