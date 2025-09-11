@@ -976,14 +976,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           child: Row(
             children: [
               Icon(
-                Icons.info_outline,
+                Icons.visibility,
                 size: 20.w,
                 color: AppColors.brandCrimson,
               ),
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(
-                  '로그인하지 않아도 일부 정보를 볼 수 있어요',
+                  '가입 없이 공개 정보를 둘러볼 수 있어요',
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: AppColors.textSecondary,
@@ -992,11 +992,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               ),
               TextButton(
                 onPressed: () {
-                  // 게스트로 계속하기
+                  // 둘러보기로 피드 페이지 이동
                   context.go(AppRoutes.feed);
                 },
                 child: Text(
-                  '게스트로 계속',
+                  '둘러보기',
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: AppColors.brandCrimson,
