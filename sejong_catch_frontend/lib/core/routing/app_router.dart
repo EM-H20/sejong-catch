@@ -10,6 +10,7 @@ import '../../features/search/pages/search_page.dart';
 import '../../features/queue/pages/queue_page.dart';
 import '../../features/profile/pages/profile_page.dart';
 import '../../features/onboarding/pages/onboarding_flow_page.dart';
+import '../../features/auth/pages/login_page.dart';
 
 /// 세종 캐치 앱의 메인 라우터 설정
 ///
@@ -69,7 +70,7 @@ class AppRouter {
           builder: (context, state) {
             // 리다이렉트 URL 파라미터 처리
             final redirectUrl = state.uri.queryParameters['redirect'];
-            return AuthPlaceholder(redirectUrl: redirectUrl);
+            return LoginPage(redirectUrl: redirectUrl);
           },
         ),
 
