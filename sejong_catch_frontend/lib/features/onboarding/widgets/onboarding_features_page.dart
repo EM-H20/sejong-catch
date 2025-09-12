@@ -86,7 +86,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           // 타이틀 섹션
           _buildTitleSection(),
 
-          SizedBox(height: 40.h),
+          SizedBox(height: 20.h),
 
           // 플로우 다이어그램
           Expanded(child: _buildFlowDiagram()),
@@ -96,7 +96,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           // 설명 텍스트
           _buildDescriptionSection(),
 
-          SizedBox(height: 40.h),
+          SizedBox(height: 20.h),
         ],
       ),
     );

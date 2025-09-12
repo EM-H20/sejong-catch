@@ -95,7 +95,7 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
             ),
           ),
 
-          SizedBox(height: 40.h),
+          SizedBox(height: 30.h),
 
           // 특징 카드들
           FadeTransition(
