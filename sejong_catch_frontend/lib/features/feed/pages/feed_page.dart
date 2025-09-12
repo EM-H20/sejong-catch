@@ -220,7 +220,7 @@ class FeedPage extends StatelessWidget {
                   ),
                   child: Icon(icon, size: 20.w, color: color),
                 ),
-                SizedBox(height: 6.h),
+                SizedBox(height: 8.h),
 
                 // 제목
                 Text(

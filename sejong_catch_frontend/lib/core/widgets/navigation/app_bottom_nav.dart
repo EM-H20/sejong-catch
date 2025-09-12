@@ -62,8 +62,8 @@ class AppBottomNav extends StatelessWidget {
       ),
       child: SafeArea(
         child: Container(
-          height: 70.h,
-          padding: EdgeInsets.symmetric(vertical: 8.h),
+          height: 80.h,  // 아이패드에서 overflow 방지를 위해 높이 증가
+          padding: EdgeInsets.symmetric(vertical: 6.h),  // 패딩 축소로 공간 절약
           child: Row(
             children: availableTabs.map((tabInfo) {
               final isSelected = currentIndex == tabInfo.originalIndex;
@@ -185,7 +185,7 @@ class AppBottomNav extends StatelessWidget {
           onTap: () => onTap(tabInfo.originalIndex),
           borderRadius: BorderRadius.circular(8.r),
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 4.h),
+            padding: EdgeInsets.symmetric(vertical: 2.h),  // 패딩 축소로 더 많은 공간 확보
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -197,7 +197,7 @@ class AppBottomNav extends StatelessWidget {
                   effectiveUnselectedColor,
                 ),
 
-                SizedBox(height: 4.h),
+                SizedBox(height: 2.h),  // 아이콘-라벨 간격 축소로 overflow 방지
 
                 // 라벨
                 _buildLabel(

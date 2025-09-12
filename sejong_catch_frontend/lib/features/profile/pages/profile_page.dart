@@ -16,12 +16,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // 임시 사용자 정보
+  // 임시 사용자 정보 (실제 상태 변경이 필요한 변수)
   bool _isLoggedIn = false;
-  String _userName = '세종대학교 학생';
-  String _userEmail = 'student@sejong.ac.kr';
-  String _userRole = 'Student';
-  String _department = '컴퓨터공학과';
+  
+  // 임시 더미 데이터 (실제로는 서버에서 불러올 정적 데이터)
+  final String _userName = '세종대학교 학생';
+  final String _userEmail = 'student@sejong.ac.kr';
+  final String _userRole = 'Student';
+  final String _department = '컴퓨터공학과';
 
   @override
   Widget build(BuildContext context) {

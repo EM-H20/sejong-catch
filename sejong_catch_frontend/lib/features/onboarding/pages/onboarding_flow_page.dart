@@ -337,12 +337,12 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
       // 온보딩 완료 처리
       await appController.setOnboardingCompleted();
 
-      // 메인 화면으로 이동
-      if (mounted) {
+      // 메인 화면으로 이동 (이중 안전 체크)
+      if (mounted && context.mounted) {
         context.go(AppRoutes.feed);
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && context.mounted) {
         _showErrorDialog('온보딩 완료 중 오류가 발생했습니다: $e');
       }
     }
@@ -350,23 +350,24 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
 
   /// 건너뛰기 처리
   Future<void> _handleSkip() async {
+    // async gap 전에 미리 Controller들과 context 읽어오기
+    final onboardingController = context.read<OnboardingController>();
+    final appController = context.read<AppController>();
+    
     final shouldSkip = await _showSkipDialog();
     if (!shouldSkip) return;
 
     try {
-      final onboardingController = context.read<OnboardingController>();
-      final appController = context.read<AppController>();
-
       // 건너뛰기 처리
       await onboardingController.skipOnboarding();
       await appController.setOnboardingCompleted();
 
-      // 메인 화면으로 이동
-      if (mounted) {
+      // 메인 화면으로 이동 (이중 안전 체크)
+      if (mounted && context.mounted) {
         context.go(AppRoutes.feed);
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && context.mounted) {
         _showErrorDialog('건너뛰기 처리 중 오류가 발생했습니다: $e');
       }
     }

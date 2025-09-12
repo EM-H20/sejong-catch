@@ -134,7 +134,7 @@ class LoginCard extends StatelessWidget {
   /// 단계별 헤더 (제목 + 서브타이틀)
   Widget _buildStepHeader(LoginController loginController) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           loginController.getCurrentStepTitle(),

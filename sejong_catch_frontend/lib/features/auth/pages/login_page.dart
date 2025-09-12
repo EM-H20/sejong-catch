@@ -13,10 +13,10 @@ import '../widgets/ui/login_mode_toggle.dart';
 import '../widgets/ui/login_footer.dart';
 
 /// 세종 캐치의 새로운 클린 로그인 페이지
-/// 
+///
 /// 기존 1,043줄에서 200줄 이하로 대대적 리팩토링!
 /// 이제 진짜 "토스급" 클린 코드가 완성되었습니다! 🎉✨
-/// 
+///
 /// **리팩토링 성과:**
 /// - 상태 관리: LoginController로 완전 분리
 /// - UI 구성: 4개의 재사용 가능한 위젯으로 분리
@@ -70,12 +70,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       end: 1.0,
     ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.3), 
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0.0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        );
   }
 
   /// 페이지 진입 애니메이션 시작
@@ -95,9 +93,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       providers: [
         // LoginController를 Provider로 주입
         ChangeNotifierProvider<LoginController>(
-          create: (context) => LoginController(
-            authController: context.read<AuthController>(),
-          ),
+          create: (context) =>
+              LoginController(authController: context.read<AuthController>()),
         ),
       ],
       child: Scaffold(
