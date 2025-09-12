@@ -73,36 +73,41 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // 로고/아이콘 영역
-          ScaleTransition(
-            scale: _iconScaleAnimation,
-            child: _buildLogoSection(),
-          ),
-
-          SizedBox(height: 20.h),
-
-          // 메인 텍스트 영역
-          FadeTransition(
-            opacity: _textFadeAnimation,
-            child: SlideTransition(
-              position: _textSlideAnimation,
-              child: _buildTextSection(),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Column(
+          children: [
+            SizedBox(height: 18.h),
+            // 로고/아이콘 영역
+            ScaleTransition(
+              scale: _iconScaleAnimation,
+              child: _buildLogoSection(),
             ),
-          ),
 
-          SizedBox(height: 30.h),
+            SizedBox(height: 20.h),
 
-          // 특징 카드들
-          FadeTransition(
-            opacity: _textFadeAnimation,
-            child: _buildFeatureCards(),
-          ),
-        ],
+            // 메인 텍스트 영역
+            FadeTransition(
+              opacity: _textFadeAnimation,
+              child: SlideTransition(
+                position: _textSlideAnimation,
+                child: _buildTextSection(),
+              ),
+            ),
+
+            SizedBox(height: 30.h),
+
+            // 특징 카드들
+            FadeTransition(
+              opacity: _textFadeAnimation,
+              child: _buildFeatureCards(),
+            ),
+
+            // 하단 여백
+            SizedBox(height: 40.h),
+          ],
+        ),
       ),
     );
   }

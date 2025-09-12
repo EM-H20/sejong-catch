@@ -77,27 +77,28 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        children: [
-          SizedBox(height: 20.h),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Column(
+          children: [
+            SizedBox(height: 18.h),
+            // 타이틀 섹션
+            _buildTitleSection(),
 
-          // 타이틀 섹션
-          _buildTitleSection(),
+            SizedBox(height: 20.h),
 
-          SizedBox(height: 20.h),
+            // 플로우 다이어그램
+            _buildFlowDiagram(),
 
-          // 플로우 다이어그램
-          Expanded(child: _buildFlowDiagram()),
+            SizedBox(height: 30.h),
 
-          SizedBox(height: 20.h),
+            // 설명 텍스트
+            _buildDescriptionSection(),
 
-          // 설명 텍스트
-          _buildDescriptionSection(),
-
-          SizedBox(height: 20.h),
-        ],
+            SizedBox(height: 40.h),
+          ],
+        ),
       ),
     );
   }
@@ -131,7 +132,6 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
   /// 플로우 다이어그램
   Widget _buildFlowDiagram() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // 1단계: 수집
         _buildFlowStep(
