@@ -344,9 +344,9 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
       // 🔥 해결책: 상태 동기화를 위한 짧은 딜레이 추가 (라우터 가드 인식 보장)
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // 메인 화면으로 이동 (이중 안전 체크)
+      // 🔄 개선: pushReplacement로 온보딩 페이지를 히스토리에서 완전히 제거
       if (mounted && context.mounted) {
-        context.go(AppRoutes.feed);
+        context.pushReplacement(AppRoutes.feed);
       }
     } catch (e) {
       if (mounted && context.mounted) {
@@ -374,9 +374,9 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
       // 🔥 해결책: 상태 동기화를 위한 짧은 딜레이 추가 (라우터 가드 인식 보장)
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // 메인 화면으로 이동 (이중 안전 체크)
+      // 🔄 개선: pushReplacement로 온보딩 페이지를 히스토리에서 완전히 제거
       if (mounted && context.mounted) {
-        context.go(AppRoutes.feed);
+        context.pushReplacement(AppRoutes.feed);
       }
     } catch (e) {
       if (mounted && context.mounted) {
