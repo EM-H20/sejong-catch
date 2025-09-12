@@ -87,12 +87,10 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
             _buildTitleSection(),
 
             SizedBox(height: 20.h),
-
             // 플로우 다이어그램
             _buildFlowDiagram(),
 
             SizedBox(height: 30.h),
-
             // 설명 텍스트
             _buildDescriptionSection(),
 
@@ -142,8 +140,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           color: Colors.blue,
         ),
 
-        // 화살표
-        _buildFlowArrow(0),
+        SizedBox(height: 20.h),
 
         // 2단계: 필터링
         _buildFlowStep(
@@ -154,8 +151,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           color: Colors.orange,
         ),
 
-        // 화살표
-        _buildFlowArrow(1),
+        SizedBox(height: 20.h),
 
         // 3단계: 추천
         _buildFlowStep(
@@ -255,36 +251,6 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  /// 플로우 화살표
-  Widget _buildFlowArrow(int index) {
-    return FadeTransition(
-      opacity: _stepAnimations[index],
-      child: SizedBox(
-        height: 40.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (int i = 0; i < 3; i++)
-              Container(
-                width: 2.w,
-                height: 8.h,
-                margin: EdgeInsets.symmetric(vertical: 2.h),
-                decoration: BoxDecoration(
-                  color: AppColors.brandCrimson.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(1.r),
-                ),
-              ),
-            Icon(
-              Icons.keyboard_arrow_down,
-              size: 20.w,
-              color: AppColors.brandCrimson,
-            ),
-          ],
         ),
       ),
     );

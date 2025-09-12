@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// 온보딩 3단계: 역할 시스템 페이지
-/// 
+///
 /// 게스트, 학생, 운영자, 관리자 역할을 설명하고
 /// 각 역할별 권한과 특징을 소개합니다.
 class OnboardingRolesPage extends StatefulWidget {
@@ -17,11 +17,10 @@ class OnboardingRolesPage extends StatefulWidget {
 
 class _OnboardingRolesPageState extends State<OnboardingRolesPage>
     with TickerProviderStateMixin {
-  
   late AnimationController _cardController;
   late List<Animation<double>> _cardAnimations;
   late List<Animation<Offset>> _slideAnimations;
-  
+
   final List<RoleInfo> _roles = [
     RoleInfo(
       icon: Icons.visibility,
@@ -56,54 +55,55 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
       features: ['사용자 관리', '통계 대시보드', '시스템 설정', '로그 분석'],
     ),
   ];
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     _cardController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    
+
     // 각 카드별 애니메이션 생성
     _cardAnimations = List.generate(_roles.length, (index) {
-      return Tween<double>(
-        begin: 0.0,
-        end: 1.0,
-      ).animate(CurvedAnimation(
-        parent: _cardController,
-        curve: Interval(
-          index * 0.2,
-          (index * 0.2) + 0.4,
-          curve: Curves.easeOut,
+      return Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _cardController,
+          curve: Interval(
+            index * 0.2,
+            (index * 0.2) + 0.4,
+            curve: Curves.easeOut,
+          ),
         ),
-      ));
+      );
     });
-    
+
     _slideAnimations = List.generate(_roles.length, (index) {
       return Tween<Offset>(
         begin: const Offset(0.5, 0.0),
         end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _cardController,
-        curve: Interval(
-          index * 0.2,
-          (index * 0.2) + 0.4,
-          curve: Curves.easeOut,
+      ).animate(
+        CurvedAnimation(
+          parent: _cardController,
+          curve: Interval(
+            index * 0.2,
+            (index * 0.2) + 0.4,
+            curve: Curves.easeOut,
+          ),
         ),
-      ));
+      );
     });
-    
+
     // 애니메이션 시작
     _startAnimations();
   }
-  
+
   void _startAnimations() async {
     await Future.delayed(const Duration(milliseconds: 200));
     _cardController.forward();
   }
-  
+
   @override
   void dispose() {
     _cardController.dispose();
@@ -116,29 +116,24 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Column(
         children: [
-          SizedBox(height: 30.h),
-          
+          SizedBox(height: 18.h),
+
           // 타이틀 섹션
           _buildTitleSection(),
-          
-          SizedBox(height: 30.h),
-          
           // 역할 카드들
-          Expanded(
-            child: _buildRoleCards(),
-          ),
-          
+          Expanded(child: _buildRoleCards()),
+
           SizedBox(height: 20.h),
-          
+
           // 하단 설명
           _buildBottomInfo(),
-          
-          SizedBox(height: 30.h),
+
+          // SizedBox(height: 30.h),
         ],
       ),
     );
   }
-  
+
   /// 타이틀 섹션
   Widget _buildTitleSection() {
     return Column(
@@ -164,7 +159,7 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
       ],
     );
   }
-  
+
   /// 역할 카드들
   Widget _buildRoleCards() {
     return GridView.builder(
@@ -173,7 +168,7 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
         crossAxisCount: 2,
         crossAxisSpacing: 12.w,
         mainAxisSpacing: 12.h,
-        childAspectRatio: 0.85,
+        childAspectRatio: 0.75,
       ),
       itemCount: _roles.length,
       itemBuilder: (context, index) {
@@ -187,7 +182,7 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
       },
     );
   }
-  
+
   /// 개별 역할 카드
   Widget _buildRoleCard(RoleInfo role) {
     return Container(
@@ -217,15 +212,11 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
               color: role.color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              role.icon,
-              size: 28.w,
-              color: role.color,
-            ),
+            child: Icon(role.icon, size: 28.w, color: role.color),
           ),
-          
-          SizedBox(height: 12.h),
-          
+
+          SizedBox(height: 5.h),
+
           // 타이틀
           Text(
             role.title,
@@ -235,9 +226,9 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
               color: AppColors.textPrimary,
             ),
           ),
-          
+
           SizedBox(height: 4.h),
-          
+
           // 서브타이틀
           Text(
             role.subtitle,
@@ -247,9 +238,9 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
               fontWeight: FontWeight.w500,
             ),
           ),
-          
+
           SizedBox(height: 8.h),
-          
+
           // 설명
           Text(
             role.description,
@@ -262,15 +253,12 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          
+
           const Spacer(),
-          
+
           // 주요 기능
           Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 8.w,
-              vertical: 6.h,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
             decoration: BoxDecoration(
               color: role.color.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8.r),
@@ -288,7 +276,7 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
       ),
     );
   }
-  
+
   /// 하단 정보
   Widget _buildBottomInfo() {
     return Container(
@@ -299,11 +287,7 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.info_outline,
-            size: 24.w,
-            color: AppColors.brandCrimson,
-          ),
+          Icon(Icons.info_outline, size: 24.w, color: AppColors.brandCrimson),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -343,7 +327,7 @@ class RoleInfo {
   final String description;
   final Color color;
   final List<String> features;
-  
+
   const RoleInfo({
     required this.icon,
     required this.title,
