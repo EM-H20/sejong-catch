@@ -113,7 +113,7 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
                 // 페이지 인디케이터
                 _buildPageIndicator(),
 
-                SizedBox(height: 20.h),
+                // SizedBox(height: 20.h),
 
                 // 메인 콘텐츠 (PageView)
                 Expanded(child: _buildPageView()),
@@ -322,8 +322,8 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
       final onboardingController = context.read<OnboardingController>();
       final appController = context.read<AppController>();
 
-      // 온보딩 컨트롤러에서 완료 처리
-      await onboardingController.completeOnboarding();
+      // 🔥 수정: AppController 먼저 완료 상태로 설정 (라우터 가드가 인식할 수 있도록)
+      await appController.setOnboardingCompleted();
 
       // 수집된 설정을 AppController에 반영
       if (onboardingController.selectedDepartment != null) {
@@ -338,8 +338,11 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
         );
       }
 
-      // 온보딩 완료 처리
-      await appController.setOnboardingCompleted();
+      // 마지막으로 OnboardingController 정리 작업
+      await onboardingController.completeOnboarding();
+
+      // 🔥 해결책: 상태 동기화를 위한 짧은 딜레이 추가 (라우터 가드 인식 보장)
+      await Future.delayed(const Duration(milliseconds: 100));
 
       // 메인 화면으로 이동 (이중 안전 체크)
       if (mounted && context.mounted) {
@@ -362,9 +365,14 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
     if (!shouldSkip) return;
 
     try {
-      // 건너뛰기 처리
-      await onboardingController.skipOnboarding();
+      // 🔥 수정: AppController 먼저 완료 상태로 설정 (라우터 가드가 인식할 수 있도록)
       await appController.setOnboardingCompleted();
+
+      // 그 다음 OnboardingController 정리 작업
+      await onboardingController.skipOnboarding();
+
+      // 🔥 해결책: 상태 동기화를 위한 짧은 딜레이 추가 (라우터 가드 인식 보장)
+      await Future.delayed(const Duration(milliseconds: 100));
 
       // 메인 화면으로 이동 (이중 안전 체크)
       if (mounted && context.mounted) {

@@ -15,7 +15,7 @@ class AppConstants {
   /// 개발 모드에서 항상 온보딩을 표시할지 여부
   /// true: 개발 중에는 앱을 켤 때마다 온보딩부터 시작
   /// false: 일반적인 온보딩 로직 (한 번 완료하면 다시 안 보임)
-  static const bool forceOnboardingInDev = true;
+  static const bool forceOnboardingInDev = false;
 
   /// 현재 개발 모드인지 확인
   /// kDebugMode는 Flutter에서 제공하는 디버그 모드 플래그

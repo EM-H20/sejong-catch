@@ -112,24 +112,25 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        children: [
-          SizedBox(height: 18.h),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          children: [
+            SizedBox(height: 18.h),
 
-          // 타이틀 섹션
-          _buildTitleSection(),
-          // 역할 카드들
-          Expanded(child: _buildRoleCards()),
+            // 타이틀 섹션
+            _buildTitleSection(),
 
-          SizedBox(height: 20.h),
+            // 역할 카드들
+            _buildRoleCards(),
 
-          // 하단 설명
-          _buildBottomInfo(),
+            // 하단 설명
+            _buildBottomInfo(),
 
-          // SizedBox(height: 30.h),
-        ],
+            SizedBox(height: 40.h),
+          ],
+        ),
       ),
     );
   }
@@ -162,16 +163,14 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
 
   /// 역할 카드들
   Widget _buildRoleCards() {
-    return GridView.builder(
-      physics: const BouncingScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12.w,
-        mainAxisSpacing: 12.h,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: _roles.length,
-      itemBuilder: (context, index) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 12.w,
+      mainAxisSpacing: 12.h,
+      childAspectRatio: 0.75,
+      children: List.generate(_roles.length, (index) {
         return FadeTransition(
           opacity: _cardAnimations[index],
           child: SlideTransition(
@@ -179,7 +178,7 @@ class _OnboardingRolesPageState extends State<OnboardingRolesPage>
             child: _buildRoleCard(_roles[index]),
           ),
         );
-      },
+      }),
     );
   }
 
