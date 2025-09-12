@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// 온보딩 1단계: 앱 소개 페이지
-/// 
+///
 /// 세종 캐치 앱을 소개하고 주요 특징을 설명합니다.
 /// 세종대학교 학생들을 위한 정보 허브라는 컨셉을 강조해요.
 class OnboardingIntroPage extends StatefulWidget {
@@ -17,65 +17,53 @@ class OnboardingIntroPage extends StatefulWidget {
 
 class _OnboardingIntroPageState extends State<OnboardingIntroPage>
     with TickerProviderStateMixin {
-  
   late AnimationController _iconController;
   late AnimationController _textController;
   late Animation<double> _iconScaleAnimation;
   late Animation<double> _textFadeAnimation;
   late Animation<Offset> _textSlideAnimation;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     // 아이콘 애니메이션
     _iconController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     // 텍스트 애니메이션
     _textController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
-    _iconScaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _iconController,
-      curve: Curves.elasticOut,
-    ));
-    
-    _textFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: Curves.easeInOut,
-    ));
-    
+
+    _iconScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _iconController, curve: Curves.elasticOut),
+    );
+
+    _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeInOut),
+    );
+
     _textSlideAnimation = Tween<Offset>(
       begin: const Offset(0.0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: Curves.easeOut,
-    ));
-    
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOut));
+
     // 순차적 애니메이션 시작
     _startAnimations();
   }
-  
+
   void _startAnimations() async {
     await Future.delayed(const Duration(milliseconds: 200));
     _iconController.forward();
-    
+
     await Future.delayed(const Duration(milliseconds: 400));
     _textController.forward();
   }
-  
+
   @override
   void dispose() {
     _iconController.dispose();
@@ -95,9 +83,9 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
             scale: _iconScaleAnimation,
             child: _buildLogoSection(),
           ),
-          
-          SizedBox(height: 40.h),
-          
+
+          SizedBox(height: 20.h),
+
           // 메인 텍스트 영역
           FadeTransition(
             opacity: _textFadeAnimation,
@@ -106,9 +94,9 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
               child: _buildTextSection(),
             ),
           ),
-          
+
           SizedBox(height: 40.h),
-          
+
           // 특징 카드들
           FadeTransition(
             opacity: _textFadeAnimation,
@@ -118,38 +106,19 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
       ),
     );
   }
-  
+
   /// 로고 섹션
   Widget _buildLogoSection() {
-    return Container(
+    return SizedBox(
       width: 120.w,
       height: 120.h,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.brandCrimson,
-            AppColors.brandCrimsonDark,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.brandCrimson.withValues(alpha: 0.3),
-            blurRadius: 20.r,
-            offset: Offset(0, 10.h),
-          ),
-        ],
-      ),
-      child: Icon(
-        Icons.school,
-        size: 60.w,
-        color: AppColors.white,
+      child: Image.asset(
+        'assets/sejong-logo.png',
+        fit: BoxFit.contain, // 원본 비율 유지
       ),
     );
   }
-  
+
   /// 메인 텍스트 섹션
   Widget _buildTextSection() {
     return Column(
@@ -164,9 +133,9 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
             height: 1.2,
           ),
         ),
-        
+
         SizedBox(height: 8.h),
-        
+
         // 서브 타이틀
         Text(
           '세종인을 위한 단 하나의 정보 허브',
@@ -177,9 +146,9 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
             height: 1.3,
           ),
         ),
-        
+
         SizedBox(height: 16.h),
-        
+
         // 설명 텍스트
         Text(
           '흩어져 있는 공모전, 취업 정보, 논문, 공지사항을\n한 곳에서 똑똑하게 관리하세요',
@@ -193,7 +162,7 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
       ],
     );
   }
-  
+
   /// 특징 카드들
   Widget _buildFeatureCards() {
     return Column(
@@ -240,7 +209,7 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
       ],
     );
   }
-  
+
   /// 개별 특징 카드
   Widget _buildFeatureCard({
     required IconData icon,
@@ -252,10 +221,7 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: AppColors.brandCrimsonLight,
-          width: 1.w,
-        ),
+        border: Border.all(color: AppColors.brandCrimsonLight, width: 1.w),
         boxShadow: [
           BoxShadow(
             color: AppColors.brandCrimson.withValues(alpha: 0.08),
@@ -274,15 +240,11 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
               color: AppColors.brandCrimsonLight,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              size: 20.w,
-              color: AppColors.brandCrimson,
-            ),
+            child: Icon(icon, size: 20.w, color: AppColors.brandCrimson),
           ),
-          
+
           SizedBox(height: 8.h),
-          
+
           // 제목
           Text(
             title,
@@ -292,9 +254,9 @@ class _OnboardingIntroPageState extends State<OnboardingIntroPage>
               color: AppColors.textPrimary,
             ),
           ),
-          
+
           SizedBox(height: 4.h),
-          
+
           // 설명
           Text(
             description,

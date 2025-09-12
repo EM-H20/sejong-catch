@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// 세종 캐치 앱 전체에서 사용되는 상수들을 정의합니다.
 ///
@@ -7,6 +7,19 @@ import 'package:flutter/material.dart';
 class AppConstants {
   // Private constructor - 인스턴스 생성 방지
   AppConstants._();
+
+  // ============================================================================
+  // 개발 모드 설정 (Development Mode Settings)
+  // ============================================================================
+
+  /// 개발 모드에서 항상 온보딩을 표시할지 여부
+  /// true: 개발 중에는 앱을 켤 때마다 온보딩부터 시작
+  /// false: 일반적인 온보딩 로직 (한 번 완료하면 다시 안 보임)
+  static const bool forceOnboardingInDev = true;
+
+  /// 현재 개발 모드인지 확인
+  /// kDebugMode는 Flutter에서 제공하는 디버그 모드 플래그
+  static const bool isDevelopmentMode = kDebugMode;
 
   // ============================================================================
   // 앱 기본 정보 (App Basic Information)

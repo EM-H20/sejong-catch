@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// 온보딩 2단계: 기능 소개 페이지
-/// 
+///
 /// 세종 캐치의 핵심 기능들을 자세히 소개합니다.
 /// 수집 → 필터링 → 추천의 플로우를 시각적으로 보여줘요.
 class OnboardingFeaturesPage extends StatefulWidget {
@@ -17,58 +17,58 @@ class OnboardingFeaturesPage extends StatefulWidget {
 
 class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
     with TickerProviderStateMixin {
-  
   late AnimationController _flowController;
   late List<Animation<double>> _stepAnimations;
   late List<Animation<Offset>> _slideAnimations;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     _flowController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
-    
+
     // 3단계 스텝 애니메이션 생성
     _stepAnimations = List.generate(3, (index) {
-      return Tween<double>(
-        begin: 0.0,
-        end: 1.0,
-      ).animate(CurvedAnimation(
-        parent: _flowController,
-        curve: Interval(
-          index * 0.3,
-          (index * 0.3) + 0.4,
-          curve: Curves.easeOut,
+      return Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _flowController,
+          curve: Interval(
+            index * 0.3,
+            (index * 0.3) + 0.4,
+            curve: Curves.easeOut,
+          ),
         ),
-      ));
+      );
     });
-    
+
     _slideAnimations = List.generate(3, (index) {
       return Tween<Offset>(
         begin: const Offset(0.0, 0.5),
         end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _flowController,
-        curve: Interval(
-          index * 0.3,
-          (index * 0.3) + 0.4,
-          curve: Curves.easeOut,
+      ).animate(
+        CurvedAnimation(
+          parent: _flowController,
+          curve: Interval(
+            index * 0.3,
+            (index * 0.3) + 0.4,
+            curve: Curves.easeOut,
+          ),
         ),
-      ));
+      );
     });
-    
+
     // 애니메이션 시작
     _startAnimations();
   }
-  
+
   void _startAnimations() async {
     await Future.delayed(const Duration(milliseconds: 300));
     _flowController.forward();
   }
-  
+
   @override
   void dispose() {
     _flowController.dispose();
@@ -81,29 +81,27 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         children: [
-          SizedBox(height: 40.h),
-          
+          SizedBox(height: 20.h),
+
           // 타이틀 섹션
           _buildTitleSection(),
-          
+
           SizedBox(height: 40.h),
-          
+
           // 플로우 다이어그램
-          Expanded(
-            child: _buildFlowDiagram(),
-          ),
-          
+          Expanded(child: _buildFlowDiagram()),
+
           SizedBox(height: 20.h),
-          
+
           // 설명 텍스트
           _buildDescriptionSection(),
-          
+
           SizedBox(height: 40.h),
         ],
       ),
     );
   }
-  
+
   /// 타이틀 섹션
   Widget _buildTitleSection() {
     return Column(
@@ -129,7 +127,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
       ],
     );
   }
-  
+
   /// 플로우 다이어그램
   Widget _buildFlowDiagram() {
     return Column(
@@ -143,10 +141,10 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           description: '여러 사이트에서\n정보를 자동 수집',
           color: Colors.blue,
         ),
-        
+
         // 화살표
         _buildFlowArrow(0),
-        
+
         // 2단계: 필터링
         _buildFlowStep(
           index: 1,
@@ -155,10 +153,10 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           description: '중복 제거 &\n신뢰도 검증',
           color: Colors.orange,
         ),
-        
+
         // 화살표
         _buildFlowArrow(1),
-        
+
         // 3단계: 추천
         _buildFlowStep(
           index: 2,
@@ -170,7 +168,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
       ],
     );
   }
-  
+
   /// 플로우 단계
   Widget _buildFlowStep({
     required int index,
@@ -189,10 +187,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(
-              color: color.withValues(alpha: 0.3),
-              width: 2.w,
-            ),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 2.w),
             boxShadow: [
               BoxShadow(
                 color: color.withValues(alpha: 0.15),
@@ -211,15 +206,11 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
                   color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 30.w,
-                  color: color,
-                ),
+                child: Icon(icon, size: 30.w, color: color),
               ),
-              
+
               SizedBox(width: 16.w),
-              
+
               // 텍스트
               Expanded(
                 child: Column(
@@ -245,15 +236,12 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
                   ],
                 ),
               ),
-              
+
               // 단계 번호
               Container(
                 width: 32.w,
                 height: 32.h,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
                 child: Center(
                   child: Text(
                     '${index + 1}',
@@ -271,12 +259,12 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
       ),
     );
   }
-  
+
   /// 플로우 화살표
   Widget _buildFlowArrow(int index) {
     return FadeTransition(
       opacity: _stepAnimations[index],
-      child: Container(
+      child: SizedBox(
         height: 40.h,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -301,7 +289,7 @@ class _OnboardingFeaturesPageState extends State<OnboardingFeaturesPage>
       ),
     );
   }
-  
+
   /// 설명 섹션
   Widget _buildDescriptionSection() {
     return Container(

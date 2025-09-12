@@ -45,7 +45,11 @@ class AppRouter {
       redirect: RouteGuards.routeGuard,
 
       // 초기 라우트 (앱 시작 시 표시할 페이지)
-      initialLocation: AppRoutes.feed,
+      // 🚨 중요: 온보딩 상태에 따라 동적으로 결정됨
+      // - 개발 모드이고 강제 온보딩이 활성화된 경우: 온보딩부터
+      // - 온보딩 완료된 경우: 피드 페이지부터  
+      // - 온보딩 미완료된 경우: 온보딩부터
+      initialLocation: AppRoutes.onboarding,
 
       // 딥링크 처리를 위한 라우트 매칭 전략
       routerNeglect: false,

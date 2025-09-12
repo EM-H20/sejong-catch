@@ -84,6 +84,12 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
     return Scaffold(
       // 그라데이션 배경
       body: Container(
+        padding: EdgeInsets.only(
+          left: 5.w,
+          right: 5.w,
+          top: 40.h,
+          bottom: 30.h,
+        ),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -95,30 +101,28 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
             stops: const [0.0, 0.4],
           ),
         ),
-        child: SafeArea(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: Column(
-                children: [
-                  // 상단 헤더 (건너뛰기 버튼 + 진행률)
-                  _buildHeader(),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Column(
+              children: [
+                // 상단 헤더 (건너뛰기 버튼 + 진행률)
+                _buildHeader(),
 
-                  // 페이지 인디케이터
-                  _buildPageIndicator(),
+                // 페이지 인디케이터
+                _buildPageIndicator(),
 
-                  SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-                  // 메인 콘텐츠 (PageView)
-                  Expanded(child: _buildPageView()),
+                // 메인 콘텐츠 (PageView)
+                Expanded(child: _buildPageView()),
 
-                  // 하단 네비게이션 버튼들
-                  _buildBottomNavigation(),
+                // 하단 네비게이션 버튼들
+                _buildBottomNavigation(),
 
-                  SizedBox(height: 20.h),
-                ],
-              ),
+                SizedBox(height: 5.h),
+              ],
             ),
           ),
         ),
@@ -131,7 +135,7 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
     return Consumer<OnboardingController>(
       builder: (context, controller, child) {
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 3.h),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -353,7 +357,7 @@ class _OnboardingFlowPageState extends State<OnboardingFlowPage>
     // async gap 전에 미리 Controller들과 context 읽어오기
     final onboardingController = context.read<OnboardingController>();
     final appController = context.read<AppController>();
-    
+
     final shouldSkip = await _showSkipDialog();
     if (!shouldSkip) return;
 

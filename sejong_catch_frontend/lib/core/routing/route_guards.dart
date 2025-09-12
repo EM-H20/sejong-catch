@@ -42,12 +42,16 @@ class RouteGuards {
       return null; // 초기화 완료까지 대기
     }
     
-    // 1. 온보딩 체크 (첫 실행 시)
-    final onboardingRedirect = _checkOnboardingGuard(
-      currentRoute,
-      appController.isOnboardingCompleted,
-    );
-    if (onboardingRedirect != null) return onboardingRedirect;
+    // 1. 온보딩 체크 (첫 실행 시만)
+    // 🚨 중요: 온보딩이 완료되었다면 더 이상 온보딩 체크를 하지 않음
+    // 이렇게 해야 바텀탭 클릭할 때마다 온보딩으로 가지 않음
+    if (!appController.isOnboardingCompleted) {
+      final onboardingRedirect = _checkOnboardingGuard(
+        currentRoute,
+        appController.isOnboardingCompleted,
+      );
+      if (onboardingRedirect != null) return onboardingRedirect;
+    }
     
     // 2. 인증 체크 (로그인 필요 페이지)
     final authRedirect = _checkAuthGuard(

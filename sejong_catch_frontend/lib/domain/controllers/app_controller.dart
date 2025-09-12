@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/config/constants.dart';
 
 /// 세종 캐치 앱의 전체 상태를 관리하는 컨트롤러
 /// 
@@ -21,7 +22,17 @@ class AppController extends ChangeNotifier {
   
   // Getters - 외부에서 상태를 읽을 수 있도록
   bool get isFirstRun => _isFirstRun;
-  bool get isOnboardingCompleted => _isOnboardingCompleted;
+  
+  /// 온보딩 완료 상태
+  /// 개발 모드에서는 forceOnboardingInDev 설정에 따라 강제로 false를 반환할 수 있어요
+  bool get isOnboardingCompleted {
+    // 개발 모드에서 강제 온보딩이 활성화된 경우
+    if (AppConstants.isDevelopmentMode && AppConstants.forceOnboardingInDev) {
+      return false; // 항상 온보딩을 보여줌
+    }
+    return _isOnboardingCompleted;
+  }
+  
   bool get isInitialized => _isInitialized;
   String? get selectedDepartment => _selectedDepartment;
   List<String> get interests => List.unmodifiable(_interests);
@@ -47,9 +58,16 @@ class AppController extends ChangeNotifier {
       if (kDebugMode) {
         print('📱 AppController 초기화 완료');
         print('   - 첫 실행: $_isFirstRun');
-        print('   - 온보딩 완료: $_isOnboardingCompleted');
+        print('   - 온보딩 완료 (저장됨): $_isOnboardingCompleted');
+        print('   - 온보딩 완료 (실제): $isOnboardingCompleted');
+        print('   - 개발 모드: ${AppConstants.isDevelopmentMode}');
+        print('   - 강제 온보딩: ${AppConstants.forceOnboardingInDev}');
         print('   - 선택된 학과: $_selectedDepartment');
         print('   - 관심사: $_interests');
+        
+        if (AppConstants.isDevelopmentMode && AppConstants.forceOnboardingInDev) {
+          print('🚀 개발 모드: 온보딩이 강제로 활성화됨');
+        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -235,9 +253,18 @@ class AppController extends ChangeNotifier {
       print('🔍 AppController 디버그 정보');
       print('   - 초기화됨: $_isInitialized');
       print('   - 첫 실행: $_isFirstRun');
-      print('   - 온보딩 완료: $_isOnboardingCompleted');
+      print('   - 온보딩 완료 (저장됨): $_isOnboardingCompleted');
+      print('   - 온보딩 완료 (실제): $isOnboardingCompleted');
+      print('   - 개발 모드: ${AppConstants.isDevelopmentMode}');
+      print('   - 강제 온보딩: ${AppConstants.forceOnboardingInDev}');
       print('   - 선택된 학과: $_selectedDepartment');
       print('   - 관심사 (${_interests.length}개): $_interests');
+      
+      if (AppConstants.isDevelopmentMode && AppConstants.forceOnboardingInDev) {
+        print('🚀 현재 개발 모드로 온보딩이 강제 활성화되어 있습니다!');
+        print('   운영 모드로 전환하려면 constants.dart에서');
+        print('   forceOnboardingInDev = false 로 변경하세요.');
+      }
     }
   }
 }
