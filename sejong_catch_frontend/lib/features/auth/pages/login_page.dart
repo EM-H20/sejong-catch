@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // 상단 여백
-                SizedBox(height: 30.h),
+                SizedBox(height: 20.h),
 
                 // 로고 및 타이틀 섹션
                 LoginHeader(isStudentLogin: loginController.isStudentLogin),
