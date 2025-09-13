@@ -251,11 +251,10 @@ class LoginController extends ChangeNotifier {
     goToNextStep(LoginStep.studentLoginLoading);
 
     try {
-      // 세종대 계정으로 로그인
+      // 세종대 계정으로 로그인 - 사용자 입력값을 그대로 사용
       final account = _studentIdController.text.trim();
-      final loginId = account.contains('@') ? account : '$account@sejong.ac.kr';
       
-      final success = await _authController.loginWithEmail(loginId, password);
+      final success = await _authController.loginWithEmail(account, password);
 
       if (success) {
         // 성공 단계로 전환

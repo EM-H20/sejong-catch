@@ -212,7 +212,7 @@ class _StudentIdStepWidgetState extends State<StudentIdStepWidget> {
                 Text(
                   '• 학번: 20210001\n'
                   '• 이메일: student@sejong.ac.kr\n'
-                  '• 아이디: myid (자동으로 @sejong.ac.kr 추가)',
+                  '• 아이디: myid@sejong.ac.kr (전체 입력)',
                   style: TextStyle(
                     fontSize: 11.sp,
                     color: AppColors.textSecondary,
@@ -423,17 +423,9 @@ class AutoCompleteSuggestion extends StatelessWidget {
     );
   }
 
-  /// 자동완성 제안 생성
+  /// 자동완성 제안 생성 - 비활성화됨
   String? _generateSuggestion(String input) {
-    if (input.isEmpty || input.contains('@')) {
-      return null; // 이미 이메일 형식이면 제안하지 않음
-    }
-
-    // 최소 2글자 이상 입력했을 때만 제안
-    if (input.length >= 2) {
-      return '$input@sejong.ac.kr';
-    }
-
+    // 자동완성 제안 기능을 비활성화하여 사용자가 직접 입력하도록 함
     return null;
   }
 }
