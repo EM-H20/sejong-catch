@@ -7,32 +7,98 @@ import '../../../core/widgets/navigation/app_bottom_nav.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 
+
 /// 메인 쉘 페이지
 ///
 /// 바텀 네비게이션이 포함된 메인 앱 구조를 담당합니다.
 /// 각 탭 페이지들을 자식으로 받아서 표시하며,
-/// 네비게이션 상태를 관리합니다.
-class RootShellPage extends StatelessWidget {
+/// 인덱스 기반 슬라이드 애니메이션과 함께 네비게이션 상태를 관리합니다.
+class RootShellPage extends StatefulWidget {
   /// 현재 표시할 페이지 위젯
   final Widget child;
 
   const RootShellPage({super.key, required this.child});
 
   @override
+  State<RootShellPage> createState() => _RootShellPageState();
+}
+
+/// RootShellPage의 상태 관리 클래스
+///
+/// PageView와 PageController를 사용한 안정적인 슬라이드 애니메이션을 제공합니다.
+/// GlobalKey 충돌 없이 토스처럼 자연스러운 좌우 슬라이드 전환을 구현해요! ✨
+class _RootShellPageState extends State<RootShellPage> {
+  /// PageView 제어를 위한 컨트롤러
+  late PageController _pageController;
+
+  /// 현재 탭 인덱스
+  int _currentIndex = 0;
+
+  /// 탭 페이지들 (라우트별로 관리)
+  final List<String> _tabRoutes = AppRoutes.bottomNavRoutes;
+
+  @override
+  void initState() {
+    super.initState();
+    // PageController 초기화 (초기 페이지는 현재 인덱스)
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    // 메모리 누수 방지
+    _pageController.dispose();
+    super.dispose();
+  }
+
+
+  /// 탭 인덱스 업데이트 및 PageView 애니메이션 트리거
+  ///
+  /// 라우트 변경 시 탭 인덱스를 업데이트하고 PageController로 애니메이션을 실행합니다.
+  void _updateTabIndex(String currentRoute) {
+    final newIndex = AppRoutes.getTabIndex(currentRoute);
+
+    if (newIndex != _currentIndex && _pageController.hasClients) {
+      setState(() {
+        _currentIndex = newIndex;
+      });
+
+      // PageView 애니메이션 실행 (토스 스타일!)
+      _pageController.animateToPage(
+        newIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.fastOutSlowIn, // 토스에서 사용하는 자연스러운 커브
+      );
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     // 현재 라우트 경로 가져오기
     final String currentRoute = GoRouterState.of(context).matchedLocation;
 
+    // 탭 인덱스 업데이트 (라우트 변경 감지)
+    _updateTabIndex(currentRoute);
+
     return Scaffold(
-      // 메인 콘텐츠 영역
-      body: AnimatedSwitcher(
-        // 페이지 전환 애니메이션 (200ms)
-        duration: Duration(milliseconds: 200),
-        // 페이지가 바뀔 때 부드러운 페이드 전환
-        transitionBuilder: (child, animation) {
-          return FadeTransition(opacity: animation, child: child);
+      // 메인 콘텐츠 영역 - PageView 기반 토스급 슬라이드 애니메이션! ✨
+      body: PageView.builder(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(), // 스와이프 비활성화 (바텀네비만)
+        itemCount: _tabRoutes.length,
+        itemBuilder: (context, index) {
+          // 현재 인덱스가 맞는 경우에만 실제 페이지 표시
+          if (index == _currentIndex) {
+            return widget.child;
+          } else {
+            // 다른 인덱스는 빈 컨테이너 (메모리 절약)
+            return Container(
+              key: ValueKey('empty-$index'),
+              color: Theme.of(context).scaffoldBackgroundColor,
+            );
+          }
         },
-        child: child,
       ),
 
       // 바텀 네비게이션 (조건부 표시)
