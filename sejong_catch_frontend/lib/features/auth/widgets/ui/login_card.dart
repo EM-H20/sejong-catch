@@ -29,7 +29,7 @@ class LoginCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -99,8 +99,6 @@ class LoginCard extends StatelessWidget {
             isLoading,
           ),
         ),
-
-        SizedBox(height: 24.h),
 
         // 뒤로가기 버튼 (첫 단계가 아니면 보이기)
         if (loginController.canGoBack()) _buildBackButton(loginController),

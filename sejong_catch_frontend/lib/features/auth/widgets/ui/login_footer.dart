@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/routing/routes.dart';
-import '../../../../core/utils/ui_utils.dart';
 
 /// 로그인 페이지 푸터 위젯
 ///
@@ -30,7 +29,7 @@ class LoginFooter extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(
-                  '가입 없이 공개 정보를 둘러볼 수 있어요',
+                  '가입 없이 공개 정보를\n둘러볼 수 있어요',
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: AppColors.textSecondary,
