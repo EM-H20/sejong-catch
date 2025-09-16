@@ -46,14 +46,50 @@ lib/features/auth/                    # ✅ 성공 사례
 - **Widgets**: 재사용 가능한 UI 컴포넌트
 - **Services**: 도메인 로직 (검증, API 호출 등)
 
-#### 2. Provider 패턴 + 콜백으로 안전한 비동기 처리
+#### 2. Riverpod 패턴으로 더 안전한 상태 관리
 ```dart
-// ✅ BuildContext 문제 완벽 해결
-Future<void> handleLogin({
-  required VoidCallback onSuccess,
-  required Function(String) onError,
-}) async {
-  // 비즈니스 로직...
+// ✅ Riverpod으로 완전히 새로워진 안전한 패턴!
+@freezed
+class LoginState with _$LoginState {
+  const factory LoginState({
+    @Default(LoginStep.initial) LoginStep currentStep,
+    @Default(false) bool isLoading,
+    String? error,
+    User? user,
+  }) = _LoginState;
+}
+
+class LoginController extends Notifier<LoginState> {
+  @override
+  LoginState build() => const LoginState();
+
+  // 🔥 컴파일 타임 안전성 + 자동 리빌드
+  Future<void> handleLogin({
+    required String email,
+    required String password,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      final user = await ref.read(authServiceProvider).login(email, password);
+      state = state.copyWith(
+        user: user,
+        isLoading: false,
+        currentStep: LoginStep.success,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        error: e.toString(),
+        isLoading: false,
+      );
+    }
+  }
+}
+
+// Provider 정의
+@riverpod
+class LoginController extends _$LoginController {
+  // 코드 생성으로 보일러플레이트 제거!
 }
 ```
 
@@ -112,8 +148,13 @@ static const error = Color(0xFFDC2626);
 ```yaml
 dependencies:
   # 상태 관리 & 라우팅
-  provider: ^6.1.5                    # 메인 상태 관리
+  flutter_riverpod: ^3.0.0            # 🚀 최신 상태 관리 (Provider 진화판)
+  riverpod_annotation: ^2.3.6         # 🔥 코드 생성으로 보일러플레이트 감소
   go_router: ^16.2.1                  # 선언적 라우팅
+
+dev_dependencies:
+  riverpod_generator: ^2.4.3          # 🛠️ Provider 코드 자동 생성
+  build_runner: ^2.4.15               # 코드 생성 도구
   
   # 네트워킹 & 데이터
   dio: ^5.9.0                         # HTTP 클라이언트
@@ -218,15 +259,18 @@ lib/
 
 ## 🚦 개발 체크리스트
 
-### 새 기능 개발 시 확인사항
+### 새 기능 개발 시 확인사항 (Riverpod 기준)
 - [ ] **폴더 구조**: auth/ 성공 패턴 복사 (controllers, models, pages, services, widgets)
-- [ ] **상태 관리**: Provider + Controller 패턴 적용
-- [ ] **UI 컴포넌트**: 재사용 가능하게 분리
+- [ ] **상태 관리**: flutter_riverpod + Notifier 패턴 적용 🚀
+- [ ] **상태 클래스**: @freezed로 불변 상태 정의
+- [ ] **Provider 정의**: @riverpod 어노테이션으로 자동 생성
+- [ ] **UI 컴포넌트**: ConsumerWidget으로 반응형 구현
 - [ ] **ScreenUtil**: 모든 크기 값에 .w, .h, .r, .sp 적용
-- [ ] **에러 처리**: 네트워크, 검증, 예외 상황 완벽 대응
-- [ ] **로딩 상태**: Shimmer 또는 CircularProgressIndicator
+- [ ] **에러 처리**: state.copyWith()로 안전한 상태 변경
+- [ ] **로딩 상태**: Shimmer 또는 CircularProgressIndicator + 상태 관리
 - [ ] **빈 상태**: 친화적 메시지와 액션 버튼 제공
 - [ ] **접근성**: 적절한 대비율과 터치 영역 보장
+- [ ] **코드 생성**: dart run build_runner build 실행 확인
 
 ### 코드 품질 검증
 - [ ] **DRY**: 중복 코드 없음

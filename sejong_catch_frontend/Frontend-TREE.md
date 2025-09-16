@@ -68,9 +68,9 @@ lib/features/auth/                  # ✅ 86% 코드 감소 달성!
 
 | 폴더 | 책임 | 예시 |
 |------|------|------|
-| **controllers/** | Provider 상태 관리 | `login_controller.dart`, `search_controller.dart` |
+| **controllers/** | Riverpod 상태 관리 (Notifier) | `login_controller.dart`, `search_controller.dart` |
 | **models/** | 비즈니스 모델 | `login_step.dart`, `search_filter.dart` |
-| **pages/** | UI 레이아웃 + Provider 연결 | `login_page.dart`, `search_page.dart` |
+| **pages/** | UI 레이아웃 + ConsumerWidget | `login_page.dart`, `search_page.dart` |
 | **services/** | 도메인 로직 | `validation_service.dart`, `api_service.dart` |
 | **widgets/ui/** | 재사용 UI 컴포넌트 | `login_card.dart`, `search_bar.dart` |
 
@@ -243,43 +243,79 @@ lib/core/widgets/
 
 ---
 
-## 🎛️ Provider 상태 관리 패턴
+## 🚀 Riverpod 상태 관리 패턴 (완전 새로워진 패러다임!)
 
-### MultiProvider 구조 (main.dart)
+### ProviderScope 구조 (main.dart) - 훨씬 간단해짐!
 ```dart
-MultiProvider(
-  providers: [
-    // 전역 컨트롤러들
-    ChangeNotifierProvider(create: (_) => AuthController()),
-    ChangeNotifierProvider(create: (_) => ThemeController()),
-    
-    // 기능별 컨트롤러들 (페이지별 생성)
-    ChangeNotifierProvider(create: (_) => FeedController()),
-    ChangeNotifierProvider(create: (_) => SearchController()),
-    ChangeNotifierProvider(create: (_) => QueueController()),
-    ChangeNotifierProvider(create: (_) => ProfileController()),
-  ],
-  child: MyApp(),
-)
+void main() {
+  runApp(
+    ProviderScope(  // 🔥 하나로 끝! 모든 Provider 자동 관리
+      observers: [
+        if (kDebugMode) RiverpodLogger(), // 디버깅 자동화
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+// 전역 Provider들 (자동으로 의존성 해결!)
+@riverpod
+class AuthController extends _$AuthController {
+  @override
+  AuthState build() => const AuthState();
+}
+
+@riverpod
+class ThemeController extends _$ThemeController {
+  @override
+  ThemeState build() => const ThemeState();
+}
+
+@riverpod
+class FeedController extends _$FeedController {
+  @override
+  FeedState build() => const FeedState();
+}
 ```
 
-### 컨트롤러 패턴 (성공 검증된 방식)
+### Riverpod 컨트롤러 패턴 (갓-급 진화!)
 ```dart
-class FeatureController extends ChangeNotifier {
-  // 상태 변수들
-  bool _isLoading = false;
-  String? _error;
-  
-  // Getters
-  bool get isLoading => _isLoading;
-  String? get error => _error;
-  
-  // 콜백 패턴으로 안전한 비동기 처리
-  Future<void> handleAction({
-    required VoidCallback onSuccess,
-    required Function(String) onError,
-  }) async {
-    // 비즈니스 로직...
+// 1. 상태 클래스 정의 (Freezed로 불변성 보장)
+@freezed
+class FeatureState with _$FeatureState {
+  const factory FeatureState({
+    @Default(false) bool isLoading,
+    String? error,
+    @Default([]) List<Item> items,
+  }) = _FeatureState;
+}
+
+// 2. Notifier 컨트롤러 (타입 안전성 완벽 보장!)
+@riverpod
+class FeatureController extends _$FeatureController {
+  @override
+  FeatureState build() => const FeatureState();
+
+  // 🔥 컴파일 타임 안전성 + 자동 리빌드 + 메모이제이션!
+  Future<void> loadItems() async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      // 의존성 자동 주입 (ref.read/watch)
+      final items = await ref.read(repositoryProvider).getItems();
+      state = state.copyWith(items: items, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
+  // 자동 캐싱 + 의존성 추적
+  void selectItem(Item item) {
+    final updatedItems = state.items.map((i) =>
+      i.id == item.id ? item.copyWith(isSelected: true) : i
+    ).toList();
+
+    state = state.copyWith(items: updatedItems);
   }
 }
 ```
@@ -316,10 +352,12 @@ RootShell (Scaffold)
 - [ ] `[기능명]_page.dart` - 메인 UI 페이지 (레이아웃만)
 - [ ] 필요한 model, service, widget 파일들 생성
 
-### 3. Provider 연결
-- [ ] MultiProvider에 Controller 추가
-- [ ] Page에서 Consumer<Controller> 패턴 사용
-- [ ] 콜백 패턴으로 비동기 처리
+### 3. Riverpod 연결 (훨씬 간단해짐!)
+- [ ] @riverpod 어노테이션으로 Provider 자동 생성
+- [ ] ConsumerWidget으로 Page 구현
+- [ ] ref.watch()로 상태 반응형 구독
+- [ ] ref.read()로 메서드 호출 (side effect 방지)
+- [ ] dart run build_runner build로 코드 생성
 
 ### 4. GoRouter 라우팅
 - [ ] 라우트 경로 추가
@@ -335,11 +373,13 @@ RootShell (Scaffold)
 
 ## 🎯 핵심 성공 요소
 
-### ✅ 검증된 패턴 (auth에서 86% 감소 달성)
+### ✅ 검증된 패턴 (auth에서 86% 감소 달성) + Riverpod 진화!
 1. **단일 책임 원칙**: 각 파일이 하나의 역할만
-2. **Provider + 콜백**: 안전한 비동기 상태 관리
-3. **컴포넌트 분리**: 재사용 가능한 UI 위젯들
-4. **DRY 원칙**: 중복 코드 철저 제거
+2. **Riverpod + Freezed**: 더 안전한 불변 상태 관리 🚀
+3. **컴포넌트 분리**: ConsumerWidget으로 반응형 UI
+4. **DRY 원칙**: 중복 코드 철저 제거 + 코드 생성 자동화
+5. **타입 안전성**: 컴파일 타임 에러 방지
+6. **자동 최적화**: 메모이제이션과 의존성 추적
 
 ### 🎨 일관성 유지
 - 모든 기능이 동일한 폴더 구조
@@ -347,11 +387,13 @@ RootShell (Scaffold)
 - 통일된 에러 처리 및 로딩 상태
 - 크림슨 레드 테마 일관성
 
-### 🚀 확장성 고려
+### 🚀 Riverpod으로 더 강력해진 확장성
 - 새로운 기능 추가 시 기존 패턴 복사
-- 공용 컴포넌트 우선 활용
-- Provider 의존성 최소화
-- 테스트 가능한 구조 유지
+- @riverpod 어노테이션으로 보일러플레이트 제거
+- 공용 컴포넌트 우선 활용 + ConsumerWidget
+- 자동 의존성 관리로 Provider 간 결합도 최소화
+- 테스트 가능한 구조 유지 + ProviderContainer로 격리 테스트
+- 코드 생성으로 휴먼 에러 방지
 
 ---
 
