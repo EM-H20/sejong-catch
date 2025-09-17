@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/config/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cards/app_card.dart';
 
 /// 📰 피드 페이지 - 메인 홈 화면
 ///
@@ -16,51 +17,12 @@ class FeedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context));
-  }
-
-  /// 📱 앱바 (로고, 설정, 알림 등)
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: Row(
-        children: [
-          SizedBox(
-            width: 28.r,
-            height: 28.r,
-            child: Image.asset('assets/sejong-logo.png', fit: BoxFit.contain),
-          ),
-          SizedBox(width: 8.w),
-          Text(
-            '세종 캐치',
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.brandCrimson,
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.white,
-      elevation: 0,
-      actions: [
-        // 🔔 알림 버튼
-        IconButton(
-          icon: Icon(Icons.notifications_outlined, size: 24.r),
-          onPressed: () {
-            // TODO: 알림 페이지로 이동
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('알림 기능 구현 예정')));
-          },
-        ),
-        // ⚙️ 설정 버튼
-        IconButton(
-          icon: Icon(Icons.settings_outlined, size: 24.r),
-          onPressed: () => context.push(AppRoutes.settings),
-        ),
-      ],
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
+
 
   /// 📄 메인 컨텐츠 영역
   Widget _buildBody(BuildContext context) {
@@ -118,128 +80,103 @@ class FeedPage extends StatelessWidget {
 
   /// 📋 피드 리스트 (임시 더미 데이터)
   Widget _buildFeedList(BuildContext context) {
+    final dummyData = [
+      {
+        'title': '2024 세종대학교 창업 아이디어 경진대회',
+        'subtitle': '혁신적인 창업 아이디어로 미래를 설계해보세요. 우수상 수상자에게는 창업 지원금과 멘토링을 제공합니다.',
+        'category': '공모전',
+        'deadline': DateTime.now().add(const Duration(days: 15)),
+        'trustLevel': 'official',
+        'priority': 'high',
+        'sourceDomain': '세종대학교 공식',
+      },
+      {
+        'title': 'SK하이닉스 2024 하계 인턴십 모집',
+        'subtitle': '반도체 분야 최고 기업에서 실무 경험을 쌓을 기회입니다. 우수 인턴은 정규직 전환 가능합니다.',
+        'category': '취업',
+        'deadline': DateTime.now().add(const Duration(days: 7)),
+        'trustLevel': 'official',
+        'priority': 'high',
+        'sourceDomain': 'SK하이닉스 채용',
+      },
+      {
+        'title': '2024 AI 혁신 논문 공모전',
+        'subtitle': '인공지능 분야의 창의적 연구 아이디어를 공모합니다. 우수 논문은 해외 학회 발표 기회 제공.',
+        'category': '논문',
+        'deadline': DateTime.now().add(const Duration(days: 30)),
+        'trustLevel': 'academic',
+        'priority': 'mid',
+        'sourceDomain': '한국AI학회',
+      },
+    ];
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 10, // 임시 더미 데이터
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      itemCount: dummyData.length,
+      padding: EdgeInsets.only(bottom: 20.h),
       itemBuilder: (context, index) {
-        return _buildFeedCard(context, index);
+        final data = dummyData[index % dummyData.length];
+        return AppCard(
+          title: data['title'] as String,
+          subtitle: data['subtitle'] as String,
+          category: data['category'] as String,
+          deadline: data['deadline'] as DateTime,
+          trustLevel: data['trustLevel'] as String,
+          priority: data['priority'] as String,
+          sourceDomain: data['sourceDomain'] as String,
+          createdAt: DateTime.now().subtract(Duration(hours: index * 2)),
+          viewCount: 150 + (index * 23),
+          onTap: () => context.push(AppRoutes.detailWithId(index.toString())),
+          onBookmarkTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('북마크에 추가했어요! 📌'),
+                backgroundColor: AppColors.success,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+        );
       },
     );
   }
 
-  /// 📇 피드 카드 (정보 카드)
-  Widget _buildFeedCard(BuildContext context, int index) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 16.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: InkWell(
-        onTap: () => context.push(AppRoutes.detailWithId(index.toString())),
-        borderRadius: BorderRadius.circular(12.r),
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🏷️ 카테고리 배지
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.brandCrimsonLight,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                    child: Text(
-                      '공모전',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColors.brandCrimson,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Icon(Icons.access_time, size: 16.r, color: Colors.grey[600]),
-                  SizedBox(width: 4.w),
-                  Text(
-                    'D-15',
-                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 12.h),
-
-              // 📰 제목
-              Text(
-                '2024 세종대학교 창업 아이디어 경진대회',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[900],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              SizedBox(height: 8.h),
-
-              // 📝 설명
-              Text(
-                '혁신적인 창업 아이디어로 미래를 설계해보세요. 우수상 수상자에게는 창업 지원금과 멘토링을 제공합니다.',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                  height: 1.4,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              SizedBox(height: 12.h),
-
-              // 🎯 액션 버튼
-              Row(
-                children: [
-                  Icon(
-                    Icons.bookmark_border,
-                    size: 20.r,
-                    color: Colors.grey[600],
-                  ),
-                  SizedBox(width: 4.w),
-                  Text(
-                    '북마크',
-                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
-                  ),
-                  SizedBox(width: 16.w),
-                  Icon(
-                    Icons.share_outlined,
-                    size: 20.r,
-                    color: Colors.grey[600],
-                  ),
-                  SizedBox(width: 4.w),
-                  Text(
-                    '공유',
-                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16.r,
-                    color: Colors.grey[400],
-                  ),
-                ],
-              ),
-            ],
-          ),
+  /// 🎆 AppBar 윈짓
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        '세종 캐치',
+        style: TextStyle(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.bold,
+          color: AppColors.brandCrimson,
         ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.notifications_outlined,
+            size: 24.r,
+            color: AppColors.brandCrimson,
+          ),
+          onPressed: () => _showNotifications(context),
+        ),
+      ],
+    );
+  }
+
+  /// 📱 알림 버튼 처리
+  void _showNotifications(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('새로운 알림이 3개 있어요! 🔔'),
+        backgroundColor: AppColors.brandCrimson,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
+
 }

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/config/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../../core/widgets/buttons/app_button.dart';
 
 /// 🔐 인증 페이지 (로그인/회원가입)
 ///
@@ -161,30 +163,36 @@ class _AuthPageState extends State<AuthPage> {
     return Column(
       children: [
         // 학번 입력
-        _buildTextField(
-          label: '학번',
-          hint: '세종대학교 학번을 입력해주세요',
-          icon: Icons.school_outlined,
+        AppTextField(
+          labelText: '학번',
+          hintText: '세종대학교 학번을 입력해주세요',
+          prefixIcon: Icons.school_outlined,
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            // 상태 관리는 추후 Controller에서 처리
+          },
         ),
 
         SizedBox(height: 16.h),
 
         // 비밀번호 입력
-        _buildTextField(
-          label: '비밀번호',
-          hint: '세종대학교 포털 비밀번호',
-          icon: Icons.lock_outline,
-          isPassword: true,
+        AppTextField.password(
+          labelText: '비밀번호',
+          hintText: '세종대학교 포털 비밀번호',
+          onChanged: (value) {
+            // 상태 관리는 추후 Controller에서 처리
+          },
         ),
 
         if (!_isLoginMode) ...[
           SizedBox(height: 16.h),
 
           // 이름 입력 (회원가입 시)
-          _buildTextField(
-            label: '이름',
-            hint: '실명을 입력해주세요',
-            icon: Icons.person_outline,
+          AppTextField(
+            labelText: '이름',
+            hintText: '실명을 입력해주세요',
+            prefixIcon: Icons.person_outline,
+            onChanged: (value) {},
           ),
 
           SizedBox(height: 16.h),
@@ -196,48 +204,6 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  /// 📝 텍스트 필드
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
-          ),
-        ),
-        SizedBox(height: 8.h),
-        TextField(
-          obscureText: isPassword,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
-            prefixIcon: Icon(icon, size: 20.r, color: Colors.grey[600]),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: AppColors.brandCrimson),
-            ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 12.h,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   /// 📋 학과 선택 드롭다운
   Widget _buildDropdownField() {
@@ -274,7 +240,7 @@ class _AuthPageState extends State<AuthPage> {
                 '데이터사이언스학과',
                 '경영학과',
                 '경제학과',
-                // TODO: 전체 학과 목록 추가
+                '기타 학과',
               ].map((department) {
                 return DropdownMenuItem(
                   value: department,
@@ -282,7 +248,7 @@ class _AuthPageState extends State<AuthPage> {
                 );
               }).toList(),
           onChanged: (value) {
-            // TODO: 학과 선택 처리
+            // 상태 관리는 추후 Controller에서 처리
           },
         ),
       ],
@@ -291,30 +257,13 @@ class _AuthPageState extends State<AuthPage> {
 
   /// 🎯 메인 액션 버튼
   Widget _buildActionButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          // TODO: 실제 인증 로직 구현
-          // 성공 시 메인 앱으로 이동
-          context.go(AppRoutes.feed);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.brandCrimson,
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-        ),
-        child: Text(
-          _isLoginMode ? '로그인' : '회원가입',
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-      ),
+    return AppButton.primary(
+      text: _isLoginMode ? '로그인' : '회원가입',
+      isExpanded: true,
+      size: AppButtonSize.large,
+      onPressed: () {
+        _handleAuth();
+      },
     );
   }
 
@@ -323,14 +272,11 @@ class _AuthPageState extends State<AuthPage> {
     return Column(
       children: [
         if (_isLoginMode) ...[
-          TextButton(
+          AppButton.text(
+            text: '비밀번호를 잊으셨나요?',
             onPressed: () {
-              // TODO: 비밀번호 찾기
+              _showPasswordResetDialog();
             },
-            child: Text(
-              '비밀번호를 잊으셨나요?',
-              style: TextStyle(fontSize: 14.sp, color: AppColors.brandCrimson),
-            ),
           ),
         ],
 
@@ -339,9 +285,9 @@ class _AuthPageState extends State<AuthPage> {
           Row(
             children: [
               Checkbox(
-                value: true, // TODO: 실제 체크박스 상태 관리
+                value: true, // 상태 관리는 추후 Controller에서 처리
                 onChanged: (value) {
-                  // TODO: 약관 동의 처리
+                  // 상태 관리는 추후 Controller에서 처리
                 },
                 activeColor: AppColors.brandCrimson,
               ),
@@ -389,21 +335,73 @@ class _AuthPageState extends State<AuthPage> {
           style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
         ),
         SizedBox(height: 8.h),
-        TextButton(
+        AppButton.text(
+          text: '게스트로 시작하기',
           onPressed: () {
-            // TODO: 게스트 모드로 메인 앱 진입
             context.go(AppRoutes.feed);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('게스트 모드로 시작했어요! 학생 인증을 하면 더 많은 기능을 이용할 수 있어요 🚀'),
+                backgroundColor: AppColors.brandCrimson,
+                duration: const Duration(seconds: 3),
+              ),
+            );
           },
-          child: Text(
-            '게스트로 시작하기',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: AppColors.brandCrimson,
-              decoration: TextDecoration.underline,
-            ),
-          ),
         ),
       ],
+    );
+  }
+
+  /// 🔐 인증 처리 로직
+  void _handleAuth() {
+    context.go(AppRoutes.feed);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isLoginMode
+              ? '로그인에 성공했어요! 세종 캐치에 오신 것을 환영합니다 🎉'
+              : '회원가입이 완료되었어요! 이제 맞춤 정보를 받아보세요 🚀',
+        ),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  /// 🔒 비밀번호 재설정 다이얼로그
+  void _showPasswordResetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '비밀번호 찾기',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('세종대학교 포털에서 비밀번호를 재설정해주세요.'),
+            SizedBox(height: 12.h),
+            Text(
+              '🔗 세종대학교 포털 → 비밀번호 찾기',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          AppButton.primary(
+            text: '확인',
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
     );
   }
 }

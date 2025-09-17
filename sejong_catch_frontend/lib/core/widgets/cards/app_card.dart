@@ -408,7 +408,7 @@ class AppCard extends StatelessWidget {
         Icon(icon, size: 14.w, color: color),
         SizedBox(width: 4.w),
         Text(
-          text,
+          text.length > 10 ? '${text.substring(0, 8)}..' : text,
           style: TextStyle(
             fontSize: 12.sp,
             color: color,

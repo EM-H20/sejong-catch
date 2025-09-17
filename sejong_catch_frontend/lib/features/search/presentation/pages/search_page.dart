@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../../core/widgets/buttons/app_button.dart';
 
 /// 🔍 검색 페이지
 ///
@@ -13,20 +15,12 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(), body: _buildBody(context));
-  }
-
-  /// 📱 검색 전용 앱바
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: Text(
-        '검색',
-        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
-      ),
-      backgroundColor: Colors.white,
-      elevation: 0,
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
+
 
   /// 📄 메인 컨텐츠
   Widget _buildBody(BuildContext context) {
@@ -56,37 +50,20 @@ class SearchPage extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: '공모전, 취업 정보를 검색해보세요',
-              hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
-              prefixIcon: Icon(
-                Icons.search,
-                size: 20.r,
-                color: Colors.grey[600],
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide(color: AppColors.brandCrimson),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 12.h,
-              ),
-            ),
+          child: AppTextField.search(
+            hintText: '공모전, 취업 정보를 검색해보세요',
+            onChanged: (value) {
+              // TODO: 실시간 검색 구현
+            },
+            onSubmitted: (value) {
+              // TODO: 검색 실행
+            },
           ),
         ),
         SizedBox(width: 12.w),
         IconButton(
           icon: Icon(Icons.tune, size: 24.r, color: AppColors.brandCrimson),
-          onPressed: () {
-            // TODO: 고급 필터 바텀시트 열기
-            _showFilterBottomSheet(context);
-          },
+          onPressed: () => _showFilterBottomSheet(context),
         ),
       ],
     );
@@ -225,30 +202,50 @@ class SearchPage extends StatelessWidget {
               const Spacer(),
 
               // 적용 버튼
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // TODO: 필터 적용 로직
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandCrimson,
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+              AppButton.primary(
+                text: '필터 적용',
+                isExpanded: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                  // TODO: 필터 적용 로직
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('필터가 적용되었어요! 🎯'),
+                      backgroundColor: AppColors.success,
                     ),
-                  ),
-                  child: Text(
-                    '필터 적용',
-                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  /// 🔍 AppBar 윈짓
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        '검색',
+        style: TextStyle(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.bold,
+          color: AppColors.brandCrimson,
+        ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.filter_list,
+            size: 24.r,
+            color: AppColors.brandCrimson,
+          ),
+          onPressed: () => _showFilterBottomSheet(context),
+        ),
+      ],
     );
   }
 }

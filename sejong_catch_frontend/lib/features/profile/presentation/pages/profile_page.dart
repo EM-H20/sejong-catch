@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/config/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/buttons/app_button.dart';
 
 /// 👤 프로필 페이지 (Student 이상 권한 필요)
 ///
@@ -15,24 +16,9 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context));
-  }
-
-  /// 📱 앱바
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: Text(
-        '프로필',
-        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
-      ),
-      backgroundColor: Colors.white,
-      elevation: 0,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.settings_outlined, size: 24.r),
-          onPressed: () => context.push(AppRoutes.settings),
-        ),
-      ],
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
 
@@ -43,7 +29,7 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         children: [
           // 👤 사용자 프로필 카드
-          _buildUserProfileCard(),
+          _buildUserProfileCard(context),
 
           SizedBox(height: 24.h),
 
@@ -65,7 +51,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   /// 👤 사용자 프로필 카드
-  Widget _buildUserProfileCard() {
+  Widget _buildUserProfileCard(BuildContext context) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
@@ -122,26 +108,12 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: 16.h),
 
             // 프로필 편집 버튼
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  // TODO: 프로필 편집 페이지로 이동
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.brandCrimson),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                ),
-                child: Text(
-                  '프로필 편집',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.brandCrimson,
-                  ),
-                ),
-              ),
+            AppButton.outline(
+              text: '프로필 편집',
+              isExpanded: true,
+              onPressed: () {
+                _showProfileEditDialog(context);
+              },
             ),
           ],
         ),
@@ -335,21 +307,113 @@ class ProfilePage extends StatelessWidget {
           title: const Text('로그아웃'),
           content: const Text('정말 로그아웃하시겠습니까?'),
           actions: [
-            TextButton(
+            AppButton.text(
+              text: '취소',
               onPressed: () => Navigator.pop(context),
-              child: const Text('취소'),
             ),
-            TextButton(
+            AppButton.primary(
+              text: '로그아웃',
+              backgroundColor: AppColors.error,
               onPressed: () {
                 Navigator.pop(context);
-                // TODO: 로그아웃 처리 후 인증 페이지로 이동
                 context.go(AppRoutes.auth);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('로그아웃되었습니다. 안전한 하루 되세요! 👋'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
               },
-              child: Text('로그아웃', style: TextStyle(color: Colors.red[600])),
             ),
           ],
         );
       },
+    );
+  }
+
+  /// ✏️ 프로필 편집 다이얼로그
+  void _showProfileEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '프로필 편집',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '현재는 베타 버전이라 편집 기능이 제한되어 있어요.',
+              style: TextStyle(fontSize: 14.sp),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              '• 프로필 사진 변경\n• 관심 분야 수정\n• 알림 설정 변경',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey[600],
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          AppButton.primary(
+            text: '확인',
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('곧 더 많은 편집 기능이 추가될 예정이에요! 🚀'),
+                  backgroundColor: AppColors.brandCrimson,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 👤 AppBar 윈짓
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        '프로필',
+        style: TextStyle(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.bold,
+          color: AppColors.brandCrimson,
+        ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.settings_outlined,
+            size: 24.r,
+            color: AppColors.brandCrimson,
+          ),
+          onPressed: () => _showSettings(context),
+        ),
+      ],
+    );
+  }
+
+  /// ⚙️ 설정 메뉴 보기
+  void _showSettings(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('설정 메뉴가 곧 추가될 예정이에요! ⚙️'),
+        backgroundColor: AppColors.brandCrimson,
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 }

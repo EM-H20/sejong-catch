@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/buttons/app_button.dart';
 
 /// 📋 줄서기 페이지 (Student 이상 권한 필요)
 ///
@@ -14,39 +15,14 @@ class QueuePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
 
-  /// 📱 앱바
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: Text(
-        '줄서기',
-        style: TextStyle(
-          fontSize: 20.sp,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      backgroundColor: Colors.white,
-      elevation: 0,
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.help_outline,
-            size: 24.r,
-          ),
-          onPressed: () {
-            // TODO: 줄서기 도움말
-          },
-        ),
-      ],
-    );
-  }
 
   /// 📄 메인 컨텐츠
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -58,12 +34,12 @@ class QueuePage extends StatelessWidget {
           SizedBox(height: 24.h),
 
           // 📋 현재 대기 중인 항목들
-          _buildActiveQueues(),
+          _buildActiveQueues(context),
 
           SizedBox(height: 24.h),
 
           // 🔥 인기 대기열 (참여 가능)
-          _buildPopularQueues(),
+          _buildPopularQueues(context),
         ],
       ),
     );
@@ -141,7 +117,7 @@ class QueuePage extends StatelessWidget {
   }
 
   /// 📋 현재 대기 중인 항목들
-  Widget _buildActiveQueues() {
+  Widget _buildActiveQueues(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -156,6 +132,7 @@ class QueuePage extends StatelessWidget {
 
         // 대기 항목들
         _buildQueueItem(
+          context,
           title: '2024 창업 아이디어 경진대회',
           position: 12,
           totalWaiting: 45,
@@ -163,6 +140,7 @@ class QueuePage extends StatelessWidget {
           isMyTurn: false,
         ),
         _buildQueueItem(
+          context,
           title: 'SK하이닉스 하계 인턴십',
           position: 1,
           totalWaiting: 23,
@@ -170,6 +148,7 @@ class QueuePage extends StatelessWidget {
           isMyTurn: true,
         ),
         _buildQueueItem(
+          context,
           title: '국제학술대회 논문 발표',
           position: 8,
           totalWaiting: 31,
@@ -181,7 +160,8 @@ class QueuePage extends StatelessWidget {
   }
 
   /// 📇 대기열 아이템 카드
-  Widget _buildQueueItem({
+  Widget _buildQueueItem(
+    BuildContext context, {
     required String title,
     required int position,
     required int totalWaiting,
@@ -273,17 +253,13 @@ class QueuePage extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                TextButton(
+                AppButton.text(
+                  text: '취소',
+                  size: AppButtonSize.small,
+                  textColor: AppColors.error,
                   onPressed: () {
-                    // TODO: 대기열 취소
+                    _showCancelDialog(context);
                   },
-                  child: Text(
-                    '취소',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.red[600],
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -294,7 +270,7 @@ class QueuePage extends StatelessWidget {
   }
 
   /// 🔥 인기 대기열 섹션
-  Widget _buildPopularQueues() {
+  Widget _buildPopularQueues(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -309,16 +285,19 @@ class QueuePage extends StatelessWidget {
 
         // 인기 대기열 항목들
         _buildPopularQueueItem(
+          context,
           title: '네이버 신입 공채',
           waitingCount: 127,
           category: '취업',
         ),
         _buildPopularQueueItem(
+          context,
           title: '국제 AI 논문 경진대회',
           waitingCount: 89,
           category: '논문',
         ),
         _buildPopularQueueItem(
+          context,
           title: '교내 창업 지원 프로그램',
           waitingCount: 156,
           category: '공모전',
@@ -328,7 +307,8 @@ class QueuePage extends StatelessWidget {
   }
 
   /// 🔥 인기 대기열 아이템
-  Widget _buildPopularQueueItem({
+  Widget _buildPopularQueueItem(
+    BuildContext context, {
     required String title,
     required int waitingCount,
     required String category,
@@ -350,25 +330,100 @@ class QueuePage extends StatelessWidget {
           ),
         ),
         subtitle: Text('$waitingCount명 대기 중'),
-        trailing: ElevatedButton(
+        trailing: AppButton.primary(
+          text: '참여',
+          size: AppButtonSize.small,
           onPressed: () {
-            // TODO: 대기열 참여
+            _joinQueue(context);
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.brandCrimson,
-            minimumSize: Size(60.w, 32.h),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-          ),
-          child: Text(
-            '참여',
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: Colors.white,
-            ),
+        ),
+      ),
+    );
+  }
+
+  /// 📋 대기열 취소 확인 다이얼로그
+  void _showCancelDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '대기열 취소',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
           ),
         ),
+        content: Text(
+          '정말 대기를 취소하시겠어요?\n순서를 다시 받으려면 처음부터 기다려야 해요.',
+          style: TextStyle(fontSize: 14.sp),
+        ),
+        actions: [
+          AppButton.text(
+            text: '계속 대기',
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          AppButton.primary(
+            text: '취소하기',
+            backgroundColor: AppColors.error,
+            onPressed: () {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('대기를 취소했어요 😔'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🔥 대기열 참여 처리
+  void _joinQueue(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('대기열에 참여했어요! 순서가 오면 알려드릴게요 🎉'),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  /// 📋 AppBar 윈짓
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        '대기열',
+        style: TextStyle(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.bold,
+          color: AppColors.brandCrimson,
+        ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.history,
+            size: 24.r,
+            color: AppColors.brandCrimson,
+          ),
+          onPressed: () => _showQueueHistory(context),
+        ),
+      ],
+    );
+  }
+
+  /// 📜 대기열 히스토리 보기
+  void _showQueueHistory(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('대기열 히스토리 기능은 곧 추가될 예정이에요! 📊'),
+        backgroundColor: AppColors.brandCrimson,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
