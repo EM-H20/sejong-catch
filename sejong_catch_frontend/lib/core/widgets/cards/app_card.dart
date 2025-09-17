@@ -4,64 +4,64 @@ import '../../theme/app_colors.dart';
 import '../../utils/formatters.dart';
 
 /// 세종 캐치 앱의 표준 정보 카드 위젯
-/// 
+///
 /// 공모전, 취업, 논문, 공지사항 등 모든 정보를 표시하는
 /// 통일된 카드 인터페이스를 제공합니다.
 class AppCard extends StatelessWidget {
   /// 카드 제목
   final String title;
-  
+
   /// 카드 부제목 (설명)
   final String? subtitle;
-  
+
   /// 정보 카테고리 (공모전, 취업 등)
   final String? category;
-  
+
   /// 마감일
   final DateTime? deadline;
-  
+
   /// 신뢰도 레벨 (official, academic, press, community)
   final String? trustLevel;
-  
+
   /// 우선순위 레벨 (high, mid, low)
   final String? priority;
-  
+
   /// 출처 로고 URL
   final String? sourceLogoUrl;
-  
+
   /// 출처 도메인명
   final String? sourceDomain;
-  
+
   /// 생성일시
   final DateTime? createdAt;
-  
+
   /// 조회수
   final int? viewCount;
-  
+
   /// 북마크 여부
   final bool isBookmarked;
-  
+
   /// 읽음 여부
   final bool isRead;
-  
+
   /// 만료 여부
   final bool isExpired;
-  
+
   /// 카드 클릭 핸들러
   final VoidCallback? onTap;
-  
+
   /// 북마크 토글 핸들러
   final VoidCallback? onBookmarkTap;
-  
+
   /// 더보기 메뉴 핸들러
   final VoidCallback? onMoreTap;
-  
+
   /// 커스텀 배경색
   final Color? backgroundColor;
-  
+
   /// 카드 엘리베이션
   final double elevation;
-  
+
   /// 카드 마진
   final EdgeInsets? margin;
 
@@ -107,26 +107,26 @@ class AppCard extends StatelessWidget {
               children: [
                 // 우선순위 바 (상단)
                 if (priority != null) _buildPriorityBar(),
-                
+
                 // 헤더 (출처 정보 + 북마크)
                 _buildHeader(context),
-                
+
                 SizedBox(height: 12.h),
-                
+
                 // 제목
                 _buildTitle(context),
-                
+
                 // 부제목
                 if (subtitle != null) ...[
                   SizedBox(height: 8.h),
                   _buildSubtitle(context),
                 ],
-                
+
                 SizedBox(height: 12.h),
-                
+
                 // 메타 정보 (카테고리, D-Day, 생성일 등)
                 _buildMetaInfo(context),
-                
+
                 // 신뢰도 배지 (하단)
                 if (trustLevel != null) ...[
                   SizedBox(height: 12.h),
@@ -139,26 +139,26 @@ class AppCard extends StatelessWidget {
       ),
     );
   }
-  
+
   /// 카드 배경색 결정
   Color _getCardBackgroundColor(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (isExpired) {
       return theme.colorScheme.surface.withValues(alpha: 0.6);
     }
-    
+
     if (isRead) {
       return theme.colorScheme.surface;
     }
-    
+
     return theme.colorScheme.surface;
   }
-  
+
   /// 우선순위 바 (카드 상단에 표시되는 색상 바)
   Widget _buildPriorityBar() {
     Color? barColor;
-    
+
     switch (priority?.toLowerCase()) {
       case 'high':
         barColor = AppColors.priorityHigh;
@@ -170,7 +170,7 @@ class AppCard extends StatelessWidget {
       default:
         return const SizedBox.shrink();
     }
-    
+
     return Container(
       width: double.infinity,
       height: 3.h,
@@ -181,16 +181,16 @@ class AppCard extends StatelessWidget {
       ),
     );
   }
-  
+
   /// 헤더 (출처 로고, 도메인, 신뢰도, 북마크 버튼)
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         // 출처 로고
         _buildSourceLogo(),
-        
+
         SizedBox(width: 8.w),
-        
+
         // 출처 도메인
         Expanded(
           child: Text(
@@ -203,7 +203,7 @@ class AppCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        
+
         // 액션 버튼들
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -212,10 +212,12 @@ class AppCard extends StatelessWidget {
             if (onBookmarkTap != null)
               _buildIconButton(
                 icon: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: isBookmarked ? AppColors.brandCrimson : AppColors.textSecondary,
+                color: isBookmarked
+                    ? AppColors.brandCrimson
+                    : AppColors.textSecondary,
                 onTap: onBookmarkTap!,
               ),
-            
+
             // 더보기 버튼
             if (onMoreTap != null)
               _buildIconButton(
@@ -228,7 +230,7 @@ class AppCard extends StatelessWidget {
       ],
     );
   }
-  
+
   /// 출처 로고 (원형 아바타)
   Widget _buildSourceLogo() {
     return Container(
@@ -249,22 +251,19 @@ class AppCard extends StatelessWidget {
                 width: 24.w,
                 height: 24.h,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _buildDefaultLogo(),
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildDefaultLogo(),
               ),
             )
           : _buildDefaultLogo(),
     );
   }
-  
+
   /// 기본 로고 (이미지 로드 실패 시)
   Widget _buildDefaultLogo() {
-    return Icon(
-      _getCategoryIcon(),
-      size: 14.w,
-      color: AppColors.brandCrimson,
-    );
+    return Icon(_getCategoryIcon(), size: 14.w, color: AppColors.brandCrimson);
   }
-  
+
   /// 카테고리별 아이콘
   IconData _getCategoryIcon() {
     switch (category?.toLowerCase()) {
@@ -284,7 +283,7 @@ class AppCard extends StatelessWidget {
         return Icons.info;
     }
   }
-  
+
   /// 아이콘 버튼 (북마크, 더보기 등)
   Widget _buildIconButton({
     required IconData icon,
@@ -295,15 +294,11 @@ class AppCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(4.w),
-        child: Icon(
-          icon,
-          size: 20.w,
-          color: color,
-        ),
+        child: Icon(icon, size: 20.w, color: color),
       ),
     );
   }
-  
+
   /// 제목
   Widget _buildTitle(BuildContext context) {
     return Text(
@@ -311,23 +306,21 @@ class AppCard extends StatelessWidget {
       style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.w600,
-        color: isExpired 
-            ? AppColors.textSecondary 
-            : AppColors.textPrimary,
+        color: isExpired ? AppColors.textSecondary : AppColors.textPrimary,
         height: 1.3,
       ),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
   }
-  
+
   /// 부제목
   Widget _buildSubtitle(BuildContext context) {
     return Text(
       subtitle!,
       style: TextStyle(
         fontSize: 14.sp,
-        color: isExpired 
+        color: isExpired
             ? AppColors.textSecondary.withValues(alpha: 0.7)
             : AppColors.textSecondary,
         height: 1.4,
@@ -336,25 +329,27 @@ class AppCard extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
   }
-  
+
   /// 메타 정보 (카테고리, D-Day, 생성일, 조회수)
   Widget _buildMetaInfo(BuildContext context) {
     final metaItems = <Widget>[];
-    
+
     // 카테고리
     if (category != null) {
-      metaItems.add(_buildMetaItem(
-        icon: _getCategoryIcon(),
-        text: category!,
-        color: AppColors.brandCrimson,
-      ));
+      metaItems.add(
+        _buildMetaItem(
+          icon: _getCategoryIcon(),
+          text: category!,
+          color: AppColors.brandCrimson,
+        ),
+      );
     }
-    
+
     // D-Day (마감일)
     if (deadline != null) {
       final ddayText = AppFormatters.formatDday(deadline!);
       final ddayStyle = AppFormatters.getDdayStyle(deadline!);
-      
+
       Color ddayColor;
       switch (ddayStyle) {
         case 'expired':
@@ -369,38 +364,38 @@ class AppCard extends StatelessWidget {
         default:
           ddayColor = AppColors.textSecondary;
       }
-      
-      metaItems.add(_buildMetaItem(
-        icon: Icons.schedule,
-        text: ddayText,
-        color: ddayColor,
-      ));
+
+      metaItems.add(
+        _buildMetaItem(icon: Icons.schedule, text: ddayText, color: ddayColor),
+      );
     }
-    
+
     // 생성일 (상대적 시간)
     if (createdAt != null) {
-      metaItems.add(_buildMetaItem(
-        icon: Icons.access_time,
-        text: AppFormatters.formatRelativeTime(createdAt!),
-        color: AppColors.textSecondary,
-      ));
+      metaItems.add(
+        _buildMetaItem(
+          icon: Icons.access_time,
+          text: AppFormatters.formatRelativeTime(createdAt!),
+          color: AppColors.textSecondary,
+        ),
+      );
     }
-    
+
     // 조회수
     if (viewCount != null && viewCount! > 0) {
-      metaItems.add(_buildMetaItem(
-        icon: Icons.visibility,
-        text: AppFormatters.formatCompactNumber(viewCount!),
-        color: AppColors.textSecondary,
-      ));
+      metaItems.add(
+        _buildMetaItem(
+          icon: Icons.visibility,
+          text: AppFormatters.formatCompactNumber(viewCount!),
+          color: AppColors.textSecondary,
+        ),
+      );
     }
-    
+
     // 점으로 구분해서 나열
-    return Wrap(
-      children: _buildSeparatedItems(metaItems, _buildDot()),
-    );
+    return Wrap(children: _buildSeparatedItems(metaItems, _buildDot()));
   }
-  
+
   /// 메타 정보 아이템 (아이콘 + 텍스트)
   Widget _buildMetaItem({
     required IconData icon,
@@ -410,11 +405,7 @@ class AppCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 14.w,
-          color: color,
-        ),
+        Icon(icon, size: 14.w, color: color),
         SizedBox(width: 4.w),
         Text(
           text,
@@ -427,45 +418,42 @@ class AppCard extends StatelessWidget {
       ],
     );
   }
-  
+
   /// 구분점 (•)
   Widget _buildDot() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8.w),
       child: Text(
         '•',
-        style: TextStyle(
-          fontSize: 12.sp,
-          color: AppColors.textSecondary,
-        ),
+        style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
       ),
     );
   }
-  
+
   /// 리스트 아이템들을 구분자로 분리해서 배치
   List<Widget> _buildSeparatedItems(List<Widget> items, Widget separator) {
     final result = <Widget>[];
-    
+
     for (int i = 0; i < items.length; i++) {
       result.add(items[i]);
-      
+
       // 마지막 아이템이 아니면 구분자 추가
       if (i < items.length - 1) {
         result.add(separator);
       }
     }
-    
+
     return result;
   }
-  
+
   /// 신뢰도 배지
   Widget _buildTrustBadge(BuildContext context) {
     if (trustLevel == null) return const SizedBox.shrink();
-    
+
     Color badgeColor;
     IconData badgeIcon;
     String badgeText;
-    
+
     switch (trustLevel!.toLowerCase()) {
       case 'official':
         badgeColor = AppColors.trustOfficial;
@@ -490,7 +478,7 @@ class AppCard extends StatelessWidget {
       default:
         return const SizedBox.shrink();
     }
-    
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
@@ -504,11 +492,7 @@ class AppCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            badgeIcon,
-            size: 12.w,
-            color: badgeColor,
-          ),
+          Icon(badgeIcon, size: 12.w, color: badgeColor),
           SizedBox(width: 4.w),
           Text(
             badgeText,

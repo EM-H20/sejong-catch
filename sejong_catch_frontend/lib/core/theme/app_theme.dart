@@ -10,11 +10,13 @@ class AppTheme {
   // Private constructor to prevent instantiation
   AppTheme._();
 
-  /// 세종 캐치 앱의 메인 테마를 반환합니다.
+  /// 세종 캐치 앱의 라이트 테마를 반환합니다.
   ///
   /// Crimson Red를 seed color로 사용하여 Material 3의
   /// 일관된 색상 팔레트를 생성합니다.
-  static ThemeData theme() {
+  static ThemeData get lightTheme => _buildTheme();
+
+  static ThemeData _buildTheme() {
     // Crimson Red 기반 ColorScheme 생성
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.brandCrimson,
