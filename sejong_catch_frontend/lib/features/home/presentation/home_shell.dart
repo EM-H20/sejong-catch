@@ -22,15 +22,11 @@ class HomeShell extends StatefulWidget {
   /// 현재 선택된 탭의 페이지 위젯
   final Widget child;
 
-  const HomeShell({
-    super.key,
-    required this.child,
-  });
+  const HomeShell({super.key, required this.child});
 
   @override
   State<HomeShell> createState() => _HomeShellState();
 }
-
 
 /// 🔧 탭 정보 클래스 (확장성을 위한 구조화)
 class _TabInfo {
@@ -189,9 +185,7 @@ class _HomeShellState extends State<HomeShell> {
   /// 🧭 깔끔한 기본 BottomNavigationBar (애니메이션 제거!)
   Widget _buildBottomNavigationBar(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: AppShadows.navigationBar,
-      ),
+      decoration: BoxDecoration(boxShadow: AppShadows.navigationBar),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentPageIndex,
@@ -203,12 +197,16 @@ class _HomeShellState extends State<HomeShell> {
         selectedFontSize: 12.sp,
         unselectedFontSize: 10.sp,
         iconSize: 24.r,
-        items: _tabs.map((tab) => BottomNavigationBarItem(
-          icon: Icon(tab.icon),
-          activeIcon: Icon(tab.activeIcon),
-          label: tab.label,
-          tooltip: tab.tooltip,
-        )).toList(),
+        items: _tabs
+            .map(
+              (tab) => BottomNavigationBarItem(
+                icon: Icon(tab.icon),
+                activeIcon: Icon(tab.activeIcon),
+                label: tab.label,
+                tooltip: tab.tooltip,
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -227,7 +225,6 @@ class _HomeShellState extends State<HomeShell> {
   /// 🔄 스마트 탭 전환 (인접=애니메이션, 원거리=즉시이동!)
   void _onTabTapped(int index) {
     if (index >= 0 && index < _tabs.length && index != _currentPageIndex) {
-
       // 🧠 인덱스 차이 계산 (핵심 로직!)
       final indexDifference = (index - _currentPageIndex).abs();
 
