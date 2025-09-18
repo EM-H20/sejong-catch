@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../app/config/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_shadows.dart';
 import '../../feed/presentation/pages/feed_page.dart';
 import '../../search/presentation/pages/search_page.dart';
 import '../../queue/presentation/pages/queue_page.dart';
@@ -189,22 +190,16 @@ class _HomeShellState extends State<HomeShell> {
   Widget _buildBottomNavigationBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10.r,
-            offset: Offset(0, -2.h),
-          ),
-        ],
+        boxShadow: AppShadows.navigationBar,
       ),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentPageIndex,
         onTap: _onTabTapped,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         selectedItemColor: AppColors.brandCrimson,
-        unselectedItemColor: Colors.grey[600],
+        unselectedItemColor: AppColors.textSecondary,
         selectedFontSize: 12.sp,
         unselectedFontSize: 10.sp,
         iconSize: 24.r,
