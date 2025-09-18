@@ -53,8 +53,9 @@ dependencies:
   pull_to_refresh: ^2.0.0            # 당겨서 새로고침 UI 패턴
 
   # # 알림 & 실시간 통신 - 패키지 에러 발생
-  # firebase_messaging: ^16.0.1        # 푸시 알림(Firebase Cloud Messaging)
-  # awesome_notifications: ^0.10.1     # 로컬 알림 생성 및 관리
+  firebase_core: ^4.1.0
+  firebase_messaging: ^16.0.1        # 푸시 알림(Firebase Cloud Messaging)
+  flutter_local_notifications: ^19.4.2 # 로컬 알림 생성 및 관리
   # web_socket_channel: ^3.0.3         # 웹소켓 실시간 통신
 
   # # 앱 분석 및 안정성 관리
