@@ -15,12 +15,8 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context),
-    );
+    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context));
   }
-
 
   /// 📄 메인 컨텐츠
   Widget _buildBody(BuildContext context) {

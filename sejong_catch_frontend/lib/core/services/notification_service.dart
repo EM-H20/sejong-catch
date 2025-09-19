@@ -53,11 +53,12 @@ class NotificationService {
       await _initializeLocalNotifications();
 
       // 3. 백그라운드 메시지 핸들러 등록
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
 
       debugPrint('✅ NotificationService 초기화 완료!');
       return true;
-
     } catch (e) {
       debugPrint('❌ NotificationService 초기화 실패: $e');
       return false;
@@ -111,7 +112,8 @@ class NotificationService {
       debugPrint('📋 알림 권한 상태: ${settings.authorizationStatus}');
 
       // 권한이 허용되었는지 확인
-      final bool isAuthorized = settings.authorizationStatus == AuthorizationStatus.authorized ||
+      final bool isAuthorized =
+          settings.authorizationStatus == AuthorizationStatus.authorized ||
           settings.authorizationStatus == AuthorizationStatus.provisional;
 
       if (isAuthorized) {
@@ -167,14 +169,16 @@ class NotificationService {
     }
 
     // Android 설정
-    const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS 설정
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: false, // Firebase에서 이미 요청했으므로 false
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-    );
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+          requestAlertPermission: false, // Firebase에서 이미 요청했으므로 false
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+        );
 
     // 초기화 설정 조합
     const InitializationSettings initSettings = InitializationSettings(
@@ -209,7 +213,9 @@ class NotificationService {
     );
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     debugPrint('✅ 알림 채널 생성 완료: $_channelName');
@@ -225,25 +231,26 @@ class NotificationService {
   }) async {
     try {
       // Android 알림 스타일 설정
-      final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-        _channelId,
-        _channelName,
-        channelDescription: _channelDescription,
-        importance: Importance.high,
-        priority: Priority.high,
-        showWhen: true,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: AppColors.brandCrimson, // 크림슨 레드
-        icon: '@mipmap/ic_launcher',
-        largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-        styleInformation: BigTextStyleInformation(
-          body,
-          contentTitle: title,
-          htmlFormatContent: true,
-          htmlFormatContentTitle: true,
-        ),
-      );
+      final AndroidNotificationDetails androidDetails =
+          AndroidNotificationDetails(
+            _channelId,
+            _channelName,
+            channelDescription: _channelDescription,
+            importance: Importance.high,
+            priority: Priority.high,
+            showWhen: true,
+            enableVibration: true,
+            enableLights: true,
+            ledColor: AppColors.brandCrimson, // 크림슨 레드
+            icon: '@mipmap/ic_launcher',
+            largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+            styleInformation: BigTextStyleInformation(
+              body,
+              contentTitle: title,
+              htmlFormatContent: true,
+              htmlFormatContentTitle: true,
+            ),
+          );
 
       // iOS 알림 스타일 설정
       const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -316,9 +323,7 @@ class NotificationService {
   /// 알림 데이터를 Payload 문자열로 변환
   String _buildPayload(Map<String, dynamic> data) {
     // JSON 형태로 직렬화 (향후 파싱용)
-    return data.entries
-        .map((entry) => '${entry.key}=${entry.value}')
-        .join('&');
+    return data.entries.map((entry) => '${entry.key}=${entry.value}').join('&');
   }
 
   /// FCM 토큰을 서버로 전송
@@ -457,25 +462,26 @@ class NotificationService {
     };
 
     // Android 알림 스타일 (타입별 커스터마이징)
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _channelId,
-      _channelName,
-      channelDescription: _channelDescription,
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-      enableVibration: true,
-      enableLights: true,
-      ledColor: ledColor,
-      icon: '@mipmap/ic_launcher',
-      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      styleInformation: BigTextStyleInformation(
-        body,
-        contentTitle: '$emoji $title',
-        htmlFormatContent: true,
-        htmlFormatContentTitle: true,
-      ),
-    );
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          _channelId,
+          _channelName,
+          channelDescription: _channelDescription,
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: true,
+          enableVibration: true,
+          enableLights: true,
+          ledColor: ledColor,
+          icon: '@mipmap/ic_launcher',
+          largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+          styleInformation: BigTextStyleInformation(
+            body,
+            contentTitle: '$emoji $title',
+            htmlFormatContent: true,
+            htmlFormatContentTitle: true,
+          ),
+        );
 
     // iOS 알림 스타일
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(

@@ -15,10 +15,7 @@ class QueuePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context),
-    );
+    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context));
   }
 
   /// 🎯 AppBar 구성
@@ -75,7 +72,9 @@ class QueuePage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.brandCrimsonLight,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.brandCrimson.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: AppColors.brandCrimson.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +94,11 @@ class QueuePage extends StatelessWidget {
                 child: _buildStatItem('대기 중', '2건', Icons.queue_outlined),
               ),
               Expanded(
-                child: _buildStatItem('호출됨', '1건', Icons.notification_important),
+                child: _buildStatItem(
+                  '호출됨',
+                  '1건',
+                  Icons.notification_important,
+                ),
               ),
               Expanded(
                 child: _buildStatItem('완료', '5건', Icons.check_circle_outline),
@@ -111,11 +114,7 @@ class QueuePage extends StatelessWidget {
   Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(
-          icon,
-          size: 24.r,
-          color: AppColors.brandCrimson,
-        ),
+        Icon(icon, size: 24.r, color: AppColors.brandCrimson),
         SizedBox(height: 4.h),
         Text(
           value,
@@ -127,10 +126,7 @@ class QueuePage extends StatelessWidget {
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: Colors.grey[600],
-          ),
+          style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
         ),
       ],
     );
@@ -233,10 +229,7 @@ class QueuePage extends StatelessWidget {
                   onPressed: () => _leaveQueue(queue),
                   child: Text(
                     '줄서기 취소',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.red[600],
-                    ),
+                    style: TextStyle(fontSize: 12.sp, color: Colors.red[600]),
                   ),
                 ),
             ],
@@ -262,36 +255,22 @@ class QueuePage extends StatelessWidget {
           if (isWaiting || isCalled) ...[
             Row(
               children: [
-                Icon(
-                  Icons.people_outline,
-                  size: 16.r,
-                  color: Colors.grey[600],
-                ),
+                Icon(Icons.people_outline, size: 16.r, color: Colors.grey[600]),
                 SizedBox(width: 4.w),
                 Text(
                   '내 순번: ${queue['currentPosition']}번 / 전체 ${queue['totalWaiting']}명',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
                 ),
               ],
             ),
             SizedBox(height: 6.h),
             Row(
               children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 16.r,
-                  color: Colors.grey[600],
-                ),
+                Icon(Icons.timer_outlined, size: 16.r, color: Colors.grey[600]),
                 SizedBox(width: 4.w),
                 Text(
                   '예상 대기시간: ${queue['estimatedTime']}',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
                 ),
               ],
             ),
@@ -307,11 +286,7 @@ class QueuePage extends StatelessWidget {
       padding: EdgeInsets.all(40.w),
       child: Column(
         children: [
-          Icon(
-            Icons.queue_outlined,
-            size: 64.r,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.queue_outlined, size: 64.r, color: Colors.grey[400]),
           SizedBox(height: 16.h),
           Text(
             '아직 대기 중인 항목이 없어요',
@@ -325,10 +300,7 @@ class QueuePage extends StatelessWidget {
           Text(
             '인기 정보에 줄을 서보세요!\n순서가 되면 알려드릴게요 🔔',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
           ),
           SizedBox(height: 24.h),
           ElevatedButton(
@@ -343,10 +315,7 @@ class QueuePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.r),
               ),
             ),
-            child: Text(
-              '인기 정보 보러가기',
-              style: TextStyle(fontSize: 14.sp),
-            ),
+            child: Text('인기 정보 보러가기', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),

@@ -26,10 +26,8 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # 상태 관리 및 데이터 모델
-  # provider: ^6.1.5                # 상태 관리 라이브러리
-  flutter_riverpod: ^3.0.0
-  freezed_annotation: ^3.1.0      # 불변 데이터 클래스를 위한 어노테이션
-  json_annotation: ^4.9.0         # JSON 자동 직렬화 어노테이션
+  flutter_riverpod: ^2.6.1         # Riverpod 상태 관리
+  riverpod_annotation: ^2.3.6      # @riverpod 어노테이션 지원
   shared_preferences: ^2.3.4      # 로컬 설정 저장 (테마, 온보딩 등)
   intl: ^0.20.2                   # 국제화 및 날짜/숫자 포맷팅
 
@@ -72,9 +70,10 @@ dev_dependencies:
 
   # 코드 품질 및 자동화 도구
   flutter_lints: ^5.0.0            # 추천 코드 린트 규칙
-  build_runner: ^2.4.15            # 코드 자동 생성 툴(Freezed, Json)
-  freezed: ^3.2.0                  # 데이터 모델 코드 생성 패키지(개발용)
-  json_serializable: ^6.11.1       # Json 모델 코드 자동 생성(개발용)
+  build_runner: ^2.4.15            # 코드 자동 생성 툴
+  riverpod_generator: ^2.4.3       # @riverpod 코드 생성
+  # freezed: ^3.1.0                  # 데이터 모델 코드 생성 (현재 미사용)
+  # json_serializable: ^6.8.0       # Json 모델 코드 자동 생성 (현재 미사용)
 
   # 앱 통합 관리 도구
   flutter_launcher_icons: ^0.14.4   # 앱 런처 아이콘 자동 생성
@@ -84,13 +83,28 @@ dev_dependencies:
 flutter:
   uses-material-design: true        # 머티리얼 아이콘 포함 설정
 
-  # 아래에 assets 또는 fonts 옵션 추가 가능
-  # 예시:
+  # 프로젝트 assets 및 폰트 설정
   assets:
     - assets/
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Pretendard-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Pretendard-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Pretendard-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Pretendard-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Pretendard-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Pretendard-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Pretendard-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Pretendard-Black.ttf
+          weight: 900

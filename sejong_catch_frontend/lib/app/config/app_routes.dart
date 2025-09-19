@@ -33,14 +33,25 @@ class AppRoutes {
 
   // 📊 라우트 그룹 정의 (권한 가드용)
   static const List<String> mainAppRoutes = [
-    home, feed, search, queue, profile
+    home,
+    feed,
+    search,
+    queue,
+    profile,
   ];
 
   static const List<String> authRequiredRoutes = [
-    queue, profile, console, consoleRules, consoleStats
+    queue,
+    profile,
+    console,
+    consoleRules,
+    consoleStats,
   ];
 
   static const List<String> guestOnlyRoutes = [
-    auth, login, register, onboarding
+    auth,
+    login,
+    register,
+    onboarding,
   ];
 }

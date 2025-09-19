@@ -34,6 +34,12 @@ class AppTheme {
       // ColorScheme 적용
       colorScheme: colorScheme,
 
+      // 🎨 Pretendard 폰트를 전체 앱의 기본 폰트로 설정
+      fontFamily: 'Pretendard',
+
+      // 📝 전체 텍스트 테마 (Pretendard 폰트 적용)
+      textTheme: _buildTextTheme(),
+
       // 기본 배경 색상
       scaffoldBackgroundColor: AppColors.white,
 
@@ -45,9 +51,10 @@ class AppTheme {
         foregroundColor: AppColors.textPrimary,
         surfaceTintColor: Colors.transparent, // Material 3 tint 제거
         titleTextStyle: TextStyle(
+          fontFamily: 'Pretendard',
           color: AppColors.textPrimary,
           fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w600, // SemiBold
         ),
         // 상태바 스타일 설정
         systemOverlayStyle: SystemUiOverlayStyle(
@@ -78,7 +85,11 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           minimumSize: const Size(44, 44), // 접근성을 위한 최소 터치 영역
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontSize: 16,
+            fontWeight: FontWeight.w600, // SemiBold
+          ),
         ),
       ),
 
@@ -110,11 +121,17 @@ class AppTheme {
         backgroundColor: AppColors.surface,
         selectedColor: AppColors.brandCrimsonLight,
         disabledColor: AppColors.disabled.withValues(alpha: 0.3),
-        labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+        labelStyle: const TextStyle(
+          fontFamily: 'Pretendard',
+          color: AppColors.textPrimary,
+          fontSize: 14,
+          fontWeight: FontWeight.w400, // Regular
+        ),
         secondaryLabelStyle: const TextStyle(
+          fontFamily: 'Pretendard',
           color: AppColors.brandCrimson,
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w500, // Medium
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide.none,
@@ -145,7 +162,11 @@ class AppTheme {
           horizontal: 16,
           vertical: 16,
         ),
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
+        hintStyle: const TextStyle(
+          fontFamily: 'Pretendard',
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w400, // Regular
+        ),
       ),
 
       // Bottom Navigation Bar 테마
@@ -156,12 +177,14 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
         selectedLabelStyle: TextStyle(
+          fontFamily: 'Pretendard',
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w500, // Medium
         ),
         unselectedLabelStyle: TextStyle(
+          fontFamily: 'Pretendard',
           fontSize: 12,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w400, // Regular
         ),
       ),
 
@@ -171,10 +194,15 @@ class AppTheme {
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppColors.brandCrimson,
         indicatorSize: TabBarIndicatorSize.label,
-        labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: TextStyle(
+        labelStyle: TextStyle(
+          fontFamily: 'Pretendard',
           fontSize: 16,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w600, // SemiBold
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontFamily: 'Pretendard',
+          fontSize: 16,
+          fontWeight: FontWeight.w400, // Regular
         ),
       ),
 
@@ -237,6 +265,132 @@ class AppTheme {
         foregroundColor: AppColors.white,
         elevation: 4,
         shape: CircleBorder(),
+      ),
+    );
+  }
+
+  /// 🎨 Pretendard 폰트를 적용한 텍스트 테마 생성
+  ///
+  /// Material 3의 TextTheme을 기반으로 하되,
+  /// 모든 텍스트 스타일에 Pretendard 폰트를 적용하고
+  /// 적절한 FontWeight를 설정합니다.
+  static TextTheme _buildTextTheme() {
+    const fontFamily = 'Pretendard';
+
+    return const TextTheme(
+      // 📖 Display 스타일 (큰 제목)
+      displayLarge: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 57,
+        fontWeight: FontWeight.w700, // Bold
+        color: AppColors.textPrimary,
+        height: 1.12,
+      ),
+      displayMedium: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 45,
+        fontWeight: FontWeight.w700, // Bold
+        color: AppColors.textPrimary,
+        height: 1.16,
+      ),
+      displaySmall: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 36,
+        fontWeight: FontWeight.w600, // SemiBold
+        color: AppColors.textPrimary,
+        height: 1.22,
+      ),
+
+      // 📰 Headline 스타일 (헤드라인)
+      headlineLarge: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 32,
+        fontWeight: FontWeight.w600, // SemiBold
+        color: AppColors.textPrimary,
+        height: 1.25,
+      ),
+      headlineMedium: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 28,
+        fontWeight: FontWeight.w600, // SemiBold
+        color: AppColors.textPrimary,
+        height: 1.29,
+      ),
+      headlineSmall: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 24,
+        fontWeight: FontWeight.w600, // SemiBold
+        color: AppColors.textPrimary,
+        height: 1.33,
+      ),
+
+      // 📝 Title 스타일 (제목)
+      titleLarge: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 22,
+        fontWeight: FontWeight.w500, // Medium
+        color: AppColors.textPrimary,
+        height: 1.27,
+      ),
+      titleMedium: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 16,
+        fontWeight: FontWeight.w500, // Medium
+        color: AppColors.textPrimary,
+        height: 1.5,
+      ),
+      titleSmall: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w500, // Medium
+        color: AppColors.textPrimary,
+        height: 1.43,
+      ),
+
+      // 📄 Body 스타일 (본문)
+      bodyLarge: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 16,
+        fontWeight: FontWeight.w400, // Regular
+        color: AppColors.textPrimary,
+        height: 1.5,
+      ),
+      bodyMedium: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w400, // Regular
+        color: AppColors.textPrimary,
+        height: 1.43,
+      ),
+      bodySmall: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w400, // Regular
+        color: AppColors.textSecondary,
+        height: 1.33,
+      ),
+
+      // 🏷️ Label 스타일 (라벨, 버튼)
+      labelLarge: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.w500, // Medium
+        color: AppColors.textPrimary,
+        height: 1.43,
+      ),
+      labelMedium: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w500, // Medium
+        color: AppColors.textPrimary,
+        height: 1.33,
+      ),
+      labelSmall: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 11,
+        fontWeight: FontWeight.w500, // Medium
+        color: AppColors.textSecondary,
+        height: 1.45,
       ),
     );
   }

@@ -204,7 +204,6 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-
   /// 📋 학과 선택 드롭다운
   Widget _buildDropdownField() {
     return Column(
@@ -375,10 +374,7 @@ class _AuthPageState extends State<AuthPage> {
       builder: (context) => AlertDialog(
         title: Text(
           '비밀번호 찾기',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -388,10 +384,7 @@ class _AuthPageState extends State<AuthPage> {
             SizedBox(height: 12.h),
             Text(
               '🔗 세종대학교 포털 → 비밀번호 찾기',
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
             ),
           ],
         ),

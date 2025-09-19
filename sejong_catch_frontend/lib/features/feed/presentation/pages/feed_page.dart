@@ -17,12 +17,8 @@ class FeedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context),
-    );
+    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context));
   }
-
 
   /// 📄 메인 컨텐츠 영역
   Widget _buildBody(BuildContext context) {
@@ -178,5 +174,4 @@ class FeedPage extends StatelessWidget {
       ),
     );
   }
-
 }
