@@ -4,6 +4,8 @@
 
 **86% 코드 감소**를 달성한 `lib/features/auth/` 구조를 **모든 기능에 동일하게 적용**합니다.
 
+**🚨 중요 변경**: Freezed 사용하지 않음 - 일반 Dart 클래스로 모델 작성
+
 ---
 
 ## 📁 전체 프로젝트 구조
@@ -18,9 +20,9 @@ lib/
 │   └── widgets/                    # 재사용 위젯 (AppCard, CTAButton 등)
 │
 ├── data/                           # 🗂️ 데이터 계층
-│   ├── models/                     # Freezed 모델
+│   ├── models/                     # 일반 Dart 클래스 모델 (Freezed X)
 │   ├── sources/remote/             # Dio + Retrofit API
-│   ├── sources/local/              # SharedPreferences, SecureStorage  
+│   ├── sources/local/              # SharedPreferences, SecureStorage
 │   └── repositories/               # Repository 패턴
 │
 ├── domain/                         # 🧠 비즈니스 로직
@@ -39,24 +41,24 @@ lib/
 
 ---
 
-## 🏆 성공 템플릿: `lib/features/auth/` 
+## 🏆 성공 템플릿: `lib/features/auth/`
 
 **이 구조를 모든 feature에 복사하세요!**
 
 ```
 lib/features/auth/                  # ✅ 86% 코드 감소 달성!
-├── controllers/                    
+├── controllers/
 │   └── login_controller.dart       # 🎛️ 모든 상태 관리 (308줄)
-│                                   
-├── models/                         
-│   └── login_step.dart            # 📊 비즈니스 모델
-│                                   
-├── pages/                          
+│
+├── models/
+│   └── login_step.dart            # 📊 일반 Dart 클래스 모델 (Freezed X)
+│
+├── pages/
 │   └── login_page.dart            # 🖼️ UI 레이아웃만 (145줄)
-│                                   
-├── services/                       
+│
+├── services/
 │   └── validation_service.dart    # 🔧 도메인 로직
-│                                   
+│
 └── widgets/ui/                     # 🧩 재사용 컴포넌트들
     ├── login_header.dart          # 헤더 (60줄)
     ├── login_card.dart            # 메인 폼 (350줄)
@@ -69,7 +71,7 @@ lib/features/auth/                  # ✅ 86% 코드 감소 달성!
 | 폴더 | 책임 | 예시 |
 |------|------|------|
 | **controllers/** | Riverpod 상태 관리 (Notifier) | `login_controller.dart`, `search_controller.dart` |
-| **models/** | 비즈니스 모델 | `login_step.dart`, `search_filter.dart` |
+| **models/** | 일반 Dart 클래스 비즈니스 모델 | `login_step.dart`, `search_filter.dart` |
 | **pages/** | UI 레이아웃 + ConsumerWidget | `login_page.dart`, `search_page.dart` |
 | **services/** | 도메인 로직 | `validation_service.dart`, `api_service.dart` |
 | **widgets/ui/** | 재사용 UI 컴포넌트 | `login_card.dart`, `search_bar.dart` |
@@ -82,22 +84,22 @@ lib/features/auth/                  # ✅ 86% 코드 감소 달성!
 GoRouter
 └── routes
     ├── /onboarding          -> OnboardingFlowPage    [guard: firstRunGuard]
-    ├── /auth                -> AuthPage              
-    ├── /                    -> RootShell (BottomNav) 
-    │   ├── /feed            -> FeedPage              
-    │   ├── /search          -> SearchPage           
+    ├── /auth                -> AuthPage
+    ├── /                    -> RootShell (BottomNav)
+    │   ├── /feed            -> FeedPage
+    │   ├── /search          -> SearchPage
     │   ├── /queue           -> QueuePage            [guard: role>=Student]
-    │   └── /profile         -> ProfilePage          
-    ├── /detail/:id          -> DetailPage           
+    │   └── /profile         -> ProfilePage
+    ├── /detail/:id          -> DetailPage
     ├── /console             -> ConsoleShell         [guard: role>=Operator]
     │   ├── /console/rules   -> RulesPage           [guard: role>=Operator]
     │   └── /console/stats   -> StatsDashboardPage  [guard: role>=Admin]
-    └── /settings            -> SettingsPage         
+    └── /settings            -> SettingsPage
 ```
 
 ### 🛡️ 권한 가드 시스템
 - **authGuard**: 로그인/학생 인증 확인
-- **roleGuard**: Guest < Student < Operator < Admin  
+- **roleGuard**: Guest < Student < Operator < Admin
 - **firstRunGuard**: 온보딩 완료 여부 (SharedPreferences)
 
 ---
@@ -110,7 +112,7 @@ lib/features/feed/
 ├── controllers/
 │   └── feed_controller.dart        # 탭별 상태, 페이지네이션
 ├── models/
-│   └── feed_item.dart             # Item, PriorityLevel, TrustLevel
+│   └── feed_item.dart             # 일반 클래스: Item, PriorityLevel, TrustLevel
 ├── pages/
 │   └── feed_page.dart             # Scaffold + TabBarView
 ├── services/
@@ -127,8 +129,8 @@ lib/features/search/
 ├── controllers/
 │   └── search_controller.dart      # 검색 상태, 필터 관리
 ├── models/
-│   ├── search_filter.dart         # 필터 조건
-│   └── search_result.dart         # 검색 결과
+│   ├── search_filter.dart         # 일반 클래스: 필터 조건
+│   └── search_result.dart         # 일반 클래스: 검색 결과
 ├── pages/
 │   └── search_page.dart           # 검색바 + 결과 리스트
 ├── services/
@@ -146,8 +148,8 @@ lib/features/queue/
 ├── controllers/
 │   └── queue_controller.dart       # 대기열 상태, 순번 관리
 ├── models/
-│   ├── queue_item.dart            # 대기열 아이템
-│   └── queue_status.dart          # 대기중/진행중/완료
+│   ├── queue_item.dart            # 일반 클래스: 대기열 아이템
+│   └── queue_status.dart          # 일반 클래스: 대기중/진행중/완료
 ├── pages/
 │   └── queue_page.dart            # 탭별 대기열 리스트
 ├── services/
@@ -164,8 +166,8 @@ lib/features/profile/
 ├── controllers/
 │   └── profile_controller.dart     # 사용자 정보, 설정 관리
 ├── models/
-│   ├── user_profile.dart          # 사용자 프로필
-│   └── app_settings.dart          # 앱 설정
+│   ├── user_profile.dart          # 일반 클래스: 사용자 프로필
+│   └── app_settings.dart          # 일반 클래스: 앱 설정
 ├── pages/
 │   └── profile_page.dart          # 설정 섹션들
 ├── services/
@@ -183,7 +185,7 @@ lib/features/onboarding/
 ├── controllers/
 │   └── onboarding_controller.dart  # 단계 관리, 완료 플래그
 ├── models/
-│   └── onboarding_step.dart       # 온보딩 단계 enum
+│   └── onboarding_step.dart       # 일반 클래스: 온보딩 단계 enum
 ├── pages/
 │   └── onboarding_flow_page.dart  # PageView + 진행률
 ├── services/
@@ -201,8 +203,8 @@ lib/features/console/
 ├── controllers/
 │   └── console_controller.dart     # 규칙 관리, 통계
 ├── models/
-│   ├── collection_rule.dart       # 수집 규칙
-│   └── admin_stats.dart           # 통계 데이터
+│   ├── collection_rule.dart       # 일반 클래스: 수집 규칙
+│   └── admin_stats.dart           # 일반 클래스: 통계 데이터
 ├── pages/
 │   ├── console_shell.dart         # 콘솔 메인
 │   ├── rules_page.dart           # 규칙 관리
@@ -243,7 +245,7 @@ lib/core/widgets/
 
 ---
 
-## 🚀 Riverpod 상태 관리 패턴 (완전 새로워진 패러다임!)
+## 🚀 Riverpod 상태 관리 패턴 (Freezed 없이!)
 
 ### ProviderScope 구조 (main.dart) - 훨씬 간단해짐!
 ```dart
@@ -278,16 +280,32 @@ class FeedController extends _$FeedController {
 }
 ```
 
-### Riverpod 컨트롤러 패턴 (갓-급 진화!)
+### Riverpod 컨트롤러 패턴 (일반 클래스 + copyWith!)
 ```dart
-// 1. 상태 클래스 정의 (Freezed로 불변성 보장)
-@freezed
-class FeatureState with _$FeatureState {
-  const factory FeatureState({
-    @Default(false) bool isLoading,
+// 1. 상태 클래스 정의 (일반 Dart 클래스로 불변성 보장)
+class FeatureState {
+  final bool isLoading;
+  final String? error;
+  final List<Item> items;
+
+  const FeatureState({
+    this.isLoading = false,
+    this.error,
+    this.items = const [],
+  });
+
+  // copyWith 수동 구현
+  FeatureState copyWith({
+    bool? isLoading,
     String? error,
-    @Default([]) List<Item> items,
-  }) = _FeatureState;
+    List<Item>? items,
+  }) {
+    return FeatureState(
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+      items: items ?? this.items,
+    );
+  }
 }
 
 // 2. Notifier 컨트롤러 (타입 안전성 완벽 보장!)
@@ -296,7 +314,7 @@ class FeatureController extends _$FeatureController {
   @override
   FeatureState build() => const FeatureState();
 
-  // 🔥 컴파일 타임 안전성 + 자동 리빌드 + 메모이제이션!
+  // 🔥 컴파일 타임 안전성 + 자동 리빌드!
   Future<void> loadItems() async {
     state = state.copyWith(isLoading: true, error: null);
 
@@ -328,7 +346,7 @@ class FeatureController extends _$FeatureController {
 RootShell (Scaffold)
 ├── body: IndexedStack              # 탭 상태 유지
 │   ├── FeedPage                   # 0: 피드
-│   ├── SearchPage                 # 1: 검색  
+│   ├── SearchPage                 # 1: 검색
 │   ├── QueuePage                  # 2: 줄서기 [Student+]
 │   └── ProfilePage                # 3: 프로필
 └── bottomNavigationBar: AppBottomNav
@@ -352,7 +370,9 @@ RootShell (Scaffold)
 - [ ] `[기능명]_page.dart` - 메인 UI 페이지 (레이아웃만)
 - [ ] 필요한 model, service, widget 파일들 생성
 
-### 3. Riverpod 연결 (훨씬 간단해짐!)
+### 3. Riverpod 연결 (일반 클래스 사용!)
+- [ ] 일반 Dart 클래스로 상태 모델 작성 (Freezed X)
+- [ ] copyWith 메서드 수동 구현
 - [ ] @riverpod 어노테이션으로 Provider 자동 생성
 - [ ] ConsumerWidget으로 Page 구현
 - [ ] ref.watch()로 상태 반응형 구독
@@ -373,9 +393,9 @@ RootShell (Scaffold)
 
 ## 🎯 핵심 성공 요소
 
-### ✅ 검증된 패턴 (auth에서 86% 감소 달성) + Riverpod 진화!
+### ✅ 검증된 패턴 (auth에서 86% 감소 달성) + Riverpod!
 1. **단일 책임 원칙**: 각 파일이 하나의 역할만
-2. **Riverpod + Freezed**: 더 안전한 불변 상태 관리 🚀
+2. **일반 클래스 + copyWith**: Freezed 없이 안전한 불변 상태 관리 🚀
 3. **컴포넌트 분리**: ConsumerWidget으로 반응형 UI
 4. **DRY 원칙**: 중복 코드 철저 제거 + 코드 생성 자동화
 5. **타입 안전성**: 컴파일 타임 에러 방지
@@ -393,7 +413,7 @@ RootShell (Scaffold)
 - 공용 컴포넌트 우선 활용 + ConsumerWidget
 - 자동 의존성 관리로 Provider 간 결합도 최소화
 - 테스트 가능한 구조 유지 + ProviderContainer로 격리 테스트
-- 코드 생성으로 휴먼 에러 방지
+- Freezed 없이도 타입 안전한 상태 관리
 
 ---
 

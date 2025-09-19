@@ -4,7 +4,7 @@
 
 **세종대학교 학생들을 위한 올인원 정보 허브**
 - ✅ **정보 통합**: 공모전·취업·논문·공지사항을 한 곳에서
-- ✅ **맞춤형 추천**: 학과/관심사 기반 스마트 필터링  
+- ✅ **맞춤형 추천**: 학과/관심사 기반 스마트 필터링
 - ✅ **신뢰성 보장**: 출처별 신뢰도 및 우선순위 시각화
 - ✅ **대기열 관리**: 인기 정보의 스마트 줄서기 시스템
 
@@ -46,20 +46,40 @@ lib/features/auth/                    # ✅ 성공 사례
 - **Widgets**: 재사용 가능한 UI 컴포넌트
 - **Services**: 도메인 로직 (검증, API 호출 등)
 
-#### 2. Riverpod 패턴으로 더 안전한 상태 관리
+#### 2. Riverpod 패턴으로 더 안전한 상태 관리 (Freezed 미사용!)
 ```dart
-// ✅ Riverpod으로 완전히 새로워진 안전한 패턴!
-@freezed
-class LoginState with _$LoginState {
-  const factory LoginState({
-    @Default(LoginStep.initial) LoginStep currentStep,
-    @Default(false) bool isLoading,
+// ✅ Riverpod + 일반 클래스로 완전히 새로워진 안전한 패턴!
+class LoginState {
+  final LoginStep currentStep;
+  final bool isLoading;
+  final String? error;
+  final User? user;
+
+  const LoginState({
+    this.currentStep = LoginStep.initial,
+    this.isLoading = false,
+    this.error,
+    this.user,
+  });
+
+  // copyWith 수동 구현
+  LoginState copyWith({
+    LoginStep? currentStep,
+    bool? isLoading,
     String? error,
     User? user,
-  }) = _LoginState;
+  }) {
+    return LoginState(
+      currentStep: currentStep ?? this.currentStep,
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+      user: user ?? this.user,
+    );
+  }
 }
 
-class LoginController extends Notifier<LoginState> {
+@riverpod
+class LoginController extends _$LoginController {
   @override
   LoginState build() => const LoginState();
 
@@ -85,12 +105,6 @@ class LoginController extends Notifier<LoginState> {
     }
   }
 }
-
-// Provider 정의
-@riverpod
-class LoginController extends _$LoginController {
-  // 코드 생성으로 보일러플레이트 제거!
-}
 ```
 
 ---
@@ -101,7 +115,7 @@ class LoginController extends _$LoginController {
 ```dart
 // ✅ 모든 크기는 반응형으로
 width: 200.w          // 너비
-height: 100.h         // 높이  
+height: 100.h         // 높이
 padding: 16.w         // 패딩
 fontSize: 14.sp       // 폰트 크기
 borderRadius: 8.r     // 모서리
@@ -125,14 +139,14 @@ borderRadius: 8.r     // 모서리
 ### 컬러 토큰
 ```dart
 // Brand Colors
-static const brandCrimson = Color(0xFFDC143C);        
-static const brandCrimsonDark = Color(0xFFB0102F);    
-static const brandCrimsonLight = Color(0xFFF7E3E8);   
+static const brandCrimson = Color(0xFFDC143C);
+static const brandCrimsonDark = Color(0xFFB0102F);
+static const brandCrimsonLight = Color(0xFFF7E3E8);
 
 // 상태별 컬러
-static const success = Color(0xFF16A34A);   
-static const warning = Color(0xFFF59E0B);   
-static const error = Color(0xFFDC2626);     
+static const success = Color(0xFF16A34A);
+static const warning = Color(0xFFF59E0B);
+static const error = Color(0xFFDC2626);
 ```
 
 ### 컴포넌트 상태
@@ -142,32 +156,34 @@ static const error = Color(0xFFDC2626);
 
 ---
 
-## 🛠️ 기술 스택 & 아키텍처
+## 🛠️ 기술 스택 & 아키텍처 (실제 사용 패키지만!)
 
 ### 필수 패키지
 ```yaml
 dependencies:
-  # 상태 관리 & 라우팅
-  flutter_riverpod: ^3.0.0            # 🚀 최신 상태 관리 (Provider 진화판)
-  riverpod_annotation: ^2.3.6         # 🔥 코드 생성으로 보일러플레이트 감소
+  # 상태 관리 & 라우팅 (Freezed 미사용!)
+  flutter_riverpod: ^2.6.1            # Riverpod 상태 관리
+  riverpod_annotation: ^2.3.6         # @riverpod 어노테이션
   go_router: ^16.2.1                  # 선언적 라우팅
 
 dev_dependencies:
-  riverpod_generator: ^2.4.3          # 🛠️ Provider 코드 자동 생성
+  riverpod_generator: ^2.4.3          # Provider 코드 자동 생성
   build_runner: ^2.4.15               # 코드 생성 도구
-  
+
   # 네트워킹 & 데이터
   dio: ^5.9.0                         # HTTP 클라이언트
   retrofit: ^4.7.2                    # API 인터페이스
-  freezed: ^3.2.0                     # 불변 모델
-  json_serializable: ^6.11.1         # JSON 직렬화
-  
-  # UI/UX 
+
+  # UI/UX
   flutter_screenutil: ^5.9.3          # 반응형 디자인 (필수!)
   cached_network_image: ^3.4.1        # 이미지 최적화
   shimmer: ^3.0.0                     # 로딩 애니메이션
   infinite_scroll_pagination: ^5.1.1  # 무한 스크롤
 ```
+
+### ⚠️ 사용하지 않는 패키지
+- ❌ **freezed** - 일반 Dart 클래스로 모델 작성
+- ❌ **json_serializable** - 수동 JSON 파싱
 
 ### Clean Architecture 레이어
 ```
@@ -184,14 +200,14 @@ lib/
 
 ### Bottom Navigation (4개 탭)
 1. **피드** - 추천/마감임박/최신 + 무한 스크롤
-2. **검색** - 검색바 + 고급 필터 바텀시트  
+2. **검색** - 검색바 + 고급 필터 바텀시트
 3. **줄서기** - 대기열 관리 + 순번 확인 (Student 이상)
 4. **프로필** - 권한 관리, 개인화 설정
 
 ### 권한 시스템 (RBAC)
 - **Guest**: 공개 정보 열람, 인증 유도
 - **Student**: 맞춤 추천, 줄서기, 히스토리
-- **Operator**: 수집 규칙, 제외어 관리  
+- **Operator**: 수집 규칙, 제외어 관리
 - **Admin**: 통계 대시보드, 권한 로그
 
 ### 신뢰도 & 우선순위 시스템
@@ -204,7 +220,7 @@ lib/
 ## 🎯 온보딩 플로우 (4화면)
 
 1. **Intro** - "세종인을 위한 단 하나의 정보 허브"
-2. **수집·필터링** - "자동 수집 & 중복 제거, 신뢰도 반영"  
+2. **수집·필터링** - "자동 수집 & 중복 제거, 신뢰도 반영"
 3. **권한 안내** - Guest/Student/Operator/Admin 설명
 4. **개인화** - 학과 선택, 관심사 칩 설정
 
@@ -245,7 +261,7 @@ lib/
 - **Guest 유도**: "학생 인증이 필요한 정보입니다. 1분 만에 완료해요."
 - **프로필 완성**: "프로필을 완성하면 더 정확한 추천을 받을 수 있어요"
 
-### 기능 피드백  
+### 기능 피드백
 - **북마크 성공**: "북마크에 담았어요. 마감 전에 확인해드릴게요"
 - **줄서기 추가**: "대기열에 추가했어요. 순서가 되면 알려드릴게요"
 - **중복 통합**: "유사 공지를 묶어 깔끔하게 정리했어요"
@@ -259,10 +275,11 @@ lib/
 
 ## 🚦 개발 체크리스트
 
-### 새 기능 개발 시 확인사항 (Riverpod 기준)
+### 새 기능 개발 시 확인사항 (Riverpod + 일반 클래스)
 - [ ] **폴더 구조**: auth/ 성공 패턴 복사 (controllers, models, pages, services, widgets)
 - [ ] **상태 관리**: flutter_riverpod + Notifier 패턴 적용 🚀
-- [ ] **상태 클래스**: @freezed로 불변 상태 정의
+- [ ] **상태 클래스**: 일반 Dart 클래스로 불변 상태 정의 (Freezed X)
+- [ ] **copyWith**: 수동으로 copyWith 메서드 구현
 - [ ] **Provider 정의**: @riverpod 어노테이션으로 자동 생성
 - [ ] **UI 컴포넌트**: ConsumerWidget으로 반응형 구현
 - [ ] **ScreenUtil**: 모든 크기 값에 .w, .h, .r, .sp 적용
@@ -274,10 +291,16 @@ lib/
 
 ### 코드 품질 검증
 - [ ] **DRY**: 중복 코드 없음
-- [ ] **SRP**: 각 파일이 단일 책임만 가짐  
+- [ ] **SRP**: 각 파일이 단일 책임만 가짐
 - [ ] **const**: 가능한 모든 위젯에 const 적용
 - [ ] **Null Safety**: 안전한 null 처리
 - [ ] **한국어**: 자연스러운 사용자 메시지
+
+### 금지사항
+- ❌ **Freezed 사용 금지**
+- ❌ **Navigator 직접 사용 금지**
+- ❌ **TODO 주석 방치 금지**
+- ❌ **ScreenUtil 미사용 금지**
 
 ---
 
