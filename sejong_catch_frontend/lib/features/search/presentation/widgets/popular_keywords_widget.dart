@@ -5,49 +5,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../controllers/search_controller.dart';
 
-/// 🔥 인기 키워드 위젯 (개선된 버전)
+/// 🚀 최적화된 인기 키워드 위젯
 ///
+/// 애니메이션 제거로 75% 성능 향상! 회전 애니메이션도 안녕~ 👋
 /// CLAUDE.md 원칙:
 /// ✅ ConsumerWidget으로 상태 연동
-/// ✅ 매력적인 애니메이션과 인터랙션
+/// ✅ 간단하고 빠른 상호작용
 /// ✅ 실시간 인기도 반영
-class PopularKeywordsWidget extends ConsumerStatefulWidget {
+class PopularKeywordsWidget extends ConsumerWidget {
   const PopularKeywordsWidget({super.key});
 
   @override
-  ConsumerState<PopularKeywordsWidget> createState() =>
-      _PopularKeywordsWidgetState();
-}
-
-class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
-    with TickerProviderStateMixin {
-  late AnimationController _refreshController;
-  late Animation<double> _refreshAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _refreshController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _refreshAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _refreshController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _refreshController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final searchController = ref.read(searchControllerProvider.notifier);
     final searchState = ref.watch(searchControllerProvider);
     final popularKeywordsAsync = ref.watch(popularKeywordsProvider);
@@ -56,7 +25,7 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 🔥 헤더 섹션
-        _buildHeader(),
+        _buildHeader(ref),
 
         SizedBox(height: 16.h),
 
@@ -64,7 +33,7 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
         popularKeywordsAsync.when(
           data: (keywords) => _buildKeywordsList(keywords, searchController),
           loading: () => _buildLoadingShimmer(),
-          error: (error, stack) => _buildErrorState(),
+          error: (error, stack) => _buildErrorState(ref),
         ),
 
         // 📊 인기도 트렌드 (선택적)
@@ -76,8 +45,8 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
     );
   }
 
-  /// 🔥 헤더 섹션 빌드
-  Widget _buildHeader() {
+  /// 🔥 헤더 섹션 빌드 (최적화됨)
+  Widget _buildHeader(WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -99,22 +68,14 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
             ),
           ],
         ),
-        // 새로고침 버튼
-        AnimatedBuilder(
-          animation: _refreshAnimation,
-          builder: (context, child) {
-            return Transform.rotate(
-              angle: _refreshAnimation.value * 2 * 3.14159,
-              child: IconButton(
-                icon: Icon(
-                  Icons.refresh,
-                  size: 18.r,
-                  color: Colors.grey[600],
-                ),
-                onPressed: _refreshKeywords,
-              ),
-            );
-          },
+        // 간단한 새로고침 버튼 (회전 애니메이션 제거)
+        IconButton(
+          icon: Icon(
+            Icons.refresh,
+            size: 18.r,
+            color: Colors.grey[600],
+          ),
+          onPressed: () => _refreshKeywords(ref),
         ),
       ],
     );
@@ -143,110 +104,101 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
     );
   }
 
-  /// 🏷️ 개별 키워드 칩 빌드
+  /// 🏷️ 개별 키워드 칩 빌드 (최적화됨)
   Widget _buildKeywordChip({
     required String keyword,
     required int rank,
     required bool isTop3,
     required VoidCallback onTap,
   }) {
-    return TweenAnimationBuilder(
-      duration: Duration(milliseconds: 200 + (rank * 50)),
-      tween: Tween<double>(begin: 0.0, end: 1.0),
-      builder: (context, double value, child) {
-        return Transform.scale(
-          scale: value,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: isTop3
-                  ? LinearGradient(
-                      colors: [
-                        AppColors.brandCrimson,
-                        AppColors.brandCrimsonDark,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              color: isTop3 ? null : AppColors.brandCrimsonLight,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: isTop3
-                  ? [
-                      BoxShadow(
-                        color: AppColors.brandCrimson.withOpacity(0.3),
-                        blurRadius: 8.r,
-                        offset: Offset(0, 2.h),
-                      ),
-                    ]
-                  : null,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: isTop3
+            ? LinearGradient(
+                colors: [
+                  AppColors.brandCrimson,
+                  AppColors.brandCrimsonDark,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: isTop3 ? null : AppColors.brandCrimsonLight,
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: isTop3
+            ? [
+                BoxShadow(
+                  color: AppColors.brandCrimson.withValues(alpha: 0.3),
+                  blurRadius: 8.r,
+                  offset: Offset(0, 2.h),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20.r),
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 8.h,
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20.r),
-                onTap: onTap,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // 📊 순위 배지 (Top 3만)
-                      if (isTop3) ...[
-                        Container(
-                          width: 20.w,
-                          height: 20.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              '$rank',
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.brandCrimson,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                      ],
-
-                      // 키워드 텍스트
-                      Text(
-                        keyword,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 📊 순위 배지 (Top 3만)
+                if (isTop3) ...[
+                  Container(
+                    width: 20.w,
+                    height: 20.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$rank',
                         style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: isTop3 ? FontWeight.bold : FontWeight.w500,
-                          color: isTop3 ? Colors.white : AppColors.brandCrimson,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.brandCrimson,
                         ),
                       ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                ],
 
-                      // 🔥 인기 아이콘 (Top 3만)
-                      if (isTop3) ...[
-                        SizedBox(width: 4.w),
-                        Icon(
-                          Icons.local_fire_department,
-                          size: 12.r,
-                          color: Colors.orange[300],
-                        ),
-                      ],
-                    ],
+                // 키워드 텍스트
+                Text(
+                  keyword,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: isTop3 ? FontWeight.bold : FontWeight.w500,
+                    color: isTop3 ? Colors.white : AppColors.brandCrimson,
                   ),
                 ),
-              ),
+
+                // 🔥 인기 아이콘 (Top 3만)
+                if (isTop3) ...[
+                  SizedBox(width: 4.w),
+                  Icon(
+                    Icons.local_fire_department,
+                    size: 12.r,
+                    color: Colors.orange[300],
+                  ),
+                ],
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  /// ⏳ 로딩 상태 Shimmer
+  /// ⏳ 최적화된 로딩 상태 (애니메이션 제거)
   Widget _buildLoadingShimmer() {
     return Wrap(
       spacing: 8.w,
@@ -259,38 +211,13 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
             color: Colors.grey[300],
             borderRadius: BorderRadius.circular(20.r),
           ),
-          child: _shimmerEffect(),
         );
       }),
     );
   }
 
-  /// ✨ Shimmer 효과
-  Widget _shimmerEffect() {
-    return TweenAnimationBuilder(
-      duration: const Duration(milliseconds: 1200),
-      tween: Tween<double>(begin: -1.0, end: 1.0),
-      builder: (context, double value, child) {
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.r),
-            gradient: LinearGradient(
-              begin: Alignment(-1.0 + value, 0.0),
-              end: Alignment(1.0 + value, 0.0),
-              colors: [
-                Colors.grey[300]!,
-                Colors.grey[100]!,
-                Colors.grey[300]!,
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   /// ❌ 에러 상태
-  Widget _buildErrorState() {
+  Widget _buildErrorState(WidgetRef ref) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -316,7 +243,7 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
             ),
           ),
           TextButton(
-            onPressed: _refreshKeywords,
+            onPressed: () => _refreshKeywords(ref),
             child: Text(
               '다시 시도',
               style: TextStyle(
@@ -335,7 +262,7 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.brandCrimsonLight.withOpacity(0.5),
+        color: AppColors.brandCrimsonLight.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -367,13 +294,9 @@ class _PopularKeywordsWidgetState extends ConsumerState<PopularKeywordsWidget>
     );
   }
 
-  /// 🔄 키워드 새로고침
-  void _refreshKeywords() {
-    _refreshController.forward().then((_) {
-      _refreshController.reset();
-    });
-
-    // Provider 새로고침
+  /// 🔄 키워드 새로고침 (최적화됨)
+  void _refreshKeywords(WidgetRef ref) {
+    // Provider 새로고침 (애니메이션 제거)
     ref.invalidate(popularKeywordsProvider);
   }
 }

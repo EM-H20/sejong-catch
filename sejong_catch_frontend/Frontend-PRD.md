@@ -6,7 +6,7 @@
 - ✅ **정보 통합**: 공모전·취업·논문·공지사항을 한 곳에서
 - ✅ **맞춤형 추천**: 학과/관심사 기반 스마트 필터링
 - ✅ **신뢰성 보장**: 출처별 신뢰도 및 우선순위 시각화
-- ✅ **대기열 관리**: 인기 정보의 스마트 줄서기 시스템
+- ✅ **스마트 줄서기**: 축제/행사 운영자가 만든 큐에 실시간 줄서기
 
 ---
 
@@ -201,14 +201,48 @@ lib/
 ### Bottom Navigation (4개 탭)
 1. **피드** - 추천/마감임박/최신 + 무한 스크롤
 2. **검색** - 검색바 + 고급 필터 바텀시트
-3. **줄서기** - 대기열 관리 + 순번 확인 (Student 이상)
+3. **줄서기** - 축제/행사 큐 참여 + 실시간 순번 확인 (Student 이상)
 4. **프로필** - 권한 관리, 개인화 설정
 
 ### 권한 시스템 (RBAC)
 - **Guest**: 공개 정보 열람, 인증 유도
-- **Student**: 맞춤 추천, 줄서기, 히스토리
-- **Operator**: 수집 규칙, 제외어 관리
+- **Student**: 맞춤 추천, 큐 줄서기, 순번 확인
+- **Operator**: 큐 생성/관리, 수집 규칙 관리
 - **Admin**: 통계 대시보드, 권한 로그
+
+### 🎪 줄서기 시스템 (축제/행사 큐 관리)
+
+#### 운영자(Operator) 기능
+- **큐 생성**: 치킨부스, 주점, 버스킹, 게임존 등 축제 부스 큐 생성
+- **큐 관리**: 활성화/일시중지/종료, 최대 인원 조정
+- **참가자 관리**: 순번 호출, 완료 처리, 실시간 공지사항 업데이트
+- **상태 제어**: active(운영중), paused(일시중지), full(만원), closed(종료)
+
+#### 일반 사용자(Student/Guest) 기능
+- **큐 목록**: 현재 활성화된 축제/행사 큐 실시간 조회
+- **큐 참여**: 원하는 큐에 줄서기 (Guest는 로그인 유도)
+- **실시간 확인**: 내 순번, 앞 대기인원, 예상 대기시간
+- **알림**: 순번 호출 시 알림 (진동/사운드)
+
+#### 큐 데이터 구조
+```dart
+class QueueItem {
+  final String id;
+  final String title;              // "BBQ 치킨부스 🔥"
+  final String description;        // 부스 설명
+  final String type;               // food, drink, event, game, photo, other
+  final String location;           // "중앙광장 A구역"
+  final QueueStatus status;        // active, paused, full, closed
+  final String operatorId;         // 운영자 ID
+  final String operatorName;       // "치킨왕 박사장"
+  final int maxCapacity;           // 최대 수용 인원
+  final int currentCount;          // 현재 대기 인원
+  final int averageWaitTime;       // 평균 대기 시간 (분)
+  final DateTime startTime;        // 운영 시작 시간
+  final DateTime endTime;          // 운영 종료 시간
+  final String? notice;            // 실시간 공지사항
+}
+```
 
 ### 신뢰도 & 우선순위 시스템
 - **TrustBadge**: Official(Shield) > Academic > Press > Community
@@ -263,13 +297,13 @@ lib/
 
 ### 기능 피드백
 - **북마크 성공**: "북마크에 담았어요. 마감 전에 확인해드릴게요"
-- **줄서기 추가**: "대기열에 추가했어요. 순서가 되면 알려드릴게요"
+- **줄서기 추가**: "치킨부스 대기열에 추가했어요! 5번째 순번이에요"
 - **중복 통합**: "유사 공지를 묶어 깔끔하게 정리했어요"
 
 ### 에러 & 빈 상태
 - **네트워크 오류**: "인터넷 연결을 확인해주세요"
 - **빈 검색**: "검색 결과가 없어요. 다른 키워드로 시도해보세요"
-- **빈 대기열**: "아직 대기 중인 항목이 없어요"
+- **빈 큐**: "운영 중인 부스가 없어요. 축제 때 다시 확인해보세요!"
 
 ---
 

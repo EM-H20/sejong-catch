@@ -11,7 +11,7 @@ import '../../controllers/feed_controller.dart';
 ///
 /// 치킨집 메뉴판보다 직관적이고 BTS처럼 완벽한 하모니를 이루는 필터!
 /// 사용자 친화적 기능:
-/// - 부드러운 SlideTransition 애니메이션
+/// - 즉시 반응하는 고속 선택
 /// - 선택된 카테고리 크림슨 하이라이트
 /// - 뱃지로 새 항목 수 표시
 /// - 햅틱 피드백
@@ -68,7 +68,7 @@ class CategoryFilterBar extends ConsumerWidget {
   }
 }
 
-/// 개별 카테고리 칩 위젯
+/// 개별 카테고리 칩 위젯 (최적화됨)
 class _CategoryChip extends StatefulWidget {
   final FeedCategory category;
   final bool isSelected;
@@ -86,32 +86,8 @@ class _CategoryChip extends StatefulWidget {
   State<_CategoryChip> createState() => _CategoryChipState();
 }
 
-class _CategoryChipState extends State<_CategoryChip>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+class _CategoryChipState extends State<_CategoryChip> {
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -123,27 +99,17 @@ class _CategoryChipState extends State<_CategoryChip>
       button: true,
       selected: widget.isSelected,
       child: GestureDetector(
-        onTapDown: (_) => _animationController.forward(),
-        onTapUp: (_) => _animationController.reverse(),
-        onTapCancel: () => _animationController.reverse(),
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
         onTap: widget.onTap,
-        child: AnimatedBuilder(
-          animation: _scaleAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: _buildChipContent(),
-            );
-          },
-        ),
+        child: _buildChipContent(),
       ),
     );
   }
 
   Widget _buildChipContent() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
+    return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: _getBackgroundColor(),
@@ -224,12 +190,16 @@ class _CategoryChipState extends State<_CategoryChip>
     }
   }
 
-  /// 배경색 계산
+  /// 배경색 계산 (눌림 상태 반영)
   Color _getBackgroundColor() {
     if (widget.isSelected) {
-      return AppColors.brandCrimson;
+      return _isPressed
+          ? AppColors.brandCrimsonDark
+          : AppColors.brandCrimson;
     }
-    return Colors.white;
+    return _isPressed
+        ? AppColors.brandCrimsonLight
+        : Colors.white;
   }
 
   /// 테두리 색상 계산

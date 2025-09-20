@@ -108,7 +108,8 @@ class AppRouter {
         final currentPath = state.uri.path;
 
         // ✅ 온보딩 페이지나 인증 페이지는 리디렉션 하지 않음
-        if (currentPath == AppRoutes.onboarding || currentPath == AppRoutes.auth) {
+        if (currentPath == AppRoutes.onboarding ||
+            currentPath == AppRoutes.auth) {
           return null;
         }
 

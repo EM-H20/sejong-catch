@@ -128,7 +128,7 @@ class OnboardingController extends _$OnboardingController {
       state = state.copyWith(isLoading: true, error: null);
 
       final service = ref.read(onboardingServiceProvider);
-      await service.setOnboardingCompleted(force: true);
+      await service.setOnboardingCompleted(force: false);
 
       // ✅ 성공적으로 완료되면 isLoading을 false로 변경
       state = state.copyWith(isLoading: false);

@@ -142,22 +142,39 @@ lib/features/search/
     └── recent_keywords.dart       # 최근 검색어
 ```
 
-### 🚶‍♂️ 줄서기 페이지
+### 🎪 줄서기 페이지 (축제/행사 큐 시스템)
 ```
 lib/features/queue/
-├── controllers/
-│   └── queue_controller.dart       # 대기열 상태, 순번 관리
-├── models/
-│   ├── queue_item.dart            # 일반 클래스: 대기열 아이템
-│   └── queue_status.dart          # 일반 클래스: 대기중/진행중/완료
-├── pages/
-│   └── queue_page.dart            # 탭별 대기열 리스트
-├── services/
-│   └── queue_service.dart         # 순번 계산, 알림 스케줄링
-└── widgets/ui/
-    ├── queue_tab_view.dart        # 상태별 탭
-    ├── queue_item_card.dart       # 순번, D-day, 진행률
-    └── queue_actions.dart         # 제거/설정 액션
+├── data/
+│   ├── models/
+│   │   ├── queue_model.dart        # 큐 데이터 모델 (일반 클래스)
+│   │   ├── participant_model.dart  # 참가자 모델
+│   │   └── queue_state.dart        # 큐 상태 모델
+│   ├── repositories/
+│   │   └── queue_repository_impl.dart # Repository 구현체
+│   └── datasources/
+│       └── queue_local_datasource.dart # Mock 데이터 소스
+├── domain/
+│   ├── entities/
+│   │   ├── queue_entity.dart       # 큐 엔티티
+│   │   └── participant_entity.dart # 참가자 엔티티
+│   └── repositories/
+│       └── queue_repository.dart   # Repository 인터페이스
+└── presentation/
+    ├── controllers/
+    │   ├── queue_controller.dart   # 큐 목록 상태 관리
+    │   ├── queue_detail_controller.dart # 상세 상태 관리
+    │   └── queue_create_controller.dart # 생성 상태 관리 (Operator용)
+    ├── pages/
+    │   ├── queue_page.dart         # 메인 큐 목록 (리팩토링)
+    │   ├── queue_detail_page.dart  # 큐 상세 & 줄서기
+    │   ├── queue_create_page.dart  # 운영자용 큐 생성
+    │   └── queue_manage_page.dart  # 운영자용 관리 대시보드
+    └── widgets/ui/
+        ├── queue_card.dart         # 큐 카드 컴포넌트
+        ├── participant_list.dart   # 참가자 목록 (운영자용)
+        ├── queue_status_badge.dart # 상태 뱃지 (active/paused/full)
+        └── operator_fab.dart       # 운영자 전용 FAB 버튼
 ```
 
 ### 👤 프로필 페이지

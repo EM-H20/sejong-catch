@@ -36,22 +36,34 @@ class OnboardingService {
   Future<void> setOnboardingCompleted({bool force = false}) async {
     await _prefs.setBool(_onboardingCompletedKey, true);
 
-    // 🎯 force 모드인 경우 개발 모드와 상관없이 완료 상태 저장
+    // 🎯 force 모드인 경우에만 개발 모드와 상관없이 완료 상태 저장
     if (force) {
       await _prefs.setBool(_forceCompletedKey, true);
-    }
-
-    // 🎯 개발 모드에서도 온보딩을 완료할 수 있도록 개발 모드 플래그 임시 해제
-    if (force || AppModeManager.shouldShowOnboardingAlways) {
-      // 개발 모드 플래그를 임시로 false로 설정하여 온보딩 완료 허용
+      // force 모드에서만 개발 모드 플래그 해제 (테스트/프로덕션용)
       await _prefs.setBool(_devModeKey, false);
     }
+
+    // 🚀 개발 모드에서는 force가 아닌 경우 개발 모드 플래그 유지
+    // 이렇게 하면 다음 실행 시에도 온보딩이 나타남
   }
 
   /// 온보딩 상태 초기화 (테스트용)
   Future<void> resetOnboarding() async {
     await _prefs.remove(_onboardingCompletedKey);
     await _prefs.remove(_forceCompletedKey);
+    await _prefs.remove(_devModeKey);
+  }
+
+  /// 개발모드 전용: 완전 초기화 (모든 온보딩 관련 설정 제거)
+  Future<void> resetAllOnboardingSettings() async {
+    if (AppModeManager.isDevelopment) {
+      await _prefs.remove(_onboardingCompletedKey);
+      await _prefs.remove(_forceCompletedKey);
+      await _prefs.remove(_devModeKey);
+
+      // 개발모드 플래그 다시 설정 (디버그 빌드에서 온보딩 항상 표시)
+      await _prefs.setBool(_devModeKey, true);
+    }
   }
 
   /// 개발 모드 확인

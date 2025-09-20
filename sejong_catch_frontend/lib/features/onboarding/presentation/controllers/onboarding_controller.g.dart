@@ -7,7 +7,7 @@ part of 'onboarding_controller.dart';
 // **************************************************************************
 
 String _$onboardingControllerHash() =>
-    r'48db8a8f6cc39d4b93a5f2077587da788f10d60b';
+    r'8a1decf506b28040598a561c79b19394ca4d147d';
 
 /// 온보딩 컨트롤러 (Riverpod 3.0 패턴)
 ///
