@@ -11,7 +11,9 @@ import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/onboarding/presentation/pages/toss_style_onboarding_page.dart';
 import '../../features/onboarding/data/services/onboarding_service.dart';
+import '../../features/queue/presentation/pages/queue_create_page.dart';
 
 /// 🧭 세종 캐치 앱의 GoRouter 중앙 설정
 ///
@@ -41,6 +43,17 @@ class AppRouter {
               path: AppRoutes.feed,
               name: 'feed',
               builder: (context, state) => const FeedPage(),
+              routes: [
+                // 📄 상세 페이지 (피드 하위 페이지, BottomNav 유지)
+                GoRoute(
+                  path: 'detail/:id',
+                  name: 'feed_detail',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id']!;
+                    return DetailPage(id: id);
+                  },
+                ),
+              ],
             ),
 
             // 🔍 검색 탭
@@ -48,6 +61,17 @@ class AppRouter {
               path: AppRoutes.search,
               name: 'search',
               builder: (context, state) => const SearchPage(),
+              routes: [
+                // 📄 검색 결과 상세 페이지 (검색 하위 페이지)
+                GoRoute(
+                  path: 'detail/:id',
+                  name: 'search_detail',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id']!;
+                    return DetailPage(id: id);
+                  },
+                ),
+              ],
             ),
 
             // 📋 줄서기 탭 (Student 이상 권한 필요)
@@ -55,7 +79,15 @@ class AppRouter {
               path: AppRoutes.queue,
               name: 'queue',
               builder: (context, state) => const QueuePage(),
-              // TODO: redirect를 통한 권한 가드 추가 예정
+              routes: [
+                // 🎪 큐 생성 페이지 (줄서기 하위 페이지, BottomNav 유지)
+                GoRoute(
+                  path: 'create',
+                  name: 'queue_create',
+                  builder: (context, state) => const QueueCreatePage(),
+                  // TODO: redirect를 통한 운영자 권한 가드 추가 예정
+                ),
+              ],
             ),
 
             // 👤 프로필 탭 (Student 이상 권한 필요)
@@ -63,7 +95,14 @@ class AppRouter {
               path: AppRoutes.profile,
               name: 'profile',
               builder: (context, state) => const ProfilePage(),
-              // TODO: redirect를 통한 권한 가드 추가 예정
+              routes: [
+                // ⚙️ 설정 페이지 (프로필 하위 페이지, BottomNav 유지)
+                GoRoute(
+                  path: 'settings',
+                  name: 'profile_settings',
+                  builder: (context, state) => const SettingsPage(),
+                ),
+              ],
             ),
           ],
         ),
@@ -82,22 +121,17 @@ class AppRouter {
           builder: (context, state) => const OnboardingPage(),
         ),
 
-        // 📄 상세 페이지 (독립 페이지)
+        // 🚀 Toss-Style 온보딩 페이지 (새로운 버전)
         GoRoute(
-          path: '${AppRoutes.detail}/:id',
-          name: 'detail',
-          builder: (context, state) {
-            final id = state.pathParameters['id']!;
-            return DetailPage(id: id);
-          },
+          path: AppRoutes.tossOnboarding,
+          name: 'toss_onboarding',
+          builder: (context, state) => const TossStyleOnboardingPage(),
         ),
 
-        // ⚙️ 설정 페이지 (독립 페이지)
-        GoRoute(
-          path: AppRoutes.settings,
-          name: 'settings',
-          builder: (context, state) => const SettingsPage(),
-        ),
+        // ⚠️ 주의: 위의 nested routes로 이동됨
+        // 상세 페이지: /feed/detail/:id, /search/detail/:id
+        // 설정 페이지: /profile/settings
+        // 큐 생성: /queue/create
 
         // 🔧 관리자 콘솔 ShellRoute (별도 네비게이션)
         // TODO: 향후 Operator/Admin 권한용 콘솔 구현 예정
@@ -108,7 +142,8 @@ class AppRouter {
         final currentPath = state.uri.path;
 
         // ✅ 온보딩 페이지나 인증 페이지는 리디렉션 하지 않음
-        if (currentPath == AppRoutes.onboarding ||
+        if (currentPath == AppRoutes.tossOnboarding ||
+            currentPath == AppRoutes.onboarding ||
             currentPath == AppRoutes.auth) {
           return null;
         }
@@ -119,12 +154,12 @@ class AppRouter {
           final isCompleted = await onboardingService.isOnboardingCompleted();
 
           if (!isCompleted) {
-            return AppRoutes.onboarding;
+            return AppRoutes.tossOnboarding;
           }
         } catch (e) {
           // 🛡️ 서비스 오류 시 한 번만 온보딩으로 보내고, 이후 무한 루프 방지
-          if (currentPath != AppRoutes.onboarding) {
-            return AppRoutes.onboarding;
+          if (currentPath != AppRoutes.tossOnboarding) {
+            return AppRoutes.tossOnboarding;
           }
         }
 
@@ -207,19 +242,14 @@ class AppRouter {
         builder: (context, state) => const OnboardingPage(),
       ),
       GoRoute(
-        path: '${AppRoutes.detail}/:id',
-        name: 'detail',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return DetailPage(id: id);
-        },
+        path: AppRoutes.tossOnboarding,
+        name: 'toss_onboarding',
+        builder: (context, state) => const TossStyleOnboardingPage(),
       ),
-
-      GoRoute(
-        path: AppRoutes.settings,
-        name: 'settings',
-        builder: (context, state) => const SettingsPage(),
-      ),
+      // ⚠️ 주의: nested routes로 이동됨
+      // 상세 페이지: /feed/detail/:id, /search/detail/:id
+      // 설정 페이지: /profile/settings
+      // 큐 생성: /queue/create
     ],
   );
 }

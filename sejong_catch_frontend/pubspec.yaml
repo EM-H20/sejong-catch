@@ -50,6 +50,11 @@ dependencies:
   infinite_scroll_pagination: ^5.1.1 # 무한 스크롤 페이징 처리
   pull_to_refresh: ^2.0.0            # 당겨서 새로고침 UI 패턴
 
+  # 애니메이션 & 모션 (Toss-Style 온보딩)
+  lottie: ^3.1.2                     # Lottie 애니메이션 지원
+  flutter_animate: ^4.5.2            # 고급 애니메이션 효과
+  flutter_staggered_animations: ^1.1.1 # 순차 애니메이션 효과
+
   # # 알림 & 실시간 통신 - 패키지 에러 발생
   firebase_core: ^4.1.0
   firebase_messaging: ^16.0.1        # 푸시 알림(Firebase Cloud Messaging)

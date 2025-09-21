@@ -7,6 +7,7 @@
 /// ✅ 큐 상태 변경 (활성/일시정지/마감/종료)
 /// ✅ 통계 대시보드
 /// ✅ 86% 코드 감소 패턴 적용
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,10 +24,7 @@ import '../widgets/ui/queue_stats_panel.dart';
 class QueueManagePage extends ConsumerStatefulWidget {
   final String queueId;
 
-  const QueueManagePage({
-    super.key,
-    required this.queueId,
-  });
+  const QueueManagePage({super.key, required this.queueId});
 
   @override
   ConsumerState<QueueManagePage> createState() => _QueueManagePageState();
@@ -74,8 +72,8 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
               controller: _tabController,
               children: [
                 _buildParticipantsList(), // 대기자 목록
-                _buildStatsPanel(),       // 통계 대시보드
-                _buildSettingsPanel(),    // 설정 패널
+                _buildStatsPanel(), // 통계 대시보드
+                _buildSettingsPanel(), // 설정 패널
               ],
             ),
           ),
@@ -93,11 +91,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
       elevation: 0,
       leading: IconButton(
         onPressed: () => context.pop(),
-        icon: Icon(
-          Icons.arrow_back,
-          color: AppColors.textPrimary,
-          size: 24.sp,
-        ),
+        icon: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 24.sp),
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,10 +107,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
           if (state.selectedQueue != null)
             Text(
               state.selectedQueue!.title,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
             ),
         ],
       ),
@@ -126,11 +117,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
           onPressed: () => ref
               .read(queueManageControllerProvider(widget.queueId).notifier)
               .refresh(),
-          icon: Icon(
-            Icons.refresh,
-            color: AppColors.brandCrimson,
-            size: 24.sp,
-          ),
+          icon: Icon(Icons.refresh, color: AppColors.brandCrimson, size: 24.sp),
         ),
         SizedBox(width: 8.w),
       ],
@@ -162,12 +149,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
-          ),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
       ),
       child: TabBar(
         controller: _tabController,
@@ -286,39 +268,33 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 큐 기본 설정
-          _buildSettingsSection(
-            '기본 설정',
-            [
-              _buildSettingsTile(
-                '최대 대기자 수',
-                '${state.selectedQueue?.maxCapacity ?? 0}명',
-                Icons.people,
-                onTap: () => _showCapacityDialog(),
-              ),
-              _buildSettingsTile(
-                '평균 서비스 시간',
-                '${state.selectedQueue?.averageWaitTime ?? 0}분',
-                Icons.timer,
-                onTap: () => _showServiceTimeDialog(),
-              ),
-            ],
-          ),
+          _buildSettingsSection('기본 설정', [
+            _buildSettingsTile(
+              '최대 대기자 수',
+              '${state.selectedQueue?.maxCapacity ?? 0}명',
+              Icons.people,
+              onTap: () => _showCapacityDialog(),
+            ),
+            _buildSettingsTile(
+              '평균 서비스 시간',
+              '${state.selectedQueue?.averageWaitTime ?? 0}분',
+              Icons.timer,
+              onTap: () => _showServiceTimeDialog(),
+            ),
+          ]),
 
           SizedBox(height: 24.h),
 
           // 위험 영역
-          _buildSettingsSection(
-            '위험 영역',
-            [
-              _buildSettingsTile(
-                '모든 대기자 취소',
-                '큐를 초기화합니다',
-                Icons.warning,
-                isDestructive: true,
-                onTap: () => _showClearQueueDialog(),
-              ),
-            ],
-          ),
+          _buildSettingsSection('위험 영역', [
+            _buildSettingsTile(
+              '모든 대기자 취소',
+              '큐를 초기화합니다',
+              Icons.warning,
+              isDestructive: true,
+              onTap: () => _showClearQueueDialog(),
+            ),
+          ]),
         ],
       ),
     );
@@ -344,7 +320,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
             borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -372,7 +348,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
         width: 40.w,
         height: 40.w,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: Icon(icon, color: color, size: 20.sp),
@@ -387,16 +363,9 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(
-          fontSize: 12.sp,
-          color: Colors.grey[600],
-        ),
+        style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
       ),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: Colors.grey[400],
-        size: 20.sp,
-      ),
+      trailing: Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
     );
   }
 
@@ -411,9 +380,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
         content: const Text('참가자를 호출했어요! 📢'),
         backgroundColor: AppColors.brandCrimson,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       ),
     );
   }
@@ -429,9 +396,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
         content: const Text('서비스 완료 처리했어요! ✅'),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       ),
     );
   }
@@ -449,10 +414,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              '취소',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
+            child: Text('취소', style: TextStyle(color: Colors.grey[600])),
           ),
           TextButton(
             onPressed: () {
@@ -472,10 +434,7 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
                 ),
               );
             },
-            child: Text(
-              '제거하기',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: Text('제거하기', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -485,17 +444,17 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
   /// 📋 최대 인원 설정 다이얼로그
   void _showCapacityDialog() {
     // TODO: 구현
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('최대 인원 설정 기능 준비중')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('최대 인원 설정 기능 준비중')));
   }
 
   /// ⏱️ 서비스 시간 설정 다이얼로그
   void _showServiceTimeDialog() {
     // TODO: 구현
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('서비스 시간 설정 기능 준비중')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('서비스 시간 설정 기능 준비중')));
   }
 
   /// 🚨 큐 초기화 확인 다이얼로그
@@ -510,19 +469,14 @@ class _QueueManagePageState extends ConsumerState<QueueManagePage>
             const Text('위험한 작업'),
           ],
         ),
-        content: const Text(
-          '모든 대기자를 취소하고 큐를 초기화합니다.\n이 작업은 되돌릴 수 없어요.',
-        ),
+        content: const Text('모든 대기자를 취소하고 큐를 초기화합니다.\n이 작업은 되돌릴 수 없어요.'),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              '취소',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
+            child: Text('취소', style: TextStyle(color: Colors.grey[600])),
           ),
           TextButton(
             onPressed: () {

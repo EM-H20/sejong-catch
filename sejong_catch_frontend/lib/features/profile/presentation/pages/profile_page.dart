@@ -7,6 +7,7 @@ import '../../../../app/config/app_routes.dart';
 import '../../../../core/config/app_mode.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../../onboarding/data/services/onboarding_service.dart';
+import '../../../onboarding/data/models/interest.dart';
 import '../widgets/ui/user_profile_card.dart';
 import '../widgets/ui/activity_stats_card.dart';
 import '../../../../core/widgets/cards/menu_card.dart';
@@ -71,7 +72,7 @@ class ProfilePage extends ConsumerWidget {
               MenuItem(
                 icon: Icons.filter_list,
                 title: '관심 분야 설정',
-                onTap: () => _showNotImplementedSnackBar(context, '관심 분야 설정'),
+                onTap: () => _showInterestSettingsDialog(context),
               ),
               MenuItem(
                 icon: Icons.download,
@@ -167,6 +168,14 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
+  /// 🎯 관심사 설정 다이얼로그
+  void _showInterestSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => _InterestSettingsDialog(),
+    );
+  }
+
   /// 🚪 로그아웃 다이얼로그
   void _showLogoutDialog(BuildContext context) {
     showDialog(
@@ -249,5 +258,295 @@ class ProfilePage extends ConsumerWidget {
   /// 🚫 미구현 기능 안내 (공통 에러 핸들러 사용)
   void _showNotImplementedSnackBar(BuildContext context, String feature) {
     ErrorHandler.showNotImplementedSnackBar(context, feature);
+  }
+}
+
+/// 🎯 관심사 설정 다이얼로그 위젯
+class _InterestSettingsDialog extends StatefulWidget {
+  @override
+  State<_InterestSettingsDialog> createState() => _InterestSettingsDialogState();
+}
+
+class _InterestSettingsDialogState extends State<_InterestSettingsDialog> {
+  final Set<Interest> _selectedInterests = {};
+
+  // 🎯 추천 관심사 데이터 (InterestData에서 가져오기)
+  final List<Interest> _allInterests = [
+    // 진로/취업
+    const Interest(
+      id: 'job_fair',
+      name: '취업박람회',
+      emoji: '💼',
+      category: InterestCategory.career,
+      description: '기업 채용 설명회 및 면접 기회',
+      relatedKeywords: ['채용', '면접', '구직'],
+    ),
+    const Interest(
+      id: 'internship',
+      name: '인턴십',
+      emoji: '👔',
+      category: InterestCategory.career,
+      description: '실무 경험 및 취업 준비',
+      relatedKeywords: ['인턴', '실습', '경험'],
+    ),
+
+    // 공모전/대회
+    const Interest(
+      id: 'programming_contest',
+      name: '프로그래밍 대회',
+      emoji: '💻',
+      category: InterestCategory.contest,
+      description: 'AI, 개발, 해커톤 등 프로그래밍 경진대회',
+      relatedKeywords: ['프로그래밍', '코딩', '해커톤'],
+    ),
+    const Interest(
+      id: 'design_contest',
+      name: '디자인 공모전',
+      emoji: '🎨',
+      category: InterestCategory.contest,
+      description: '시각, 제품, UX/UI 디자인 공모전',
+      relatedKeywords: ['디자인', '시각', 'UI'],
+    ),
+
+    // 장학금/지원
+    const Interest(
+      id: 'scholarship',
+      name: '성적우수 장학금',
+      emoji: '🏆',
+      category: InterestCategory.scholarship,
+      description: '학업 성취도 기반 장학 혜택',
+      relatedKeywords: ['장학금', '성적', '학업'],
+    ),
+
+    // 동아리/모임
+    const Interest(
+      id: 'tech_club',
+      name: 'IT/개발 동아리',
+      emoji: '⚡',
+      category: InterestCategory.club,
+      description: '프로그래밍 및 기술 관련 동아리',
+      relatedKeywords: ['IT', '개발', '프로그래밍'],
+    ),
+
+    // 문화/행사
+    const Interest(
+      id: 'festival',
+      name: '대학 축제',
+      emoji: '🎪',
+      category: InterestCategory.culture,
+      description: '학교 축제 및 문화 행사',
+      relatedKeywords: ['축제', '문화', '행사'],
+    ),
+
+    // 봉사/사회
+    const Interest(
+      id: 'volunteer',
+      name: '봉사활동',
+      emoji: '❤️',
+      category: InterestCategory.volunteer,
+      description: '지역사회 봉사 및 나눔 활동',
+      relatedKeywords: ['봉사', '나눔', '지역사회'],
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Container(
+        width: double.infinity,
+        constraints: BoxConstraints(maxHeight: 600.h),
+        padding: EdgeInsets.all(24.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 제목
+            Row(
+              children: [
+                Icon(
+                  Icons.filter_list,
+                  color: const Color(0xFFDC143C),
+                  size: 24.sp,
+                ),
+                SizedBox(width: 12.w),
+                Text(
+                  '관심 분야 설정',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1F2937),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 8.h),
+
+            Text(
+              '최대 5개까지 선택할 수 있어요',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // 관심사 목록
+            Expanded(
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: 8.w,
+                  runSpacing: 8.h,
+                  children: _allInterests.map((interest) {
+                    final isSelected = _selectedInterests.contains(interest);
+                    return _buildInterestChip(interest, isSelected);
+                  }).toList(),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // 선택된 개수 표시
+            Row(
+              children: [
+                Text(
+                  '선택됨: ${_selectedInterests.length}/5',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                    color: _selectedInterests.length > 5
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 16.h),
+
+            // 버튼들
+            Row(
+              children: [
+                // 취소 버튼
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: const Color(0xFFE5E7EB)),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    child: Text(
+                      '취소',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: const Color(0xFF374151),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 12.w),
+
+                // 저장 버튼
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _selectedInterests.length <= 5
+                        ? () => _saveInterests()
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFDC143C),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    child: Text(
+                      '저장',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInterestChip(Interest interest, bool isSelected) {
+    return GestureDetector(
+      onTap: () => _toggleInterest(interest),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 16.w,
+          vertical: 8.h,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFFDC143C)
+              : const Color(0xFFF9FAFB),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFFDC143C)
+                : const Color(0xFFE5E7EB),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              interest.emoji,
+              style: TextStyle(fontSize: 14.sp),
+            ),
+            SizedBox(width: 6.w),
+            Text(
+              interest.name,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : const Color(0xFF374151),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _toggleInterest(Interest interest) {
+    setState(() {
+      if (_selectedInterests.contains(interest)) {
+        _selectedInterests.remove(interest);
+      } else if (_selectedInterests.length < 5) {
+        _selectedInterests.add(interest);
+      }
+    });
+  }
+
+  void _saveInterests() {
+    // TODO: 실제로는 여기서 API 호출하여 관심사 저장
+    Navigator.of(context).pop();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('관심 분야가 저장되었어요 (${_selectedInterests.length}개)'),
+        backgroundColor: const Color(0xFFDC143C),
+      ),
+    );
   }
 }

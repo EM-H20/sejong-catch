@@ -93,7 +93,7 @@ class ParticipantListItem extends ConsumerWidget {
             '번',
             style: TextStyle(
               fontSize: 10.sp,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
         ],
@@ -211,7 +211,7 @@ class ParticipantListItem extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color: timeColor.withOpacity(0.1),
+        color: timeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6.r),
       ),
       child: Row(
@@ -263,9 +263,9 @@ class ParticipantListItem extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.1),
+        color: chipColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4.r),
-        border: Border.all(color: chipColor.withOpacity(0.3)),
+        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
       ),
       child: Text(
         statusText,
@@ -340,7 +340,7 @@ class ParticipantListItem extends ConsumerWidget {
         child: IconButton(
           onPressed: onPressed,
           style: IconButton.styleFrom(
-            backgroundColor: color.withOpacity(0.1),
+            backgroundColor: color.withValues(alpha: 0.1),
             padding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.r),
@@ -365,7 +365,7 @@ class ParticipantListItem extends ConsumerWidget {
       case ParticipantStatus.serving:
         return AppColors.success;
       case ParticipantStatus.completed:
-        return AppColors.success.withOpacity(0.7);
+        return AppColors.success.withValues(alpha: 0.7);
       case ParticipantStatus.cancelled:
         return Colors.grey;
     }
@@ -378,10 +378,10 @@ class ParticipantListItem extends ConsumerWidget {
         return Colors.white;
       case ParticipantStatus.called:
         return participant.isCallExpired
-            ? AppColors.error.withOpacity(0.05)
-            : AppColors.brandCrimsonLight.withOpacity(0.3);
+            ? AppColors.error.withValues(alpha: 0.05)
+            : AppColors.brandCrimsonLight.withValues(alpha: 0.3);
       case ParticipantStatus.serving:
-        return AppColors.success.withOpacity(0.05);
+        return AppColors.success.withValues(alpha: 0.05);
       case ParticipantStatus.completed:
       case ParticipantStatus.cancelled:
         return Colors.grey[50]!;
@@ -392,16 +392,16 @@ class ParticipantListItem extends ConsumerWidget {
   Color _getBorderColor() {
     switch (participant.status) {
       case ParticipantStatus.waiting:
-        return Colors.orange.withOpacity(0.3);
+        return Colors.orange.withValues(alpha: 0.3);
       case ParticipantStatus.called:
         return participant.isCallExpired
-            ? AppColors.error.withOpacity(0.3)
-            : AppColors.brandCrimson.withOpacity(0.3);
+            ? AppColors.error.withValues(alpha: 0.3)
+            : AppColors.brandCrimson.withValues(alpha: 0.3);
       case ParticipantStatus.serving:
-        return AppColors.success.withOpacity(0.3);
+        return AppColors.success.withValues(alpha: 0.3);
       case ParticipantStatus.completed:
       case ParticipantStatus.cancelled:
-        return Colors.grey.withOpacity(0.2);
+        return Colors.grey.withValues(alpha: 0.2);
     }
   }
 }

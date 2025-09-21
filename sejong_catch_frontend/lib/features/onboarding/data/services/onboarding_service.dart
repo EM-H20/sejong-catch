@@ -19,16 +19,7 @@ class OnboardingService {
       return true;
     }
 
-    // 🎯 전역 AppMode에서 개발 모드 확인 - 개발 모드에서는 항상 온보딩 표시
-    if (AppModeManager.shouldShowOnboardingAlways) {
-      return false;
-    }
-
-    // 레거시 개발 모드 설정도 확인 (하위 호환성)
-    if (isDevMode()) {
-      return false;
-    }
-
+    // 🎯 온보딩 완료 상태 확인 (개발 모드 강제 표시 비활성화)
     return _prefs.getBool(_onboardingCompletedKey) ?? false;
   }
 

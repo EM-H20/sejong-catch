@@ -40,35 +40,8 @@ class OnboardingFooter extends ConsumerWidget {
             // 버튼 영역
             Row(
               children: [
-                // 건너뛰기 버튼 (마지막 페이지가 아닐 때만 표시)
-                if (!controller.isLastPage)
-                  Expanded(
-                    child: TextButton(
-                      onPressed: state.isLoading
-                          ? null
-                          : () => controller.skipOnboarding(context),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                      ),
-                      child: Text(
-                        '건너뛰기',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF6B7280),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                if (!controller.isLastPage) SizedBox(width: 16.w),
-
                 // 다음/시작하기 버튼
                 Expanded(
-                  flex: controller.isLastPage ? 1 : 2,
                   child: ElevatedButton(
                     onPressed: state.isLoading
                         ? null

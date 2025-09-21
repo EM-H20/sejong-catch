@@ -13,6 +13,11 @@ class AppRoutes {
   static const String queue = '/queue';
   static const String profile = '/profile';
 
+  // 🎪 큐 관련 라우트
+  static const String queueCreate = '/queue/create';
+  static const String queueDetail = '/queue/detail';
+  static String queueDetailWithId(String id) => '$queueDetail/$id';
+
   // 🔐 인증 관련 라우트 (독립 페이지)
   static const String auth = '/auth';
   static const String login = '/auth/login';
@@ -20,6 +25,7 @@ class AppRoutes {
 
   // 📱 온보딩 & 설정 라우트
   static const String onboarding = '/onboarding';
+  static const String tossOnboarding = '/toss-onboarding'; // 🆕 Toss-Style 온보딩
   static const String settings = '/settings';
 
   // 📄 상세 페이지 라우트
@@ -53,5 +59,6 @@ class AppRoutes {
     login,
     register,
     onboarding,
+    tossOnboarding,
   ];
 }

@@ -70,9 +70,7 @@ class _SejongCatchAppState extends ConsumerState<SejongCatchApp> {
     super.didChangeDependencies();
     // 🎯 ProviderContainer와 연결된 라우터 생성
     // AppMode에 따른 동적 라우팅 설정
-    _router ??= AppRouter.createRouter(
-      ProviderScope.containerOf(context),
-    );
+    _router ??= AppRouter.createRouter(ProviderScope.containerOf(context));
   }
 
   @override
@@ -92,7 +90,8 @@ class _SejongCatchAppState extends ConsumerState<SejongCatchApp> {
       builder: (context, child) {
         return MaterialApp.router(
           // 🏷️ 앱 기본 정보
-          title: '세종 캐치 ${AppModeManager.isProduction ? '' : '(${AppModeManager.modeString})'}',
+          title:
+              '세종 캐치 ${AppModeManager.isProduction ? '' : '(${AppModeManager.modeString})'}',
           debugShowCheckedModeBanner: AppModeManager.showDeveloperTools,
 
           // 🎨 테마 설정 (크림슨 레드 디자인 시스템)
@@ -140,7 +139,9 @@ final class _RiverpodLogger extends ProviderObserver {
     Object? value,
     ProviderContainer container,
   ) {
-    AppLogger.debug('Riverpod Provider Added: ${provider.name ?? provider.runtimeType} = $value');
+    AppLogger.debug(
+      'Riverpod Provider Added: ${provider.name ?? provider.runtimeType} = $value',
+    );
   }
 
   @override
@@ -148,6 +149,8 @@ final class _RiverpodLogger extends ProviderObserver {
     ProviderBase<Object?> provider,
     ProviderContainer container,
   ) {
-    AppLogger.debug('Riverpod Provider Disposed: ${provider.name ?? provider.runtimeType}');
+    AppLogger.debug(
+      'Riverpod Provider Disposed: ${provider.name ?? provider.runtimeType}',
+    );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../controllers/onboarding_controller.dart';
 import '../widgets/onboarding_slide.dart';
@@ -38,21 +37,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          // 건너뛰기 버튼 (우상단)
-          if (!controller.isLastPage)
-            TextButton(
-              onPressed: () => controller.skipOnboarding(context),
-              child: Text(
-                '건너뛰기',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: const Color(0xFF6B7280),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-        ],
       ),
       body: Column(
         children: [

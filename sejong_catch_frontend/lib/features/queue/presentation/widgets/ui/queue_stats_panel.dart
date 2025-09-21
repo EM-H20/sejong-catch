@@ -8,6 +8,7 @@
 /// ✅ 시간대별 활동 패턴
 /// ✅ 완료율 및 취소율 통계
 /// ✅ ScreenUtil 반응형 적용
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,8 +60,12 @@ class QueueStatsPanel extends ConsumerWidget {
   /// 📊 주요 지표 행
   Widget _buildKeyMetricsRow() {
     final totalParticipants = participants.length;
-    final completedCount = participants.where((p) => p.status == ParticipantStatus.completed).length;
-    final completionRate = totalParticipants > 0 ? (completedCount / totalParticipants * 100) : 0.0;
+    final completedCount = participants
+        .where((p) => p.status == ParticipantStatus.completed)
+        .length;
+    final completionRate = totalParticipants > 0
+        ? (completedCount / totalParticipants * 100)
+        : 0.0;
 
     return Row(
       children: [
@@ -102,7 +107,7 @@ class QueueStatsPanel extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -138,10 +143,7 @@ class QueueStatsPanel extends ConsumerWidget {
             SizedBox(height: 4.h),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
             ),
           ],
         ],
@@ -159,7 +161,9 @@ class QueueStatsPanel extends ConsumerWidget {
       Column(
         children: ParticipantStatus.values.map((status) {
           final count = statusCounts[status] ?? 0;
-          final percentage = participants.isNotEmpty ? (count / participants.length * 100) : 0.0;
+          final percentage = participants.isNotEmpty
+              ? (count / participants.length * 100)
+              : 0.0;
 
           return _buildStatusRow(status, count, percentage);
         }).toList(),
@@ -168,7 +172,11 @@ class QueueStatsPanel extends ConsumerWidget {
   }
 
   /// 🟢 상태별 행
-  Widget _buildStatusRow(ParticipantStatus status, int count, double percentage) {
+  Widget _buildStatusRow(
+    ParticipantStatus status,
+    int count,
+    double percentage,
+  ) {
     final color = _getStatusColor(status);
     final statusText = _getStatusDisplayName(status);
 
@@ -176,9 +184,9 @@ class QueueStatsPanel extends ConsumerWidget {
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -217,14 +225,11 @@ class QueueStatsPanel extends ConsumerWidget {
           SizedBox(width: 8.w),
 
           // 퍼센트
-          Container(
+          SizedBox(
             width: 50.w,
             child: Text(
               '${percentage.toStringAsFixed(0)}%',
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
               textAlign: TextAlign.right,
             ),
           ),
@@ -235,8 +240,12 @@ class QueueStatsPanel extends ConsumerWidget {
 
   /// ⏰ 시간 분석
   Widget _buildTimeAnalysis() {
-    final waitingParticipants = participants.where((p) => p.status == ParticipantStatus.waiting).toList();
-    final completedParticipants = participants.where((p) => p.status == ParticipantStatus.completed).toList();
+    final waitingParticipants = participants
+        .where((p) => p.status == ParticipantStatus.waiting)
+        .toList();
+    final completedParticipants = participants
+        .where((p) => p.status == ParticipantStatus.completed)
+        .toList();
 
     final avgWaitTime = _calculateAverageWaitTime(completedParticipants);
     final maxWaitTime = _calculateMaxWaitTime(waitingParticipants);
@@ -255,7 +264,7 @@ class QueueStatsPanel extends ConsumerWidget {
           SizedBox(height: 12.h),
           _buildTimeRow(
             '최대 대기시간',
-            '${maxWaitTime}분',
+            '$maxWaitTime분',
             AppColors.error,
             Icons.hourglass_full,
           ),
@@ -276,7 +285,7 @@ class QueueStatsPanel extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -286,10 +295,7 @@ class QueueStatsPanel extends ConsumerWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 14.sp, color: AppColors.textPrimary),
             ),
           ),
           Text(
@@ -321,8 +327,8 @@ class QueueStatsPanel extends ConsumerWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.brandCrimson.withOpacity(0.1),
-                  AppColors.brandCrimsonLight.withOpacity(0.05),
+                  AppColors.brandCrimson.withValues(alpha: 0.1),
+                  AppColors.brandCrimsonLight.withValues(alpha: 0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -335,7 +341,7 @@ class QueueStatsPanel extends ConsumerWidget {
                   width: 48.w,
                   height: 48.w,
                   decoration: BoxDecoration(
-                    color: AppColors.brandCrimson.withOpacity(0.2),
+                    color: AppColors.brandCrimson.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(24.r),
                   ),
                   child: Icon(
@@ -367,11 +373,7 @@ class QueueStatsPanel extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_upward,
-                  color: AppColors.success,
-                  size: 20.sp,
-                ),
+                Icon(Icons.arrow_upward, color: AppColors.success, size: 20.sp),
               ],
             ),
           ),
@@ -408,7 +410,7 @@ class QueueStatsPanel extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -430,7 +432,9 @@ class QueueStatsPanel extends ConsumerWidget {
   }
 
   /// ⏰ 평균 대기시간 계산 (완료된 참가자 기준)
-  double _calculateAverageWaitTime(List<ParticipantModel> completedParticipants) {
+  double _calculateAverageWaitTime(
+    List<ParticipantModel> completedParticipants,
+  ) {
     if (completedParticipants.isEmpty) return 0.0;
 
     final totalWaitTime = completedParticipants.fold<int>(

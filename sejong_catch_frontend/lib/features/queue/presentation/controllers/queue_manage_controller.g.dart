@@ -182,7 +182,7 @@ class _QueueManageControllerProviderElement
 }
 
 String _$participantAlertControllerHash() =>
-    r'7c2ca350e47e32155b1bf117acd8e6cbf1e025e9';
+    r'b516c6c8fd35f9023045802a195879304236a43d';
 
 /// 🔔 호출이 필요한 참가자 알림 Provider
 ///

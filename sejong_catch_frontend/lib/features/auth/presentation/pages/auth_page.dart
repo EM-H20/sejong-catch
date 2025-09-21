@@ -20,7 +20,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  bool _isLoginMode = true;
+  bool _isStudentLogin = true;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +98,7 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  /// 🔄 로그인/회원가입 모드 토글
+  /// 🔄 학생/게스트 로그인 모드 토글
   Widget _buildModeToggle() {
     return Container(
       decoration: BoxDecoration(
@@ -109,22 +109,22 @@ class _AuthPageState extends State<AuthPage> {
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _isLoginMode = true),
+              onTap: () => setState(() => _isStudentLogin = true),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: _isLoginMode
+                  color: _isStudentLogin
                       ? AppColors.brandCrimson
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  '로그인',
+                  '학생 로그인',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
-                    color: _isLoginMode ? Colors.white : Colors.grey[700],
+                    color: _isStudentLogin ? Colors.white : Colors.grey[700],
                   ),
                 ),
               ),
@@ -132,22 +132,22 @@ class _AuthPageState extends State<AuthPage> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _isLoginMode = false),
+              onTap: () => setState(() => _isStudentLogin = false),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: !_isLoginMode
+                  color: !_isStudentLogin
                       ? AppColors.brandCrimson
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  '회원가입',
+                  '게스트 로그인',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
-                    color: !_isLoginMode ? Colors.white : Colors.grey[700],
+                    color: !_isStudentLogin ? Colors.white : Colors.grey[700],
                   ),
                 ),
               ),
@@ -160,6 +160,15 @@ class _AuthPageState extends State<AuthPage> {
 
   /// 📝 인증 폼
   Widget _buildAuthForm() {
+    if (_isStudentLogin) {
+      return _buildStudentLoginForm();
+    } else {
+      return _buildGuestLoginForm();
+    }
+  }
+
+  /// 🎓 학생 로그인 폼
+  Widget _buildStudentLoginForm() {
     return Column(
       children: [
         // 학번 입력
@@ -183,81 +192,57 @@ class _AuthPageState extends State<AuthPage> {
             // 상태 관리는 추후 Controller에서 처리
           },
         ),
-
-        if (!_isLoginMode) ...[
-          SizedBox(height: 16.h),
-
-          // 이름 입력 (회원가입 시)
-          AppTextField(
-            labelText: '이름',
-            hintText: '실명을 입력해주세요',
-            prefixIcon: Icons.person_outline,
-            onChanged: (value) {},
-          ),
-
-          SizedBox(height: 16.h),
-
-          // 학과 선택 (회원가입 시)
-          _buildDropdownField(),
-        ],
       ],
     );
   }
 
-  /// 📋 학과 선택 드롭다운
-  Widget _buildDropdownField() {
+  /// 👤 게스트 로그인 폼
+  Widget _buildGuestLoginForm() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '학과',
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
-          ),
-        ),
-        SizedBox(height: 8.h),
-        DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            hintText: '학과를 선택해주세요',
-            prefixIcon: Icon(Icons.school, size: 20.r, color: Colors.grey[600]),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: AppColors.brandCrimson),
-            ),
-          ),
-          items:
-              [
-                '컴퓨터공학과',
-                '소프트웨어학과',
-                '정보보호학과',
-                '데이터사이언스학과',
-                '경영학과',
-                '경제학과',
-                '기타 학과',
-              ].map((department) {
-                return DropdownMenuItem(
-                  value: department,
-                  child: Text(department),
-                );
-              }).toList(),
+        // 전화번호 입력
+        AppTextField(
+          labelText: '전화번호',
+          hintText: '010-1234-5678',
+          prefixIcon: Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
           onChanged: (value) {
             // 상태 관리는 추후 Controller에서 처리
           },
         ),
+
+        SizedBox(height: 16.h),
+
+        // 이름 입력
+        AppTextField(
+          labelText: '이름',
+          hintText: '실명을 입력해주세요',
+          prefixIcon: Icons.person_outline,
+          onChanged: (value) {
+            // 상태 관리는 추후 Controller에서 처리
+          },
+        ),
+
+        SizedBox(height: 12.h),
+
+        // 게스트 로그인 안내
+        Text(
+          '게스트로 로그인하면 제한된 정보만 확인할 수 있어요',
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: Colors.grey[600],
+          ),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
 
+
   /// 🎯 메인 액션 버튼
   Widget _buildActionButton() {
     return AppButton.primary(
-      text: _isLoginMode ? '로그인' : '회원가입',
+      text: _isStudentLogin ? '학생 로그인' : '게스트 로그인',
       isExpanded: true,
       size: AppButtonSize.large,
       onPressed: () {
@@ -270,7 +255,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildAdditionalOptions() {
     return Column(
       children: [
-        if (_isLoginMode) ...[
+        if (_isStudentLogin) ...[
           AppButton.text(
             text: '비밀번호를 잊으셨나요?',
             onPressed: () {
@@ -279,46 +264,6 @@ class _AuthPageState extends State<AuthPage> {
           ),
         ],
 
-        // 이용약관 동의 (회원가입 시)
-        if (!_isLoginMode) ...[
-          Row(
-            children: [
-              Checkbox(
-                value: true, // 상태 관리는 추후 Controller에서 처리
-                onChanged: (value) {
-                  // 상태 관리는 추후 Controller에서 처리
-                },
-                activeColor: AppColors.brandCrimson,
-              ),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
-                    children: [
-                      const TextSpan(text: ''),
-                      TextSpan(
-                        text: '이용약관',
-                        style: TextStyle(
-                          color: AppColors.brandCrimson,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      const TextSpan(text: ' 및 '),
-                      TextSpan(
-                        text: '개인정보처리방침',
-                        style: TextStyle(
-                          color: AppColors.brandCrimson,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      const TextSpan(text: '에 동의합니다.'),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ],
     );
   }
@@ -335,12 +280,12 @@ class _AuthPageState extends State<AuthPage> {
         ),
         SizedBox(height: 8.h),
         AppButton.text(
-          text: '게스트로 시작하기',
+          text: '둘러보기',
           onPressed: () {
             context.go(AppRoutes.feed);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('게스트 모드로 시작했어요! 학생 인증을 하면 더 많은 기능을 이용할 수 있어요 🚀'),
+                content: Text('둘러보기 모드로 시작했어요! 학생 인증을 하면 더 많은 기능을 이용할 수 있어요 🚀'),
                 backgroundColor: AppColors.brandCrimson,
                 duration: const Duration(seconds: 3),
               ),
@@ -357,9 +302,9 @@ class _AuthPageState extends State<AuthPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          _isLoginMode
-              ? '로그인에 성공했어요! 세종 캐치에 오신 것을 환영합니다 🎉'
-              : '회원가입이 완료되었어요! 이제 맞춤 정보를 받아보세요 🚀',
+          _isStudentLogin
+              ? '학생 로그인에 성공했어요! 세종 캐치에 오신 것을 환영합니다 🎉'
+              : '게스트 로그인이 완료되었어요! 제한된 정보를 확인해보세요 📱',
         ),
         backgroundColor: AppColors.success,
         duration: const Duration(seconds: 3),

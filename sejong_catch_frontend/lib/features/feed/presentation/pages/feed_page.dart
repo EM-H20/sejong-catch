@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../app/config/app_routes.dart';
 import '../widgets/ui/category_filter_bar.dart';
 import '../widgets/ui/feed_list_view.dart';
 
@@ -111,6 +113,17 @@ class FeedPage extends ConsumerWidget {
           ),
           onPressed: () => _showSearch(context),
           tooltip: '정보 검색',
+        ),
+
+        // 🚀 Toss-Style 온보딩 테스트 버튼 (임시)
+        IconButton(
+          icon: Icon(
+            Icons.auto_awesome,
+            size: 24.r,
+            color: AppColors.brandCrimson,
+          ),
+          onPressed: () => context.go(AppRoutes.tossOnboarding),
+          tooltip: 'Toss-Style 온보딩 테스트',
         ),
       ],
     );

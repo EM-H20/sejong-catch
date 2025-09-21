@@ -112,10 +112,6 @@ class OnboardingController extends _$OnboardingController {
     }
   }
 
-  /// 온보딩 건너뛰기
-  Future<void> skipOnboarding(BuildContext context) async {
-    await _completeOnboarding(context);
-  }
 
   /// 온보딩 시작하기 (마지막 페이지에서)
   Future<void> startApp(BuildContext context) async {

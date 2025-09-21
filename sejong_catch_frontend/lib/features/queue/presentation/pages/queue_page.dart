@@ -1,3 +1,5 @@
+library;
+
 /// 🎪 큐 목록 페이지
 ///
 /// 축제/이벤트 큐 목록을 표시하는 메인 페이지
@@ -183,7 +185,7 @@ class _QueuePageState extends ConsumerState<QueuePage> {
     // const hasOperatorPermission = true; // 임시
 
     return FloatingActionButton(
-      onPressed: () => context.push('/queue/create'),
+      onPressed: () => context.push('create'),
       backgroundColor: AppColors.brandCrimson,
       child: Icon(
         Icons.add,
