@@ -23,28 +23,33 @@
 ### 성공한 폴더 구조 (모든 feature에 적용)
 ```
 lib/features/auth/                    # ✅ 성공 사례
-├── controllers/
-│   └── login_controller.dart        # 모든 상태 관리 (308줄)
-├── models/
-│   └── login_step.dart              # 비즈니스 모델
-├── pages/
-│   └── login_page.dart              # UI 레이아웃만 (145줄)
-├── services/
-│   └── validation_service.dart      # 비즈니스 로직
-└── widgets/ui/
-    ├── login_header.dart            # 재사용 컴포넌트 (60줄)
-    ├── login_card.dart              # 메인 폼 (350줄)
-    ├── login_mode_toggle.dart       # 모드 전환 (80줄)
-    └── login_footer.dart            # 하단 안내 (70줄)
+├── data/
+│   ├── models/                      # API DTO (일반 클래스)
+│   ├── repositories/                # Repository 구현체 (Retrofit)
+│   └── datasources/                 # API, Local 데이터 소스
+├── domain/
+│   ├── entities/                    # 비즈니스 엔티티
+│   └── repositories/                # Repository 인터페이스
+└── presentation/
+    ├── controllers/
+    │   └── login_controller.dart    # @riverpod Notifier (308줄)
+    ├── pages/
+    │   └── login_page.dart          # ConsumerWidget (145줄)
+    └── widgets/ui/
+        ├── login_header.dart        # 재사용 컴포넌트 (60줄)
+        ├── login_card.dart          # 메인 폼 (350줄)
+        ├── login_mode_toggle.dart   # 모드 전환 (80줄)
+        └── login_footer.dart        # 하단 안내 (70줄)
 ```
 
 ### 핵심 성공 원칙
 
 #### 1. 단일 책임 원칙 (SRP) 완벽 구현
-- **Page**: 오직 레이아웃과 Provider 연결만
-- **Controller**: 모든 상태 관리와 비즈니스 로직
+- **Page**: 오직 레이아웃과 ConsumerWidget 연결만
+- **Controller**: @riverpod Notifier로 모든 상태 관리
+- **Data Layer**: Repository 패턴으로 API/로컬 데이터 추상화
+- **Domain Layer**: 순수 비즈니스 로직과 엔티티
 - **Widgets**: 재사용 가능한 UI 컴포넌트
-- **Services**: 도메인 로직 (검증, API 호출 등)
 
 #### 2. Riverpod 패턴으로 더 안전한 상태 관리 (Freezed 미사용!)
 ```dart
@@ -188,10 +193,13 @@ dev_dependencies:
 ### Clean Architecture 레이어
 ```
 lib/
-├── core/                  # 전역 공통 (테마, 라우팅, 공용 위젯)
-├── data/                  # 데이터 계층 (API, 로컬 저장소)
-├── domain/               # 비즈니스 로직 (Services, Controllers)
-└── features/            # 기능별 구현 (성공한 auth 구조 복사)
+├── app/                   # 앱 전역 설정 (라우팅, 테마, 환경)
+├── core/                  # 공용 모듈 (위젯, 유틸리티, 상수)
+└── features/             # 기능별 Clean Architecture (검증된 auth 구조)
+    └── [feature_name]/   # auth, feed, search, queue 등
+        ├── data/         # 데이터 계층 (API, 로컬)
+        ├── domain/       # 비즈니스 로직
+        └── presentation/ # UI 계층 (Riverpod + 일반 클래스)
 ```
 
 ---

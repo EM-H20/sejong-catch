@@ -94,9 +94,9 @@ class AdaptiveSlideLayout extends StatelessWidget {
     final safeContentHeight = availableContentHeight * 0.90;
 
     // 🎯 4단계: 각 섹션에 비율 배분 (총합 100%)
-    final headerHeight = safeContentHeight * 0.25;   // 25%
-    final visualHeight = safeContentHeight * 0.35;   // 35%
-    final contentHeight = safeContentHeight * 0.40;  // 40%
+    final headerHeight = safeContentHeight * 0.22;   // 22% (헤더 약간 줄임)
+    final visualHeight = safeContentHeight * 0.43;   // 43% (Before/After 영역 확장)
+    final contentHeight = safeContentHeight * 0.35;  // 35% (하단 메시지 줄임)
 
     return LayoutDimensions(
       headerHeight: headerHeight,

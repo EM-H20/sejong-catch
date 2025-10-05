@@ -638,6 +638,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "protobuf",
+      "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/protobuf-4.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
       "name": "pub_semver",
       "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/pub_semver-2.2.0",
       "packageUri": "lib/",
@@ -660,6 +666,12 @@
       "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/retrofit-4.7.2",
       "packageUri": "lib/",
       "languageVersion": "3.8"
+    },
+    {
+      "name": "retrofit_generator",
+      "rootUri": "file:///Users/luca/.pub-cache/hosted/pub.dev/retrofit_generator-9.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
     },
     {
       "name": "riverpod",

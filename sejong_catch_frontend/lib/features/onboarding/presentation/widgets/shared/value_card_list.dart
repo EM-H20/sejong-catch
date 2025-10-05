@@ -25,24 +25,27 @@ class ValueCardList extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final cardSpacing = spacing ?? _getCardSpacing(screenHeight);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min, // 🎯 필요한 만큼만 높이 차지
-      children: values.asMap().entries.map((entry) {
-        final index = entry.key;
-        final value = entry.value;
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // 🎯 필요한 만큼만 높이 차지
+        children: values.asMap().entries.map((entry) {
+          final index = entry.key;
+          final value = entry.value;
 
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: index < values.length - 1 ? cardSpacing : 0,
-          ),
-          child: AnimatedValueCard(
-            value: value,
-            index: index,
-            controller: controller,
-            style: cardStyle,
-          ),
-        );
-      }).toList(),
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: index < values.length - 1 ? cardSpacing : 0,
+            ),
+            child: AnimatedValueCard(
+              value: value,
+              index: index,
+              controller: controller,
+              style: cardStyle,
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 

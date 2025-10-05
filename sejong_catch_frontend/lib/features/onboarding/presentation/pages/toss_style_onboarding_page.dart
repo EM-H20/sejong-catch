@@ -8,11 +8,11 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../app/config/app_routes.dart';
 import '../../data/services/onboarding_service.dart';
 import '../widgets/slides/problem_slide.dart';
-import '../widgets/slides/solution_slide.dart';
+import '../widgets/slides/problem_solution_slide.dart';
 import '../widgets/slides/welcome_slide.dart';
 
 /// 🚀 Toss-Style 새로운 온보딩 페이지
-/// 3단계 진행: 문제공감 → 솔루션제시 → 시작하기 (학과선택 제거!)
+/// 3단계 진행: 문제공감 → Before/After 비교 → 시작하기
 class TossStyleOnboardingPage extends StatefulWidget {
   const TossStyleOnboardingPage({super.key});
 
@@ -34,9 +34,9 @@ class _TossStyleOnboardingPageState extends State<TossStyleOnboardingPage>
       icon: Icons.sentiment_satisfied_alt,
     ),
     OnboardingStep(
-      title: "솔루션",
+      title: "변화",
       subtitle: "세종 캐치가 해결해드려요",
-      icon: Icons.auto_awesome,
+      icon: Icons.compare_arrows,
     ),
     OnboardingStep(
       title: "시작하기",
@@ -84,10 +84,10 @@ class _TossStyleOnboardingPageState extends State<TossStyleOnboardingPage>
                   // 1️⃣ 문제 공감 슬라이드
                   const ProblemSlide(),
 
-                  // 2️⃣ 솔루션 제시 슬라이드
-                  const SolutionSlide(),
+                  // 2️⃣ Before/After 비교 슬라이드
+                  const ProblemSolutionSlide(),
 
-                  // 3️⃣ 환영 메시지 슬라이드 (학과 선택 제거!)
+                  // 3️⃣ 환영 메시지 슬라이드
                   const WelcomeSlide(),
                 ],
               ),

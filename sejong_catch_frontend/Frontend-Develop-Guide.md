@@ -89,17 +89,17 @@ lib/
 │   ├── theme/                    # 크림슨 레드 테마
 │   ├── utils/                    # 헬퍼 함수, 확장
 │   └── constants/                # 상수 정의
-└── features/                     # 도메인별 기능 구현
-    └── [feature_name]/           # 각 기능별 폴더
+└── features/                     # 도메인별 기능 구현 (Clean Architecture)
+    └── [feature_name]/           # auth, feed, search, queue 등
         ├── data/                 # 데이터 계층
-        │   ├── models/           # 일반 Dart 모델
-        │   ├── repositories/     # Repository 구현체
+        │   ├── models/           # API DTO (일반 Dart 클래스)
+        │   ├── repositories/     # Repository 구현체 (Retrofit)
         │   └── datasources/      # API, Local 데이터 소스
         ├── domain/               # 비즈니스 로직
-        │   ├── entities/         # 비즈니스 엔티티
+        │   ├── entities/         # 순수 비즈니스 엔티티
         │   └── repositories/     # Repository 인터페이스
-        └── presentation/         # UI 계층
-            ├── controllers/      # Riverpod Notifier
+        └── presentation/         # UI 계층 (Riverpod + 일반 클래스)
+            ├── controllers/      # @riverpod Notifier
             ├── pages/            # ConsumerWidget 페이지
             └── widgets/          # Feature 전용 위젯
 ```
@@ -312,10 +312,14 @@ flutter test
 ## 📋 개발 체크리스트
 
 ### 새 기능 개발 시
-- [ ] features/[기능명]/ 폴더 구조 생성
-- [ ] 일반 Dart 클래스로 상태 모델 작성 (Freezed X)
+- [ ] features/[기능명]/ Clean Architecture 폴더 구조 생성
+  - [ ] data/ - models, repositories, datasources
+  - [ ] domain/ - entities, repositories (interface)
+  - [ ] presentation/ - controllers, pages, widgets
+- [ ] 일반 Dart 클래스로 모델/엔티티 작성 (Freezed X)
 - [ ] copyWith 메서드 수동 구현
-- [ ] Riverpod Controller 작성 (@riverpod)
+- [ ] Repository 패턴 구현 (인터페이스 + 구현체)
+- [ ] @riverpod Notifier로 상태 관리
 - [ ] ConsumerWidget으로 페이지 구현
 - [ ] ScreenUtil 모든 크기에 적용
 - [ ] GoRouter 라우트 추가

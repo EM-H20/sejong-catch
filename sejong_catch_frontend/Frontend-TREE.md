@@ -12,24 +12,17 @@
 
 ```
 lib/
-├── core/                           # 🌐 전역 공통 모듈
-│   ├── config/                     # 환경 변수, 앱 상수
+├── app/                            # 🌐 앱 전역 설정
+│   ├── config/                     # 라우팅, 테마, 환경 변수
+│   └── providers/                  # 전역 Provider (@riverpod)
+│
+├── core/                           # 🔧 공용 모듈
+│   ├── widgets/                    # 재사용 위젯 (AppCard, CTAButton 등)
 │   ├── theme/                      # AppTheme (크림슨 레드)
-│   ├── routing/                    # GoRouter + 권한 가드
 │   ├── utils/                      # 공통 유틸리티
-│   └── widgets/                    # 재사용 위젯 (AppCard, CTAButton 등)
+│   └── constants/                  # 상수 정의
 │
-├── data/                           # 🗂️ 데이터 계층
-│   ├── models/                     # 일반 Dart 클래스 모델 (Freezed X)
-│   ├── sources/remote/             # Dio + Retrofit API
-│   ├── sources/local/              # SharedPreferences, SecureStorage
-│   └── repositories/               # Repository 패턴
-│
-├── domain/                         # 🧠 비즈니스 로직
-│   ├── services/                   # 도메인 서비스 (Priority, Trust, Dedup)
-│   └── controllers/                # Provider 전역 컨트롤러 (Auth, Theme 등)
-│
-└── features/                       # ✨ 기능별 구현 (성공 패턴 복사!)
+└── features/                       # ✨ 기능별 Clean Architecture
     ├── auth/                       # ✅ 검증된 성공 사례
     ├── feed/                       # 복사할 구조
     ├── search/                     # 복사할 구조
@@ -37,6 +30,20 @@ lib/
     ├── profile/                    # 복사할 구조
     ├── onboarding/                 # 복사할 구조
     └── console/                    # 복사할 구조
+
+    # 각 Feature 내부 구조 (모든 Feature 동일 적용!)
+    └── [feature_name]/
+        ├── data/                   # 📡 데이터 계층
+        │   ├── models/             # API DTO (일반 Dart 클래스)
+        │   ├── repositories/       # Repository 구현체 (Retrofit)
+        │   └── datasources/        # API, Local 데이터 소스
+        ├── domain/                 # 🧠 비즈니스 로직
+        │   ├── entities/           # 순수 비즈니스 엔티티
+        │   └── repositories/       # Repository 인터페이스
+        └── presentation/           # 🎨 UI 계층
+            ├── controllers/        # @riverpod Notifier
+            ├── pages/              # ConsumerWidget 페이지
+            └── widgets/            # Feature 전용 위젯
 ```
 
 ---
@@ -47,34 +54,45 @@ lib/
 
 ```
 lib/features/auth/                  # ✅ 86% 코드 감소 달성!
-├── controllers/
-│   └── login_controller.dart       # 🎛️ 모든 상태 관리 (308줄)
+├── data/
+│   ├── models/
+│   │   ├── login_request.dart     # 📊 API 요청 DTO (일반 클래스)
+│   │   └── auth_response.dart     # 📊 API 응답 DTO (일반 클래스)
+│   ├── repositories/
+│   │   └── auth_repository_impl.dart # 🔌 Retrofit 구현체
+│   └── datasources/
+│       └── auth_remote_datasource.dart # 🌐 API 호출 로직
 │
-├── models/
-│   └── login_step.dart            # 📊 일반 Dart 클래스 모델 (Freezed X)
+├── domain/
+│   ├── entities/
+│   │   └── user.dart              # 🎯 순수 비즈니스 엔티티
+│   └── repositories/
+│       └── auth_repository.dart   # 📜 Repository 인터페이스
 │
-├── pages/
-│   └── login_page.dart            # 🖼️ UI 레이아웃만 (145줄)
-│
-├── services/
-│   └── validation_service.dart    # 🔧 도메인 로직
-│
-└── widgets/ui/                     # 🧩 재사용 컴포넌트들
-    ├── login_header.dart          # 헤더 (60줄)
-    ├── login_card.dart            # 메인 폼 (350줄)
-    ├── login_mode_toggle.dart     # 모드 전환 (80줄)
-    └── login_footer.dart          # 하단 안내 (70줄)
+└── presentation/
+    ├── controllers/
+    │   └── login_controller.dart  # 🎛️ @riverpod Notifier (308줄)
+    ├── pages/
+    │   └── login_page.dart        # 🖼️ ConsumerWidget (145줄)
+    └── widgets/ui/                 # 🧩 재사용 컴포넌트들
+        ├── login_header.dart      # 헤더 (60줄)
+        ├── login_card.dart        # 메인 폼 (350줄)
+        ├── login_mode_toggle.dart # 모드 전환 (80줄)
+        └── login_footer.dart      # 하단 안내 (70줄)
 ```
 
 ### 📋 각 폴더 역할 정의
 
 | 폴더 | 책임 | 예시 |
 |------|------|------|
-| **controllers/** | Riverpod 상태 관리 (Notifier) | `login_controller.dart`, `search_controller.dart` |
-| **models/** | 일반 Dart 클래스 비즈니스 모델 | `login_step.dart`, `search_filter.dart` |
-| **pages/** | UI 레이아웃 + ConsumerWidget | `login_page.dart`, `search_page.dart` |
-| **services/** | 도메인 로직 | `validation_service.dart`, `api_service.dart` |
-| **widgets/ui/** | 재사용 UI 컴포넌트 | `login_card.dart`, `search_bar.dart` |
+| **data/models/** | API DTO (요청/응답) | `login_request.dart`, `auth_response.dart` |
+| **data/repositories/** | Repository 구현체 (Retrofit) | `auth_repository_impl.dart` |
+| **data/datasources/** | 외부 데이터 소스 | `auth_remote_datasource.dart` |
+| **domain/entities/** | 순수 비즈니스 엔티티 | `user.dart`, `feed_item.dart` |
+| **domain/repositories/** | Repository 인터페이스 | `auth_repository.dart` |
+| **presentation/controllers/** | @riverpod Notifier 상태 관리 | `login_controller.dart` |
+| **presentation/pages/** | ConsumerWidget UI 페이지 | `login_page.dart` |
+| **presentation/widgets/** | Feature 전용 UI 컴포넌트 | `login_card.dart` |
 
 ---
 
@@ -378,14 +396,16 @@ RootShell (Scaffold)
 
 ## 🚦 개발 체크리스트 (새 기능 추가 시)
 
-### 1. 폴더 구조 생성
+### 1. Clean Architecture 폴더 구조 생성
 - [ ] `lib/features/[기능명]/` 디렉토리 생성
-- [ ] `controllers/`, `models/`, `pages/`, `services/`, `widgets/ui/` 하위 폴더 생성
+- [ ] `data/` - models, repositories, datasources 폴더 생성
+- [ ] `domain/` - entities, repositories 폴더 생성
+- [ ] `presentation/` - controllers, pages, widgets 폴더 생성
 
-### 2. 파일 생성 (auth 패턴 복사)
-- [ ] `[기능명]_controller.dart` - Provider 상태 관리
-- [ ] `[기능명]_page.dart` - 메인 UI 페이지 (레이아웃만)
-- [ ] 필요한 model, service, widget 파일들 생성
+### 2. 파일 생성 (auth Clean Architecture 패턴 복사)
+- [ ] **Data Layer**: DTO 모델, Repository 구현체, Datasource
+- [ ] **Domain Layer**: 비즈니스 엔티티, Repository 인터페이스
+- [ ] **Presentation Layer**: @riverpod Controller, ConsumerWidget Page, UI 위젯
 
 ### 3. Riverpod 연결 (일반 클래스 사용!)
 - [ ] 일반 Dart 클래스로 상태 모델 작성 (Freezed X)

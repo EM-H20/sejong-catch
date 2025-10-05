@@ -39,6 +39,7 @@
         "flutter_launcher_icons",
         "flutter_lints",
         "flutter_test",
+        "retrofit_generator",
         "riverpod_generator"
       ]
     },
@@ -1563,6 +1564,30 @@
       "name": "synchronized",
       "version": "3.4.0",
       "dependencies": []
+    },
+    {
+      "name": "retrofit_generator",
+      "version": "9.7.0",
+      "dependencies": [
+        "analyzer",
+        "build",
+        "built_collection",
+        "code_builder",
+        "dart_style",
+        "dio",
+        "protobuf",
+        "retrofit",
+        "source_gen"
+      ]
+    },
+    {
+      "name": "protobuf",
+      "version": "4.2.0",
+      "dependencies": [
+        "collection",
+        "fixnum",
+        "meta"
+      ]
     }
   ],
   "configVersion": 1
