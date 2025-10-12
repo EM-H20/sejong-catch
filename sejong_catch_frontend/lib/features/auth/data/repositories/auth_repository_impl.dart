@@ -78,12 +78,13 @@ class AuthRepositoryImpl implements AuthRepository {
       // API 요청 (Authorization 헤더는 Interceptor에서 자동 추가)
       final profileDto = await _remoteDataSource.getMyProfile();
 
-      // UserProfileDto → User 변환 (간단한 필드만 사용)
+      // UserProfileDto → User 변환
       return User(
+        id: profileDto.id,
         studentId: profileDto.studentId,
+        role: profileDto.role,
         name: profileDto.name,
         major: profileDto.major,
-        year: profileDto.year,
       );
     } on DioException catch (e) {
       throw _mapDioErrorToAuthException(e);
