@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,24 +7,75 @@ import '../../../../app/config/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../controllers/auth_controller.dart';
 
 /// 🔐 인증 페이지 (로그인/회원가입)
 ///
 /// CLAUDE.md 원칙:
-/// ✅ 세종대 SSO 게이트웨이 연동 예정
-/// ✅ 독립 페이지 (BottomNavigationBar 없음)
-class AuthPage extends StatefulWidget {
+/// ✅ ConsumerStatefulWidget으로 Riverpod 통합
+/// ✅ AuthController를 통한 실제 API 호출
+/// ✅ 둘러보기 모드는 제약 없이 유지 (요구사항)
+class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
 
   @override
-  State<AuthPage> createState() => _AuthPageState();
+  ConsumerState<AuthPage> createState() => _AuthPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _AuthPageState extends ConsumerState<AuthPage> {
   bool _isStudentLogin = true;
+
+  // 📝 학생 로그인 폼 컨트롤러
+  final _studentIdController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  // 📝 게스트 로그인 폼 컨트롤러
+  final _phoneController = TextEditingController();
+  final _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _studentIdController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    // 🎯 인증 상태 감시
+    final authState = ref.watch(authControllerProvider);
+
+    // 🎯 로그인 성공 시 자동 이동
+    ref.listen(authControllerProvider, (previous, next) {
+      if (next.isLoggedIn && !next.isLoading) {
+        context.go(AppRoutes.feed);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('학생 로그인에 성공했어요! 세종 캐치에 오신 것을 환영합니다 🎉'),
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+
+      // 에러 메시지 표시
+      if (next.error != null && !next.isLoading) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error!),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        // 에러 표시 후 초기화
+        Future.delayed(const Duration(seconds: 3), () {
+          ref.read(authControllerProvider.notifier).clearError();
+        });
+      }
+    });
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -46,7 +98,7 @@ class _AuthPageState extends State<AuthPage> {
               SizedBox(height: 24.h),
 
               // 🎯 메인 액션 버튼
-              _buildActionButton(),
+              _buildActionButton(authState.isLoading),
 
               SizedBox(height: 16.h),
 
@@ -55,7 +107,7 @@ class _AuthPageState extends State<AuthPage> {
 
               SizedBox(height: 24.h),
 
-              // 📋 게스트 모드
+              // 📋 게스트 모드 (제약 없이 유지)
               _buildGuestMode(),
             ],
           ),
@@ -173,24 +225,20 @@ class _AuthPageState extends State<AuthPage> {
       children: [
         // 학번 입력
         AppTextField(
+          controller: _studentIdController,
           labelText: '학번',
           hintText: '세종대학교 학번을 입력해주세요',
           prefixIcon: Icons.school_outlined,
           keyboardType: TextInputType.number,
-          onChanged: (value) {
-            // 상태 관리는 추후 Controller에서 처리
-          },
         ),
 
         SizedBox(height: 16.h),
 
         // 비밀번호 입력
         AppTextField.password(
+          controller: _passwordController,
           labelText: '비밀번호',
           hintText: '세종대학교 포털 비밀번호',
-          onChanged: (value) {
-            // 상태 관리는 추후 Controller에서 처리
-          },
         ),
       ],
     );
@@ -202,25 +250,21 @@ class _AuthPageState extends State<AuthPage> {
       children: [
         // 전화번호 입력
         AppTextField(
+          controller: _phoneController,
           labelText: '전화번호',
           hintText: '010-1234-5678',
           prefixIcon: Icons.phone_outlined,
           keyboardType: TextInputType.phone,
-          onChanged: (value) {
-            // 상태 관리는 추후 Controller에서 처리
-          },
         ),
 
         SizedBox(height: 16.h),
 
         // 이름 입력
         AppTextField(
+          controller: _nameController,
           labelText: '이름',
           hintText: '실명을 입력해주세요',
           prefixIcon: Icons.person_outline,
-          onChanged: (value) {
-            // 상태 관리는 추후 Controller에서 처리
-          },
         ),
 
         SizedBox(height: 12.h),
@@ -238,16 +282,14 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-
   /// 🎯 메인 액션 버튼
-  Widget _buildActionButton() {
+  Widget _buildActionButton(bool isLoading) {
     return AppButton.primary(
       text: _isStudentLogin ? '학생 로그인' : '게스트 로그인',
       isExpanded: true,
       size: AppButtonSize.large,
-      onPressed: () {
-        _handleAuth();
-      },
+      isLoading: isLoading,
+      onPressed: isLoading ? null : _handleAuth,
     );
   }
 
@@ -263,12 +305,11 @@ class _AuthPageState extends State<AuthPage> {
             },
           ),
         ],
-
       ],
     );
   }
 
-  /// 📋 게스트 모드
+  /// 📋 게스트 모드 (제약 없이 유지 - 요구사항)
   Widget _buildGuestMode() {
     return Column(
       children: [
@@ -285,7 +326,8 @@ class _AuthPageState extends State<AuthPage> {
             context.go(AppRoutes.feed);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('둘러보기 모드로 시작했어요! 학생 인증을 하면 더 많은 기능을 이용할 수 있어요 🚀'),
+                content: Text(
+                    '둘러보기 모드로 시작했어요! 학생 인증을 하면 더 많은 기능을 이용할 수 있어요 🚀'),
                 backgroundColor: AppColors.brandCrimson,
                 duration: const Duration(seconds: 3),
               ),
@@ -296,20 +338,50 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  /// 🔐 인증 처리 로직
+  /// 🔐 인증 처리 로직 (실제 API 호출!)
   void _handleAuth() {
-    context.go(AppRoutes.feed);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isStudentLogin
-              ? '학생 로그인에 성공했어요! 세종 캐치에 오신 것을 환영합니다 🎉'
-              : '게스트 로그인이 완료되었어요! 제한된 정보를 확인해보세요 📱',
+    if (_isStudentLogin) {
+      // 학생 로그인: Controller를 통한 실제 API 호출
+      final studentId = _studentIdController.text.trim();
+      final password = _passwordController.text.trim();
+
+      if (studentId.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('학번과 비밀번호를 입력해주세요.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
+
+      // ✅ 실제 API 호출!
+      ref.read(authControllerProvider.notifier).login(studentId, password);
+    } else {
+      // 게스트 로그인: 현재는 Mock (향후 백엔드 연동 시 구현)
+      final phone = _phoneController.text.trim();
+      final name = _nameController.text.trim();
+
+      if (phone.isEmpty || name.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('전화번호와 이름을 입력해주세요.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
+
+      // TODO: 게스트 로그인 API 연동
+      context.go(AppRoutes.feed);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('게스트 로그인이 완료되었어요! 제한된 정보를 확인해보세요 📱'),
+          backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 3),
         ),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 3),
-      ),
-    );
+      );
+    }
   }
 
   /// 🔒 비밀번호 재설정 다이얼로그
