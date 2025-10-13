@@ -34,7 +34,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     final onboardingService = OnboardingService();
     await onboardingService.markOnboardingComplete();
     if (mounted) {
-      context.go('/feed');
+      context.go('/auth'); // 온보딩 완료 → 로그인 페이지로 이동
     }
   }
 
