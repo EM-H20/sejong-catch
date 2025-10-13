@@ -20,7 +20,58 @@ class AuthRepository extends _$AuthRepository {
   void build() {}
 
   /// 로그인
+  ///
+  /// 🔧 **개발/프로덕션 자동 전환**
+  /// - Mock 모드: `flutter run --dart-define=USE_MOCK_AUTH=true`
+  /// - Real 모드: `flutter run` (기본값)
   Future<LoginResponse> login(String studentId, String password) async {
+    // 환경 변수로 Mock/Real 자동 전환
+    const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
+
+    if (useMock) {
+      return _mockLogin(studentId, password);
+    } else {
+      return _realLogin(studentId, password);
+    }
+  }
+
+  /// Mock 로그인 (개발 전용)
+  Future<LoginResponse> _mockLogin(String studentId, String password) async {
+    // 학번 1234 / 비밀번호 1234만 허용
+    if (studentId == '1234' && password == '1234') {
+      // 네트워크 지연 시뮬레이션 (1초)
+      await Future.delayed(const Duration(seconds: 1));
+
+      return const LoginResponse(
+        accessToken: 'mock_access_token_abc123xyz',
+        refreshToken: 'mock_refresh_token_def456uvw',
+        user: UserDto(
+          id: 'mock_user_001',
+          studentId: '1234',
+          role: 'student',
+          name: '홍길동',
+          major: '컴퓨터공학과',
+        ),
+        linked: true,
+        sso: SsoDto(
+          success: true,
+          isAuth: true,
+          code: '200',
+          body: SsoBodyDto(
+            name: '홍길동',
+            major: '컴퓨터공학과',
+          ),
+        ),
+      );
+    }
+
+    // 잘못된 학번/비밀번호
+    await Future.delayed(const Duration(milliseconds: 500));
+    throw Exception('Mock 모드: 학번 1234 / 비밀번호 1234만 사용 가능합니다');
+  }
+
+  /// 실제 API 로그인 (프로덕션)
+  Future<LoginResponse> _realLogin(String studentId, String password) async {
     final api = ref.read(authApiProvider);
     final request = LoginRequest(studentId: studentId, password: password);
     return await api.login(request);

@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🎭 Mock 모드 (개발용)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=USE_MOCK_AUTH=true"
+      ]
+    },
+    {
+      "name": "🔥 Real 모드 (프로덕션)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=USE_MOCK_AUTH=false"
+      ]
+    },
+    {
+      "name": "📱 Default (Mock)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart"
+    }
+  ]
+}

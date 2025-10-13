@@ -4,15 +4,11 @@ part 'login_response.freezed.dart';
 part 'login_response.g.dart';
 
 /// 로그인 API 응답 모델
-///
-/// Freezed + JsonSerializable로 JSON 직렬화 자동화
-/// snake_case ↔ camelCase 자동 변환
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake)
 class LoginResponse with _$LoginResponse {
   const factory LoginResponse({
-    required String accessToken,   // → access_token
-    required String refreshToken,  // → refresh_token
+    @JsonKey(name: 'access_token') required String accessToken,
+    @JsonKey(name: 'refresh_token') required String refreshToken,
     required UserDto user,
     required bool linked,
     required SsoDto sso,
@@ -24,11 +20,10 @@ class LoginResponse with _$LoginResponse {
 
 /// 사용자 정보 DTO
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake)
 class UserDto with _$UserDto {
   const factory UserDto({
     required String id,
-    required String studentId,  // → student_id
+    @JsonKey(name: 'student_id') required String studentId,
     required String role,
     required String name,
     required String major,
@@ -40,11 +35,10 @@ class UserDto with _$UserDto {
 
 /// SSO 정보 DTO
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake)
 class SsoDto with _$SsoDto {
   const factory SsoDto({
     required bool success,
-    required bool isAuth,  // → is_auth
+    @JsonKey(name: 'is_auth') required bool isAuth,
     required String code,
     required SsoBodyDto body,
   }) = _SsoDto;
