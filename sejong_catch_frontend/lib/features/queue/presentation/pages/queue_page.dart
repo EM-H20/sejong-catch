@@ -73,7 +73,10 @@ class _QueuePageState extends ConsumerState<QueuePage>
         labelColor: const Color(0xFFDC143C),
         unselectedLabelColor: const Color(0xFF6B7280),
         labelStyle: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: TextStyle(
+          fontSize: 15.sp,
+          fontWeight: FontWeight.w500,
+        ),
         tabs: const [
           Tab(text: '전체 큐'),
           Tab(text: '내 대기열'),
@@ -86,10 +89,7 @@ class _QueuePageState extends ConsumerState<QueuePage>
   Widget _buildBody() {
     return TabBarView(
       controller: _tabController,
-      children: [
-        _buildAllQueuesTab(),
-        _buildMyQueuesTab(),
-      ],
+      children: [_buildAllQueuesTab(), _buildMyQueuesTab()],
     );
   }
 
@@ -208,11 +208,16 @@ class _QueuePageState extends ConsumerState<QueuePage>
                 ),
                 const Spacer(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 6.h,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     statusText,
@@ -286,7 +291,12 @@ class _QueuePageState extends ConsumerState<QueuePage>
   }
 
   /// 📊 통계 아이템
-  Widget _buildStatItem(IconData icon, String label, String value, Color color) {
+  Widget _buildStatItem(
+    IconData icon,
+    String label,
+    String value,
+    Color color,
+  ) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
@@ -521,10 +531,7 @@ class _QueuePageState extends ConsumerState<QueuePage>
           SizedBox(height: 8.h),
           Text(
             subtitle,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: const Color(0xFF6B7280),
-            ),
+            style: TextStyle(fontSize: 14.sp, color: const Color(0xFF6B7280)),
           ),
         ],
       ),
@@ -537,19 +544,11 @@ class _QueuePageState extends ConsumerState<QueuePage>
     // const isOperator = true;
     // if (!isOperator) return const SizedBox.shrink();
 
-    return FloatingActionButton.extended(
+    return FloatingActionButton(
       onPressed: _showCreateQueueBottomSheet,
       backgroundColor: const Color(0xFFDC143C),
       elevation: 4,
-      icon: Icon(Icons.add, size: 24.sp, color: Colors.white),
-      label: Text(
-        '큐 생성',
-        style: TextStyle(
-          fontSize: 15.sp,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-      ),
+      child: Icon(Icons.add, size: 28.sp, color: Colors.white),
     );
   }
 
@@ -631,9 +630,15 @@ class _QueuePageState extends ConsumerState<QueuePage>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
-                    borderSide: const BorderSide(color: Color(0xFFDC143C), width: 2),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFDC143C),
+                      width: 2,
+                    ),
                   ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
                 ),
               ),
 
@@ -699,9 +704,15 @@ class _QueuePageState extends ConsumerState<QueuePage>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
-                    borderSide: const BorderSide(color: Color(0xFFDC143C), width: 2),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFDC143C),
+                      width: 2,
+                    ),
                   ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
                 ),
               ),
 
@@ -762,7 +773,9 @@ class _QueuePageState extends ConsumerState<QueuePage>
           color: isSelected ? const Color(0xFFDC143C) : const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: isSelected ? const Color(0xFFDC143C) : const Color(0xFFE5E7EB),
+            color: isSelected
+                ? const Color(0xFFDC143C)
+                : const Color(0xFFE5E7EB),
             width: 1.5,
           ),
         ),
@@ -783,13 +796,12 @@ class _QueuePageState extends ConsumerState<QueuePage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
         title: Text(
           '${queue['name']} 줄서기',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
         ),
         content: Text(
           '현재 ${queue['waiting']}명이 대기 중이에요.\n'
@@ -852,13 +864,12 @@ class _QueuePageState extends ConsumerState<QueuePage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
         title: Text(
           '줄서기 포기',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
         ),
         content: Text(
           '${myQueue['name']} 줄서기를 포기하시겠어요?\n다시 줄을 서려면 처음부터 대기해야 해요.',
@@ -886,9 +897,9 @@ class _QueuePageState extends ConsumerState<QueuePage>
               setState(() {
                 _tabController.animateTo(0); // 전체 큐 탭으로 이동
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('줄서기를 포기했어요')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('줄서기를 포기했어요')));
             },
             child: Text(
               '포기',
