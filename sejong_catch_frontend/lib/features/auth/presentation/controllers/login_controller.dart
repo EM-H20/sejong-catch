@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../data/repositories/auth_repository.dart';
+import '../../../../core/services/token_storage_service.dart';
 import '../models/login_state.dart';
 
 part 'login_controller.g.dart';
@@ -23,7 +26,7 @@ class LoginController extends _$LoginController {
     state = state.copyWith(password: value);
   }
 
-  /// 로그인 실행
+  /// 로그인 실행 (실제 API 연동)
   Future<void> login() async {
     // 유효성 검증
     if (state.studentId.isEmpty) {
@@ -37,36 +40,62 @@ class LoginController extends _$LoginController {
     }
 
     // 로딩 시작
-    state = state.startLoading();
+    state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // TODO: 실제 API 연동
-      // 1. Python Auth API → sejong_token 발급
-      // 2. Node.js /auth/exchange → access_token, refresh_token
+      // 1. 백엔드 API 호출 (실제 연동!)
+      final authRepository = ref.read(authRepositoryProvider.notifier);
+      final response = await authRepository.login(
+        state.studentId,
+        state.password,
+      );
 
-      // 임시 딜레이 (API 호출 시뮬레이션)
-      await Future.delayed(const Duration(seconds: 2));
+      // 2. 토큰 저장 (FlutterSecureStorage)
+      final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
+      await tokenStorage.saveTokens(
+        response.accessToken,
+        response.refreshToken,
+      );
 
-      // 성공 시뮬레이션
+      // 3. 성공 상태로 업데이트
       state = state.copyWith(
         isLoading: false,
         isLoggedIn: true,
         error: null,
       );
 
-      // TODO: 토큰 저장 (FlutterSecureStorage)
+      // ✅ 로그인 성공!
       // TODO: 홈 화면으로 네비게이션 (context.go('/feed'))
-    } catch (e) {
-      // 에러 처리
+    } on DioException catch (e) {
+      // 네트워크 에러 처리
+      String errorMessage = '로그인에 실패했어요. 학번과 비밀번호를 확인해주세요.';
+
+      if (e.response?.statusCode == 401) {
+        errorMessage = '학번 또는 비밀번호가 올바르지 않아요.';
+      } else if (e.response?.statusCode == 429) {
+        errorMessage = '너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.';
+      } else if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        errorMessage = '서버 연결에 실패했어요. 네트워크를 확인해주세요.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        errorMessage = '인터넷 연결을 확인해주세요.';
+      }
+
       state = state.copyWith(
         isLoading: false,
-        error: '로그인에 실패했어요. 학번과 비밀번호를 확인해주세요.',
+        error: errorMessage,
+      );
+    } catch (e) {
+      // 기타 에러 처리
+      state = state.copyWith(
+        isLoading: false,
+        error: '알 수 없는 오류가 발생했어요. 다시 시도해주세요.',
       );
     }
   }
 
   /// 에러 메시지 초기화
   void clearError() {
-    state = state.clearError();
+    state = state.copyWith(error: null);
   }
 }

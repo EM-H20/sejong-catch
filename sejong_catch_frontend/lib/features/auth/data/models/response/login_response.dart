@@ -1,131 +1,66 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'login_response.freezed.dart';
+part 'login_response.g.dart';
+
 /// 로그인 API 응답 모델
-class LoginResponse {
-  final String accessToken;
-  final String refreshToken;
-  final UserDto user;
-  final bool linked;
-  final SsoDto sso;
+///
+/// Freezed + JsonSerializable로 JSON 직렬화 자동화
+/// snake_case ↔ camelCase 자동 변환
+@freezed
+@JsonSerializable(fieldRename: FieldRename.snake)
+class LoginResponse with _$LoginResponse {
+  const factory LoginResponse({
+    required String accessToken,   // → access_token
+    required String refreshToken,  // → refresh_token
+    required UserDto user,
+    required bool linked,
+    required SsoDto sso,
+  }) = _LoginResponse;
 
-  const LoginResponse({
-    required this.accessToken,
-    required this.refreshToken,
-    required this.user,
-    required this.linked,
-    required this.sso,
-  });
-
-  factory LoginResponse.fromJson(Map<String, dynamic> json) {
-    return LoginResponse(
-      accessToken: json['access_token'] as String,
-      refreshToken: json['refresh_token'] as String,
-      user: UserDto.fromJson(json['user'] as Map<String, dynamic>),
-      linked: json['linked'] as bool,
-      sso: SsoDto.fromJson(json['sso'] as Map<String, dynamic>),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'access_token': accessToken,
-      'refresh_token': refreshToken,
-      'user': user.toJson(),
-      'linked': linked,
-      'sso': sso.toJson(),
-    };
-  }
+  factory LoginResponse.fromJson(Map<String, dynamic> json) =>
+      _$LoginResponseFromJson(json);
 }
 
 /// 사용자 정보 DTO
-class UserDto {
-  final String id;
-  final String studentId;
-  final String role;
-  final String name;
-  final String major;
+@freezed
+@JsonSerializable(fieldRename: FieldRename.snake)
+class UserDto with _$UserDto {
+  const factory UserDto({
+    required String id,
+    required String studentId,  // → student_id
+    required String role,
+    required String name,
+    required String major,
+  }) = _UserDto;
 
-  const UserDto({
-    required this.id,
-    required this.studentId,
-    required this.role,
-    required this.name,
-    required this.major,
-  });
-
-  factory UserDto.fromJson(Map<String, dynamic> json) {
-    return UserDto(
-      id: json['id'] as String,
-      studentId: json['student_id'] as String,
-      role: json['role'] as String,
-      name: json['name'] as String,
-      major: json['major'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'student_id': studentId,
-      'role': role,
-      'name': name,
-      'major': major,
-    };
-  }
+  factory UserDto.fromJson(Map<String, dynamic> json) =>
+      _$UserDtoFromJson(json);
 }
 
 /// SSO 정보 DTO
-class SsoDto {
-  final bool success;
-  final bool isAuth;
-  final String code;
-  final SsoBodyDto body;
+@freezed
+@JsonSerializable(fieldRename: FieldRename.snake)
+class SsoDto with _$SsoDto {
+  const factory SsoDto({
+    required bool success,
+    required bool isAuth,  // → is_auth
+    required String code,
+    required SsoBodyDto body,
+  }) = _SsoDto;
 
-  const SsoDto({
-    required this.success,
-    required this.isAuth,
-    required this.code,
-    required this.body,
-  });
-
-  factory SsoDto.fromJson(Map<String, dynamic> json) {
-    return SsoDto(
-      success: json['success'] as bool,
-      isAuth: json['is_auth'] as bool,
-      code: json['code'] as String,
-      body: SsoBodyDto.fromJson(json['body'] as Map<String, dynamic>),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'is_auth': isAuth,
-      'code': code,
-      'body': body.toJson(),
-    };
-  }
+  factory SsoDto.fromJson(Map<String, dynamic> json) =>
+      _$SsoDtoFromJson(json);
 }
 
 /// SSO Body DTO
-class SsoBodyDto {
-  final String name;
-  final String major;
+@freezed
+class SsoBodyDto with _$SsoBodyDto {
+  const factory SsoBodyDto({
+    required String name,
+    required String major,
+  }) = _SsoBodyDto;
 
-  const SsoBodyDto({
-    required this.name,
-    required this.major,
-  });
-
-  factory SsoBodyDto.fromJson(Map<String, dynamic> json) {
-    return SsoBodyDto(
-      name: json['name'] as String,
-      major: json['major'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'major': major,
-    };
-  }
+  factory SsoBodyDto.fromJson(Map<String, dynamic> json) =>
+      _$SsoBodyDtoFromJson(json);
 }
