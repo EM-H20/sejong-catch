@@ -220,7 +220,7 @@ class AppButton extends StatelessWidget {
         return _ButtonDimensions(
           height: 36.h,
           horizontalPadding: 16.w,
-          fontSize: 12.sp,
+          fontSize: 14.sp,
           iconSize: 16.w,
         );
 
@@ -228,7 +228,7 @@ class AppButton extends StatelessWidget {
         return _ButtonDimensions(
           height: 44.h,
           horizontalPadding: 20.w,
-          fontSize: 14.sp,
+          fontSize: 16.sp,
           iconSize: 18.w,
         );
 
@@ -236,7 +236,7 @@ class AppButton extends StatelessWidget {
         return _ButtonDimensions(
           height: 52.h,
           horizontalPadding: 24.w,
-          fontSize: 16.sp,
+          fontSize: 18.sp,
           iconSize: 20.w,
         );
     }

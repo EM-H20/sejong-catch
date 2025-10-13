@@ -160,18 +160,15 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 AppSpacing.verticalSpaceHuge,
 
                 // 🚀 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 56.h,
-                  child: AppButton.primary(
-                    text: '로그인',
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        controller.login();
-                      }
-                    },
-                    isLoading: loginState.isLoading,
-                  ),
+                AppButton.primary(
+                  size: AppButtonSize.large,
+                  text: '로그인',
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      controller.login();
+                    }
+                  },
+                  isLoading: loginState.isLoading,
                 ),
 
                 AppSpacing.verticalSpaceLG,
