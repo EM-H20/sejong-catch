@@ -10,7 +10,6 @@ import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
-import '../../features/queue/presentation/pages/queue_create_page.dart';
 
 /// 🧭 세종 캐치 앱의 GoRouter 중앙 설정
 ///
@@ -71,19 +70,11 @@ class AppRouter {
             ),
 
             // 📋 줄서기 탭 (Student 이상 권한 필요)
+            // 큐 생성은 QueuePage 내부 바텀시트로 처리됨
             GoRoute(
               path: AppRoutes.queue,
               name: 'queue',
               builder: (context, state) => const QueuePage(),
-              routes: [
-                // 🎪 큐 생성 페이지 (줄서기 하위 페이지, BottomNav 유지)
-                GoRoute(
-                  path: 'create',
-                  name: 'queue_create',
-                  builder: (context, state) => const QueueCreatePage(),
-                  // TODO: redirect를 통한 운영자 권한 가드 추가 예정
-                ),
-              ],
             ),
 
             // 👤 프로필 탭 (Student 이상 권한 필요)
@@ -120,7 +111,7 @@ class AppRouter {
         // ⚠️ 주의: 위의 nested routes로 이동됨
         // 상세 페이지: /feed/detail/:id, /search/detail/:id
         // 설정 페이지: /profile/settings
-        // 큐 생성: /queue/create
+        // 큐 생성: QueuePage 내부 바텀시트로 처리 (라우트 없음)
 
         // 🔧 관리자 콘솔 ShellRoute (별도 네비게이션)
         // TODO: 향후 Operator/Admin 권한용 콘솔 구현 예정
