@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sejong_catch_frontend/core/theme/app_colors.dart';
 import 'package:sejong_catch_frontend/core/theme/app_spacing.dart';
 import 'package:sejong_catch_frontend/core/theme/app_shadows.dart';
 import 'package:sejong_catch_frontend/core/widgets/app_divider.dart';
+import 'package:sejong_catch_frontend/features/auth/presentation/controllers/login_controller.dart';
 
 /// 👤 프로필 페이지 - 사용자 정보 및 설정
 ///
@@ -624,14 +626,35 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              // 다이얼로그 닫기
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('로그아웃되었습니다'),
-                  backgroundColor: AppColors.error,
-                ),
-              );
+
+              // 로그아웃 처리
+              final loginController =
+                  ref.read(loginControllerProvider.notifier);
+              final success = await loginController.logout();
+
+              if (mounted) {
+                if (success) {
+                  // 로그아웃 성공 → 로그인 페이지로 이동
+                  context.go('/login');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('로그아웃되었습니다. 다시 만나요! 👋'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                } else {
+                  // 로그아웃 실패 (드물지만 방어 코드)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('로그아웃 중 문제가 발생했어요'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              }
             },
             child: Text(
               '로그아웃',

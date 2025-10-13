@@ -98,4 +98,30 @@ class LoginController extends _$LoginController {
   void clearError() {
     state = state.copyWith(error: null);
   }
+
+  /// 로그아웃
+  ///
+  /// **동작**:
+  /// 1. AuthRepository.logout() 호출 (토큰 삭제 + SharedPreferences 삭제)
+  /// 2. State를 초기 상태로 리셋
+  /// 3. Mock/Real 모드 모두 지원
+  ///
+  /// **반환**: 성공 시 true, 실패 시 false
+  Future<bool> logout() async {
+    try {
+      // 1. Repository logout 호출 (토큰 + 로컬 데이터 삭제)
+      final authRepository = ref.read(authRepositoryProvider.notifier);
+      await authRepository.logout();
+
+      // 2. State 초기화
+      state = const LoginState();
+
+      // ✅ 로그아웃 성공!
+      return true;
+    } catch (e) {
+      // 에러 발생 시에도 State는 초기화 (로컬 삭제가 더 중요)
+      state = const LoginState();
+      return false;
+    }
+  }
 }
