@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_colors.dart';
+import 'app_spacing.dart';
+import 'text_styles.dart';
 
 /// Sejong Catch 앱의 테마를 정의하는 클래스입니다.
 ///
@@ -44,20 +46,15 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.white,
 
       // AppBar 테마 - extendBodyBehindAppBar용 투명 설정
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
         surfaceTintColor: Colors.transparent, // Material 3 tint 제거
-        titleTextStyle: TextStyle(
-          fontFamily: 'Pretendard',
-          color: AppColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w600, // SemiBold
-        ),
+        titleTextStyle: AppTextStyles.heading3,
         // 상태바 스타일 설정
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark, // 아이콘 어둡게
           statusBarBrightness: Brightness.light, // iOS용 라이트 바
@@ -70,7 +67,10 @@ class AppTheme {
         shadowColor: AppColors.shadow.withValues(alpha: 0.08),
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        margin: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xs,
+        ),
       ),
 
       // 버튼 테마들
@@ -84,12 +84,8 @@ class AppTheme {
           shadowColor: AppColors.brandCrimson.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           minimumSize: const Size(44, 44), // 접근성을 위한 최소 터치 영역
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: const TextStyle(
-            fontFamily: 'Pretendard',
-            fontSize: 16,
-            fontWeight: FontWeight.w600, // SemiBold
-          ),
+          padding: AppSpacing.buttonPadding,
+          textStyle: AppTextStyles.button,
         ),
       ),
 
@@ -101,7 +97,7 @@ class AppTheme {
           disabledForegroundColor: AppColors.disabled,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           minimumSize: const Size(44, 44),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: AppSpacing.buttonPadding,
         ),
       ),
 
@@ -112,7 +108,7 @@ class AppTheme {
           disabledForegroundColor: AppColors.disabled,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           minimumSize: const Size(44, 44),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: AppSpacing.buttonPaddingSmall,
         ),
       ),
 
@@ -121,21 +117,16 @@ class AppTheme {
         backgroundColor: AppColors.surface,
         selectedColor: AppColors.brandCrimsonLight,
         disabledColor: AppColors.disabled.withValues(alpha: 0.3),
-        labelStyle: const TextStyle(
-          fontFamily: 'Pretendard',
-          color: AppColors.textPrimary,
-          fontSize: 14,
-          fontWeight: FontWeight.w400, // Regular
-        ),
-        secondaryLabelStyle: const TextStyle(
-          fontFamily: 'Pretendard',
+        labelStyle: AppTextStyles.bodyMedium,
+        secondaryLabelStyle: AppTextStyles.label.copyWith(
           color: AppColors.brandCrimson,
-          fontSize: 14,
-          fontWeight: FontWeight.w500, // Medium
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide.none,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
       ),
 
       // Input 테마
@@ -158,52 +149,35 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        hintStyle: const TextStyle(
-          fontFamily: 'Pretendard',
+        contentPadding: AppSpacing.cardPadding,
+        hintStyle: AppTextStyles.bodyMedium.copyWith(
           color: AppColors.textSecondary,
-          fontWeight: FontWeight.w400, // Regular
         ),
       ),
 
       // Bottom Navigation Bar 테마
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.white,
         selectedItemColor: AppColors.brandCrimson,
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(
-          fontFamily: 'Pretendard',
-          fontSize: 12,
-          fontWeight: FontWeight.w500, // Medium
+        selectedLabelStyle: AppTextStyles.caption.copyWith(
+          fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: TextStyle(
-          fontFamily: 'Pretendard',
-          fontSize: 12,
-          fontWeight: FontWeight.w400, // Regular
-        ),
+        unselectedLabelStyle: AppTextStyles.caption,
       ),
 
       // Tab Bar 테마
-      tabBarTheme: const TabBarThemeData(
+      tabBarTheme: TabBarThemeData(
         labelColor: AppColors.brandCrimson,
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppColors.brandCrimson,
         indicatorSize: TabBarIndicatorSize.label,
-        labelStyle: TextStyle(
-          fontFamily: 'Pretendard',
-          fontSize: 16,
-          fontWeight: FontWeight.w600, // SemiBold
+        labelStyle: AppTextStyles.bodyLarge.copyWith(
+          fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: TextStyle(
-          fontFamily: 'Pretendard',
-          fontSize: 16,
-          fontWeight: FontWeight.w400, // Regular
-        ),
+        unselectedLabelStyle: AppTextStyles.bodyLarge,
       ),
 
       // Divider 테마

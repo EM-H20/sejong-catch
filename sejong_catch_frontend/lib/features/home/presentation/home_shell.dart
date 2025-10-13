@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../app/config/app_routes.dart';
+import '../../../core/config/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_shadows.dart';
 import '../../feed/presentation/pages/feed_page.dart';

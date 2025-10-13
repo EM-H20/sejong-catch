@@ -47,6 +47,10 @@ class AppColors {
   /// 설명 텍스트, 메타데이터에 사용
   static const Color textSecondary = Color(0xFF6B7280);
 
+  /// 3차 텍스트 색상
+  /// 캡션, 덜 중요한 정보에 사용
+  static const Color textTertiary = Color(0xFF9CA3AF);
+
   // ============================================================================
   // Semantic Colors
   // ============================================================================

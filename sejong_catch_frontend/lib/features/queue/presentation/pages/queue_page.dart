@@ -1,29 +1,14 @@
-library;
-
-/// 🎪 큐 목록 페이지
-///
-/// 축제/이벤트 큐 목록을 표시하는 메인 페이지
-/// Features:
-/// ✅ 타입별 필터 (음식/음료/이벤트/게임/포토존)
-/// ✅ 무한 스크롤 큐 목록
-/// ✅ 참여/취소 기능
-/// ✅ 내 참여 현황 표시
-/// ✅ 실시간 업데이트
-/// ✅ 86% 코드 감소 패턴 적용 (UI만 담당)
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/loading_widget.dart';
-import '../../../../core/widgets/empty_widget.dart';
-import '../../../../core/widgets/error_widget.dart';
-import '../controllers/queue_controller.dart';
-import '../widgets/ui/queue_card.dart';
-import '../widgets/ui/queue_filter_chips.dart';
-
+/// 📋 줄서기 페이지 - 축제/행사 큐 관리
+///
+/// CLAUDE.md 원칙:
+/// ✅ UI만 담당하는 깔끔한 페이지 (Profile 패턴 적용!)
+/// ✅ 실시간 큐 목록 + 내 순번
+/// ✅ 운영자는 FAB으로 큐 생성
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
 
@@ -31,234 +16,593 @@ class QueuePage extends ConsumerStatefulWidget {
   ConsumerState<QueuePage> createState() => _QueuePageState();
 }
 
-class _QueuePageState extends ConsumerState<QueuePage> {
-  final ScrollController _scrollController = ScrollController();
+class _QueuePageState extends ConsumerState<QueuePage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    // 페이지 로드 시 큐 목록 초기화
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(queueControllerProvider.notifier).loadQueues();
-    });
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          // 🏷️ 타입별 필터 칩
-          _buildFilterSection(),
-
-          // 📋 큐 목록
-          Expanded(
-            child: _buildQueueList(),
-          ),
-        ],
-      ),
-      floatingActionButton: _buildCreateButton(),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
+      floatingActionButton: _buildFAB(context),
     );
   }
 
-  /// 📱 앱바
-  PreferredSizeWidget _buildAppBar() {
+  /// 🔝 앱바
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      title: const Text('줄서기'),
+      backgroundColor: Colors.transparent,
       elevation: 0,
-      automaticallyImplyLeading: false, // BottomNav 탭이므로 뒤로가기 버튼 없음
-      title: Text(
-        '🎪 축제 줄서기',
-        style: TextStyle(
-          fontSize: 20.sp,
-          fontWeight: FontWeight.bold,
-          color: AppColors.brandCrimson,
-        ),
+      bottom: TabBar(
+        controller: _tabController,
+        indicatorColor: const Color(0xFFDC143C),
+        labelColor: const Color(0xFFDC143C),
+        unselectedLabelColor: const Color(0xFF6B7280),
+        tabs: const [
+          Tab(text: '전체 큐'),
+          Tab(text: '내 대기열'),
+        ],
       ),
-      actions: [
-        // 새로고침 버튼
-        IconButton(
-          onPressed: () => ref.read(queueControllerProvider.notifier).refresh(),
-          icon: Icon(
-            Icons.refresh,
-            color: AppColors.brandCrimson,
-            size: 24.sp,
-          ),
-        ),
-        SizedBox(width: 8.w),
+    );
+  }
+
+  /// 📄 메인 컨텐츠
+  Widget _buildBody(BuildContext context) {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        _buildAllQueuesTab(),
+        _buildMyQueuesTab(),
       ],
     );
   }
 
-  /// 🏷️ 필터 섹션
-  Widget _buildFilterSection() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.h),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
-          ),
-        ),
-      ),
-      child: QueueFilterChips(
-        selectedType: null, // TODO: state에서 selectedFilter 가져오기
-        onTypeSelected: (type) {
-          ref.read(queueControllerProvider.notifier).filterByType(type);
-        },
-      ),
+  /// 📋 전체 큐 탭
+  Widget _buildAllQueuesTab() {
+    // 임시 더미 데이터
+    final dummyQueues = [
+      {
+        'id': 'q1',
+        'name': '🍗 치킨부스',
+        'type': 'food',
+        'status': 'active',
+        'waiting': 12,
+        'currentNumber': 5,
+        'avgWaitTime': 15,
+      },
+      {
+        'id': 'q2',
+        'name': '🍺 주점',
+        'type': 'drink',
+        'status': 'active',
+        'waiting': 8,
+        'currentNumber': 3,
+        'avgWaitTime': 10,
+      },
+      {
+        'id': 'q3',
+        'name': '🎮 게임존',
+        'type': 'game',
+        'status': 'paused',
+        'waiting': 5,
+        'currentNumber': 2,
+        'avgWaitTime': 20,
+      },
+      {
+        'id': 'q4',
+        'name': '📸 포토존',
+        'type': 'photo',
+        'status': 'full',
+        'waiting': 30,
+        'currentNumber': 15,
+        'avgWaitTime': 5,
+      },
+    ];
+
+    if (dummyQueues.isEmpty) {
+      return _buildEmptyState('운영 중인 큐가 없어요', '축제 기간에 다시 확인해보세요! 🎪');
+    }
+
+    return ListView.separated(
+      padding: EdgeInsets.all(16.w),
+      itemCount: dummyQueues.length,
+      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+      itemBuilder: (context, index) {
+        return _buildQueueCard(dummyQueues[index]);
+      },
     );
   }
 
-  /// 📋 큐 목록
-  Widget _buildQueueList() {
-    final state = ref.watch(queueControllerProvider);
+  /// 📇 큐 카드
+  Widget _buildQueueCard(Map<String, dynamic> queue) {
+    final status = queue['status'] as String;
+    final isActive = status == 'active';
+    final isPaused = status == 'paused';
 
-    // 로딩 상태
-    if (state.isLoading && state.queues.isEmpty) {
-      return const LoadingWidget(message: '축제 정보를 불러오고 있어요');
+    Color statusColor;
+    String statusText;
+    if (isActive) {
+      statusColor = const Color(0xFF10B981);
+      statusText = '운영중';
+    } else if (isPaused) {
+      statusColor = const Color(0xFFF59E0B);
+      statusText = '일시정지';
+    } else {
+      statusColor = const Color(0xFFEF4444);
+      statusText = '마감';
     }
 
-    // 에러 상태
-    if (state.error != null) {
-      return AppErrorWidget(
-        message: state.error!,
-        onRetry: () => ref.read(queueControllerProvider.notifier).loadQueues(),
-      );
-    }
-
-    // 빈 상태
-    if (state.queues.isEmpty) {
-      return const AppEmptyWidget(
-        title: '진행 중인 축제가 없어요',
-        subtitle: '새로운 축제가 추가되면 알려드릴게요!',
-        icon: Icons.event_busy,
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: () => ref.read(queueControllerProvider.notifier).refresh(),
-      child: ListView.builder(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(vertical: 8.h),
-        itemCount: state.queues.length + (state.isLoading ? 1 : 0),
-        itemBuilder: (context, index) {
-          // 로딩 인디케이터
-          if (index >= state.queues.length) {
-            return Padding(
-              padding: EdgeInsets.all(16.w),
-              child: const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          final queue = state.queues[index];
-          final myParticipation = state.getMyParticipationInQueue(queue.id);
-          final isJoined = myParticipation != null;
-
-          return QueueCard(
-            queue: queue,
-            isJoined: isJoined,
-            myParticipation: myParticipation,
-            onTap: () => _navigateToQueueDetail(queue.id),
-            onJoinQueue: () => _joinQueue(queue.id),
-            onLeaveQueue: () => _leaveQueue(queue.id),
+    return GestureDetector(
+      onTap: () {
+        if (isActive) {
+          _showJoinQueueDialog(queue);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${queue['name']}은(는) 현재 $statusText 상태예요')),
           );
-        },
-      ),
-    );
-  }
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 헤더 (이름 + 상태)
+            Row(
+              children: [
+                Text(
+                  queue['name'] as String,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1F2937),
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    statusText,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: statusColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-  /// ➕ 큐 생성 버튼 (운영자만)
-  Widget? _buildCreateButton() {
-    // TODO: 실제 권한 체크는 AuthController에서
-    // const hasOperatorPermission = true; // 임시
+            SizedBox(height: 12.h),
 
-    return FloatingActionButton(
-      onPressed: () => context.push('create'),
-      backgroundColor: AppColors.brandCrimson,
-      child: Icon(
-        Icons.add,
-        color: Colors.white,
-        size: 24.sp,
-      ),
-    );
-  }
+            // 통계 정보
+            Row(
+              children: [
+                _buildStatItem(
+                  Icons.people,
+                  '대기',
+                  '${queue['waiting']}명',
+                  const Color(0xFF3B82F6),
+                ),
+                SizedBox(width: 16.w),
+                _buildStatItem(
+                  Icons.timer,
+                  '예상 대기',
+                  '${queue['avgWaitTime']}분',
+                  const Color(0xFF8B5CF6),
+                ),
+                SizedBox(width: 16.w),
+                _buildStatItem(
+                  Icons.confirmation_number,
+                  '현재 번호',
+                  '#${queue['currentNumber']}',
+                  const Color(0xFFDC143C),
+                ),
+              ],
+            ),
 
-  /// 🎯 큐 상세 페이지로 이동
-  void _navigateToQueueDetail(String queueId) {
-    context.push('/queue/$queueId');
-  }
-
-  /// 🎪 큐 참여
-  void _joinQueue(String queueId) {
-    ref.read(queueControllerProvider.notifier).joinQueue(queueId);
-
-    // 성공 시 스낵바 표시
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('줄서기에 참여했어요! 순서가 되면 알려드릴게요 🎉'),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
+            if (isActive) ...[
+              SizedBox(height: 12.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _showJoinQueueDialog(queue),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFDC143C),
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  child: Text(
+                    '줄서기',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 
-  /// ❌ 큐 참여 취소
-  void _leaveQueue(String queueId) {
-    final myParticipation = ref.read(queueControllerProvider).getMyParticipationInQueue(queueId);
+  /// 📊 통계 아이템
+  Widget _buildStatItem(IconData icon, String label, String value, Color color) {
+    return Row(
+      children: [
+        Icon(icon, size: 16.sp, color: color),
+        SizedBox(width: 4.w),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11.sp,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1F2937),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
-    if (myParticipation == null) return;
+  /// 📋 내 대기열 탭
+  Widget _buildMyQueuesTab() {
+    // 임시 더미 데이터 (내가 참여한 큐)
+    final myQueues = [
+      {
+        'id': 'mq1',
+        'name': '🍗 치킨부스',
+        'myNumber': 8,
+        'currentNumber': 5,
+        'peopleAhead': 3,
+        'estimatedWait': 15,
+      },
+    ];
 
-    // 확인 다이얼로그
+    if (myQueues.isEmpty) {
+      return _buildEmptyState('참여 중인 큐가 없어요', '전체 큐 탭에서 줄을 서보세요!');
+    }
+
+    return ListView.separated(
+      padding: EdgeInsets.all(16.w),
+      itemCount: myQueues.length,
+      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+      itemBuilder: (context, index) {
+        return _buildMyQueueCard(myQueues[index]);
+      },
+    );
+  }
+
+  /// 🎫 내 큐 카드
+  Widget _buildMyQueueCard(Map<String, dynamic> myQueue) {
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFDC143C), Color(0xFFB0102F)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFDC143C).withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // 큐 이름
+          Text(
+            myQueue['name'] as String,
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+
+          SizedBox(height: 20.h),
+
+          // 내 번호 (크게)
+          Container(
+            padding: EdgeInsets.all(24.w),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  '내 번호',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  '#${myQueue['myNumber']}',
+                  style: TextStyle(
+                    fontSize: 48.sp,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 20.h),
+
+          // 대기 정보
+          Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      '현재 번호',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '#${myQueue['currentNumber']}',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 1,
+                  height: 40.h,
+                  color: Colors.white.withValues(alpha: 0.3),
+                ),
+                Column(
+                  children: [
+                    Text(
+                      '내 앞 대기',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '${myQueue['peopleAhead']}명',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 1,
+                  height: 40.h,
+                  color: Colors.white.withValues(alpha: 0.3),
+                ),
+                Column(
+                  children: [
+                    Text(
+                      '예상 대기',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '${myQueue['estimatedWait']}분',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 16.h),
+
+          // 포기 버튼
+          TextButton(
+            onPressed: () => _showCancelDialog(myQueue),
+            child: Text(
+              '줄서기 포기',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white.withValues(alpha: 0.8),
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.white.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 📭 빈 상태
+  Widget _buildEmptyState(String title, String subtitle) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.queue,
+            size: 64.sp,
+            color: const Color(0xFF9CA3AF),
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF374151),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: const Color(0xFF6B7280),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ➕ FAB (운영자 전용)
+  Widget _buildFAB(BuildContext context) {
+    // 임시: 실제로는 권한 체크 (role >= Operator)
+    const isOperator = true;
+
+    return FloatingActionButton.extended(
+      onPressed: () {
+        context.push('/queue/create');
+      },
+      backgroundColor: const Color(0xFFDC143C),
+      icon: const Icon(Icons.add, color: Colors.white),
+      label: Text(
+        '큐 생성',
+        style: TextStyle(
+          fontSize: 14.sp,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  /// 💬 줄서기 다이얼로그
+  void _showJoinQueueDialog(Map<String, dynamic> queue) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('줄서기 취소'),
-        content: const Text('정말로 줄서기를 취소하시겠어요?\n순번을 다시 받으려면 처음부터 줄을 서야 해요.'),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+        title: Text('${queue['name']} 줄서기'),
+        content: Text(
+          '현재 ${queue['waiting']}명이 대기 중이에요.\n'
+          '예상 대기시간은 약 ${queue['avgWaitTime']}분입니다.\n\n'
+          '줄을 서시겠어요?',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              '아니요',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('취소'),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              ref.read(queueControllerProvider.notifier).leaveQueue(queueId);
-
+              Navigator.pop(context);
+              setState(() {
+                _tabController.animateTo(1); // 내 대기열 탭으로 이동
+              });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('줄서기를 취소했어요'),
-                  backgroundColor: Colors.grey[600],
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
+                  content: Text('${queue['name']} 줄서기 완료! 순번을 확인하세요 🎉'),
+                  backgroundColor: const Color(0xFFDC143C),
                 ),
               );
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC143C),
+            ),
+            child: const Text('줄서기', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ❌ 포기 다이얼로그
+  void _showCancelDialog(Map<String, dynamic> myQueue) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('줄서기 포기'),
+        content: Text('${myQueue['name']} 줄서기를 포기하시겠어요?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('아니요'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('줄서기를 포기했어요')),
+              );
+            },
             child: Text(
-              '네, 취소할게요',
-              style: TextStyle(color: AppColors.error),
+              '포기',
+              style: TextStyle(color: Colors.red[600]),
             ),
           ),
         ],
