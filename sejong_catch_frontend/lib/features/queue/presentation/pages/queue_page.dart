@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sejong_catch_frontend/core/theme/app_colors.dart';
 
 /// 📋 줄서기 페이지 - 축제/행사 큐 관리
 ///
@@ -546,9 +547,9 @@ class _QueuePageState extends ConsumerState<QueuePage>
 
     return FloatingActionButton(
       onPressed: _showCreateQueueBottomSheet,
-      backgroundColor: const Color(0xFFDC143C),
+      backgroundColor: AppColors.textSecondary, // 회색 계열 (#6B7280)
       elevation: 4,
-      child: Icon(Icons.add, size: 28.sp, color: Colors.white),
+      child: Icon(Icons.add, size: 28.sp, color: AppColors.white),
     );
   }
 

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sejong_catch_frontend/core/theme/app_colors.dart';
+import 'package:sejong_catch_frontend/core/theme/app_spacing.dart';
+import 'package:sejong_catch_frontend/core/theme/app_shadows.dart';
+import 'package:sejong_catch_frontend/core/widgets/app_divider.dart';
 
 /// 📰 피드 페이지 - 공모전·취업·논문·공지·축제 통합 피드
 ///
@@ -8,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 /// ✅ UI만 담당하는 깔끔한 페이지 (Search 패턴 적용!)
 /// ✅ 카테고리 필터 칩 + 피드 카드 리스트
 /// ✅ 더미 데이터 하드코딩
+/// ✅ AppColors, AppSpacing, AppDivider 디자인 토큰 사용
 class FeedPage extends ConsumerStatefulWidget {
   const FeedPage({super.key});
 
@@ -81,12 +86,15 @@ class _FeedPageState extends ConsumerState<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F8),
+      backgroundColor: AppColors.surface,
       appBar: _buildAppBar(),
       body: Column(
         children: [
           // 카테고리 필터
           _buildCategoryFilter(),
+
+          // 구분선 추가 (얇은 구분선)
+          AppDivider.thin(),
 
           // 피드 리스트
           Expanded(
@@ -107,26 +115,26 @@ class _FeedPageState extends ConsumerState<FeedPage> {
             style: TextStyle(
               fontSize: 20.sp,
               fontWeight: FontWeight.w700,
-              color: const Color(0xFFDC143C),
+              color: AppColors.brandCrimson,
             ),
           ),
-          SizedBox(width: 6.w),
+          AppSpacing.horizontalSpaceXS,
           Text(
             '피드',
             style: TextStyle(
               fontSize: 20.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1F2937),
+              color: AppColors.textPrimary,
             ),
           ),
         ],
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0,
       actions: [
         IconButton(
           icon: Icon(Icons.notifications_outlined, size: 24.sp),
-          color: const Color(0xFF6B7280),
+          color: AppColors.textSecondary,
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('알림 기능 준비 중! 🔔')),
@@ -142,16 +150,13 @@ class _FeedPageState extends ConsumerState<FeedPage> {
     return Container(
       height: 56.h,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(color: const Color(0xFFE5E7EB), width: 1),
-        ),
+        color: AppColors.white,
       ),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
         itemCount: _categories.length,
-        separatorBuilder: (context, index) => SizedBox(width: 8.w),
+        separatorBuilder: (context, index) => AppSpacing.horizontalSpaceSM,
         itemBuilder: (context, index) {
           final category = _categories[index];
           final isSelected = category == _selectedCategory;
@@ -165,12 +170,10 @@ class _FeedPageState extends ConsumerState<FeedPage> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFDC143C) : Colors.white,
+                color: isSelected ? AppColors.brandCrimson : AppColors.white,
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFFDC143C)
-                      : const Color(0xFFE5E7EB),
+                  color: isSelected ? AppColors.brandCrimson : AppColors.divider,
                   width: 1.5,
                 ),
               ),
@@ -180,7 +183,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                    color: isSelected ? AppColors.white : AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -204,9 +207,9 @@ class _FeedPageState extends ConsumerState<FeedPage> {
     }
 
     return ListView.separated(
-      padding: EdgeInsets.all(18.w),
+      padding: AppSpacing.screenPadding,
       itemCount: filteredItems.length,
-      separatorBuilder: (context, index) => SizedBox(height: 16.h),
+      separatorBuilder: (context, index) => AppSpacing.verticalSpaceLG,
       itemBuilder: (context, index) {
         final item = filteredItems[index];
         return _buildFeedCard(item);
@@ -228,21 +231,15 @@ class _FeedPageState extends ConsumerState<FeedPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: isUrgent
-                ? const Color(0xFFDC143C).withValues(alpha: 0.3)
-                : const Color(0xFFE5E7EB),
+                ? AppColors.brandCrimson.withValues(alpha: 0.3)
+                : AppColors.divider,
             width: isUrgent ? 2 : 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: AppShadows.basic,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,7 +248,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
             Container(
               height: 140.h,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: AppColors.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
               ),
               child: Stack(
@@ -261,7 +258,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                     child: Icon(
                       Icons.image_outlined,
                       size: 48.sp,
-                      color: const Color(0xFF9CA3AF),
+                      color: AppColors.disabled,
                     ),
                   ),
 
@@ -285,21 +282,16 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                       child: Container(
                         padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.white,
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 4,
-                            ),
-                          ],
+                          boxShadow: AppShadows.basic,
                         ),
                         child: Icon(
                           item['isBookmarked'] as bool
                               ? Icons.bookmark
                               : Icons.bookmark_border,
                           size: 20.sp,
-                          color: const Color(0xFFDC143C),
+                          color: AppColors.brandCrimson,
                         ),
                       ),
                     ),
@@ -308,9 +300,12 @@ class _FeedPageState extends ConsumerState<FeedPage> {
               ),
             ),
 
+            // 구분선 (카드 내부 - 썸네일과 내용 사이)
+            AppDivider.thin(),
+
             // 카드 내용
             Padding(
-              padding: EdgeInsets.all(16.w),
+              padding: AppSpacing.cardPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -320,26 +315,31 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1F2937),
+                      color: AppColors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  SizedBox(height: 6.h),
+                  AppSpacing.verticalSpaceXS,
 
                   // 설명
                   Text(
                     item['description'] as String,
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: const Color(0xFF6B7280),
+                      color: AppColors.textSecondary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  SizedBox(height: 12.h),
+                  AppSpacing.verticalSpaceMD,
+
+                  // 구분선 (내용과 하단 정보 사이)
+                  AppDivider.thin(),
+
+                  AppSpacing.verticalSpaceMD,
 
                   // 하단 정보 (D-Day, 조회수, 우선순위)
                   Row(
@@ -348,29 +348,26 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                       _buildInfoChip(
                         icon: Icons.access_time,
                         label: 'D-$dDay',
-                        color: isUrgent
-                            ? const Color(0xFFDC143C)
-                            : const Color(0xFF6B7280),
+                        color: isUrgent ? AppColors.error : AppColors.textSecondary,
                         backgroundColor: isUrgent
-                            ? const Color(0xFFFEF2F2)
-                            : const Color(0xFFF9FAFB),
+                            ? AppColors.error.withValues(alpha: 0.1)
+                            : AppColors.surface,
                       ),
 
-                      SizedBox(width: 8.w),
+                      AppSpacing.horizontalSpaceSM,
 
                       // 조회수
                       _buildInfoChip(
                         icon: Icons.visibility_outlined,
                         label: _formatNumber(item['viewCount'] as int),
-                        color: const Color(0xFF6B7280),
-                        backgroundColor: const Color(0xFFF9FAFB),
+                        color: AppColors.textSecondary,
+                        backgroundColor: AppColors.surface,
                       ),
 
-                      SizedBox(width: 8.w),
+                      AppSpacing.horizontalSpaceSM,
 
                       // 우선순위
-                      if (priority != 'low')
-                        _buildPriorityBadge(priority),
+                      if (priority != 'low') _buildPriorityBadge(priority),
                     ],
                   ),
                 ],
@@ -387,22 +384,22 @@ class _FeedPageState extends ConsumerState<FeedPage> {
     Color badgeColor;
     switch (category) {
       case '공모전':
-        badgeColor = const Color(0xFFDC143C);
+        badgeColor = AppColors.brandCrimson;
         break;
       case '취업':
-        badgeColor = const Color(0xFF2563EB);
+        badgeColor = AppColors.trustAcademic; // 파란색
         break;
       case '논문':
-        badgeColor = const Color(0xFF7C3AED);
+        badgeColor = const Color(0xFF7C3AED); // 보라색
         break;
       case '학교공지':
-        badgeColor = const Color(0xFF059669);
+        badgeColor = AppColors.success;
         break;
       case '축제':
-        badgeColor = const Color(0xFFF59E0B);
+        badgeColor = AppColors.warning;
         break;
       default:
-        badgeColor = const Color(0xFF6B7280);
+        badgeColor = AppColors.textSecondary;
     }
 
     return Container(
@@ -416,7 +413,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
         style: TextStyle(
           fontSize: 11.sp,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: AppColors.white,
         ),
       ),
     );
@@ -439,7 +436,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14.sp, color: color),
-          SizedBox(width: 4.w),
+          AppSpacing.horizontalSpaceXS,
           Text(
             label,
             style: TextStyle(
@@ -461,15 +458,15 @@ class _FeedPageState extends ConsumerState<FeedPage> {
     switch (priority) {
       case 'high':
         label = '높음';
-        color = const Color(0xFFDC143C);
+        color = AppColors.priorityHigh;
         break;
       case 'mid':
         label = '중간';
-        color = const Color(0xFFF59E0B);
+        color = AppColors.priorityMid;
         break;
       default:
         label = '낮음';
-        color = const Color(0xFF6B7280);
+        color = AppColors.textSecondary;
     }
 
     return Container(
@@ -483,7 +480,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.flag, size: 12.sp, color: color),
-          SizedBox(width: 4.w),
+          AppSpacing.horizontalSpaceXS,
           Text(
             label,
             style: TextStyle(
@@ -506,23 +503,23 @@ class _FeedPageState extends ConsumerState<FeedPage> {
           Icon(
             Icons.inbox_outlined,
             size: 64.sp,
-            color: const Color(0xFF9CA3AF),
+            color: AppColors.disabled,
           ),
-          SizedBox(height: 16.h),
+          AppSpacing.verticalSpaceLG,
           Text(
             '$_selectedCategory 정보가 없어요',
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+              color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 8.h),
+          AppSpacing.verticalSpaceSM,
           Text(
             '다른 카테고리를 확인해보세요',
             style: TextStyle(
               fontSize: 14.sp,
-              color: const Color(0xFF6B7280),
+              color: AppColors.textSecondary,
             ),
           ),
         ],
