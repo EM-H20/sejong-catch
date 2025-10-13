@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/services/token_storage_service.dart';
+import '../../../../core/services/onboarding_service.dart';
 import '../datasources/auth_api.dart';
 import '../models/request/login_request.dart';
 import '../models/response/login_response.dart';
@@ -85,9 +87,33 @@ class AuthRepository extends _$AuthRepository {
   }
 
   /// 로그아웃
+  ///
+  /// **동작**:
+  /// 1. 토큰 삭제 (FlutterSecureStorage)
+  /// 2. SharedPreferences 모든 데이터 삭제 (온보딩 상태 포함)
+  /// 3. API 로그아웃 호출 (선택적, Mock 모드에서는 스킵)
+  ///
+  /// **Mock/Real 모드 모두 지원**
   Future<void> logout() async {
-    final api = ref.read(authApiProvider);
-    await api.logout();
+    // 1. 토큰 삭제
+    final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
+    await tokenStorage.clearTokens();
+
+    // 2. SharedPreferences 전체 삭제 (온보딩 상태 초기화)
+    final onboardingService = ref.read(onboardingServiceProvider);
+    await onboardingService.clearAllLocalData();
+
+    // 3. API 로그아웃 호출 (Real 모드일 때만)
+    const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
+    if (!useMock) {
+      try {
+        final api = ref.read(authApiProvider);
+        await api.logout();
+      } catch (e) {
+        // API 로그아웃 실패해도 로컬 데이터는 이미 삭제됨
+        // 실패해도 계속 진행 (로컬 삭제가 더 중요함)
+      }
+    }
   }
 
   /// 내 정보 조회

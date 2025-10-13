@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_spacing.dart';
+
 /// 🔍 검색 페이지 - 정보 검색 및 필터링
 ///
 /// CLAUDE.md 원칙:
 /// ✅ UI만 담당하는 깔끔한 페이지 (Profile 패턴 적용!)
 /// ✅ 검색바 + 인기 키워드
 /// ✅ 고급 필터 바텀시트
+/// ✅ AppColors, AppSpacing, AppShadows 공용 컴포넌트 100% 적용
+/// ✅ 프로페셔널 디자인 폴리시
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
@@ -39,132 +45,115 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context),
-    );
-  }
+      backgroundColor: AppColors.surface,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // 검색바 (필터 버튼 포함)
+            _buildSearchBar(),
 
-  /// 🔝 앱바
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text('검색'),
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-    );
-  }
+            // 구분선
+            Divider(height: 1, thickness: 1, color: AppColors.divider),
 
-  /// 📄 메인 컨텐츠
-  Widget _buildBody(BuildContext context) {
-    return Column(
-      children: [
-        // 검색바
-        _buildSearchBar(),
-
-        // 검색 결과 또는 인기 키워드
-        Expanded(
-          child: _isSearching ? _buildSearchResults() : _buildPopularSection(),
-        ),
-      ],
-    );
-  }
-
-  /// 🔎 검색바
-  Widget _buildSearchBar() {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: const Color(0xFFE5E7EB),
-            width: 1,
-          ),
+            // 검색 결과 또는 인기 키워드
+            Expanded(
+              child: _isSearching
+                  ? _buildSearchResults()
+                  : _buildPopularSection(),
+            ),
+          ],
         ),
       ),
-      child: Column(
+    );
+  }
+
+  /// 🔎 검색바 - 깔끔한 버전!
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: AppSpacing.cardPadding,
+      child: Row(
         children: [
-          // 검색 입력 필드
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: '공모전, 취업, 논문 검색...',
-                hintStyle: TextStyle(
-                  fontSize: 14.sp,
-                  color: const Color(0xFF9CA3AF),
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: const Color(0xFF6B7280),
-                  size: 20.sp,
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.clear,
-                          color: const Color(0xFF6B7280),
-                          size: 20.sp,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                            _isSearching = false;
-                            _searchResults.clear();
-                          });
-                        },
-                      )
-                    : null,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 12.h,
-                ),
+          // 검색 입력 필드 (확장)
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: AppColors.divider),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _isSearching = value.isNotEmpty;
-                  if (_isSearching) {
-                    // 임시 검색 로직
-                    _searchResults = [
-                      '🔥 AI 해커톤 대회 - $value 관련',
-                      '📌 $value 취업 박람회',
-                      '🎓 $value 관련 논문 공모',
-                    ];
-                  }
-                });
-              },
-              onSubmitted: (value) => _performSearch(value),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: '공모전, 취업, 논문 검색...',
+                  hintStyle: TextStyle(
+                    fontSize: 14.sp,
+                    color: AppColors.textTertiary,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.textSecondary,
+                    size: 20.sp,
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.clear,
+                            color: AppColors.textSecondary,
+                            size: 20.sp,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _isSearching = false;
+                              _searchResults.clear();
+                            });
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: AppSpacing.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _isSearching = value.isNotEmpty;
+                    if (_isSearching) {
+                      // 임시 검색 로직
+                      _searchResults = [
+                        '🔥 AI 해커톤 대회 - $value 관련',
+                        '📌 $value 취업 박람회',
+                        '🎓 $value 관련 논문 공모',
+                      ];
+                    }
+                  });
+                },
+                onSubmitted: (value) => _performSearch(value),
+              ),
             ),
           ),
 
-          SizedBox(height: 12.h),
+          AppSpacing.horizontalSpaceMD,
 
-          // 고급 필터 버튼
+          // 고급 필터 버튼 (검색바 옆으로 이동!) 🎯
           GestureDetector(
             onTap: _showFilterBottomSheet,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.tune,
-                  size: 16.sp,
-                  color: const Color(0xFFDC143C),
+            child: Container(
+              padding: EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.brandCrimsonLight,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: AppColors.brandCrimson.withValues(alpha: 0.2),
                 ),
-                SizedBox(width: 6.w),
-                Text(
-                  '고급 필터',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFFDC143C),
-                  ),
-                ),
-              ],
+                boxShadow: AppShadows.basic,
+              ),
+              child: Icon(
+                Icons.tune,
+                size: 20.sp,
+                color: AppColors.brandCrimson,
+              ),
             ),
           ),
         ],
@@ -175,7 +164,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   /// 🔥 인기 키워드 섹션
   Widget _buildPopularSection() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
+      padding: AppSpacing.cardPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -185,26 +174,26 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               Icon(
                 Icons.trending_up,
                 size: 20.sp,
-                color: const Color(0xFFDC143C),
+                color: AppColors.brandCrimson,
               ),
-              SizedBox(width: 8.w),
+              AppSpacing.horizontalSpaceSM,
               Text(
                 '인기 검색어',
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1F2937),
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
 
-          SizedBox(height: 16.h),
+          AppSpacing.verticalSpaceLG,
 
           // 인기 키워드 칩들
           Wrap(
-            spacing: 8.w,
-            runSpacing: 8.h,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm.h,
             children: _popularKeywords.asMap().entries.map((entry) {
               final index = entry.key;
               final keyword = entry.value;
@@ -212,7 +201,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             }).toList(),
           ),
 
-          SizedBox(height: 32.h),
+          AppSpacing.verticalSpaceXXXL,
+
+          // 구분선 추가
+          Divider(thickness: 1, color: AppColors.divider),
+
+          AppSpacing.verticalSpaceXL,
 
           // 최근 검색 (빈 상태)
           _buildRecentSearchSection(),
@@ -221,8 +215,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 
-  /// 🏷️ 키워드 칩
+  /// 🏷️ 키워드 칩 - 프로 디자인 버전!
   Widget _buildKeywordChip(String keyword, int rank) {
+    final isTopRank = rank <= 3;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -236,15 +232,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm.h + 2.h,
+        ),
         decoration: BoxDecoration(
-          color: rank <= 3 ? const Color(0xFFFEF2F2) : const Color(0xFFF9FAFB),
+          color: isTopRank ? AppColors.brandCrimsonLight : AppColors.surface,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: rank <= 3
-                ? const Color(0xFFDC143C).withValues(alpha: 0.3)
-                : const Color(0xFFE5E7EB),
+            color: isTopRank
+                ? AppColors.brandCrimson.withValues(alpha: 0.3)
+                : AppColors.divider,
           ),
+          boxShadow: AppShadows.basic,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -253,9 +253,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               width: 20.w,
               height: 20.h,
               decoration: BoxDecoration(
-                color: rank <= 3
-                    ? const Color(0xFFDC143C)
-                    : const Color(0xFF9CA3AF),
+                color: isTopRank ? AppColors.brandCrimson : AppColors.disabled,
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -264,18 +262,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   style: TextStyle(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: AppColors.white,
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 8.w),
+            AppSpacing.horizontalSpaceSM,
             Text(
               keyword,
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF374151),
+                color: AppColors.textPrimary,
               ),
             ),
           ],
@@ -291,37 +289,29 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       children: [
         Row(
           children: [
-            Icon(
-              Icons.history,
-              size: 20.sp,
-              color: const Color(0xFF6B7280),
-            ),
-            SizedBox(width: 8.w),
+            Icon(Icons.history, size: 20.sp, color: AppColors.textSecondary),
+            AppSpacing.horizontalSpaceSM,
             Text(
               '최근 검색',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF1F2937),
+                color: AppColors.textPrimary,
               ),
             ),
           ],
         ),
-        SizedBox(height: 16.h),
+        AppSpacing.verticalSpaceLG,
         Center(
           child: Column(
             children: [
-              Icon(
-                Icons.search_off,
-                size: 48.sp,
-                color: const Color(0xFF9CA3AF),
-              ),
-              SizedBox(height: 8.h),
+              Icon(Icons.search_off, size: 48.sp, color: AppColors.disabled),
+              AppSpacing.verticalSpaceSM,
               Text(
                 '최근 검색 내역이 없어요',
                 style: TextStyle(
                   fontSize: 14.sp,
-                  color: const Color(0xFF6B7280),
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],
@@ -338,59 +328,53 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     }
 
     return ListView.separated(
-      padding: EdgeInsets.all(16.w),
+      padding: AppSpacing.cardPadding,
       itemCount: _searchResults.length,
-      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+      separatorBuilder: (context, index) => AppSpacing.verticalSpaceMD,
       itemBuilder: (context, index) {
         return _buildResultCard(_searchResults[index]);
       },
     );
   }
 
-  /// 📇 결과 카드
+  /// 📇 결과 카드 - 프로 디자인 버전!
   Widget _buildResultCard(String title) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title 상세보기 (준비 중)')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$title 상세보기 (준비 중)')));
       },
       child: Container(
-        padding: EdgeInsets.all(16.w),
+        padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: AppColors.divider),
+          boxShadow: AppShadows.medium,
         ),
         child: Row(
           children: [
             Icon(
               Icons.article_outlined,
               size: 24.sp,
-              color: const Color(0xFFDC143C),
+              color: AppColors.brandCrimson,
             ),
-            SizedBox(width: 12.w),
+            AppSpacing.horizontalSpaceMD,
             Expanded(
               child: Text(
                 title,
                 style: TextStyle(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF1F2937),
+                  color: AppColors.textPrimary,
                 ),
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
               size: 16.sp,
-              color: const Color(0xFF9CA3AF),
+              color: AppColors.disabled,
             ),
           ],
         ),
@@ -404,27 +388,20 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search_off,
-            size: 64.sp,
-            color: const Color(0xFF9CA3AF),
-          ),
-          SizedBox(height: 16.h),
+          Icon(Icons.search_off, size: 64.sp, color: AppColors.disabled),
+          AppSpacing.verticalSpaceLG,
           Text(
             '검색 결과가 없어요',
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+              color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 8.h),
+          AppSpacing.verticalSpaceSM,
           Text(
             '다른 키워드로 시도해보세요',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: const Color(0xFF6B7280),
-            ),
+            style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -436,10 +413,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (context) => _FilterBottomSheet(),
+      backgroundColor: Colors.transparent,
+      builder: (context) => const _FilterBottomSheet(),
     );
   }
 
@@ -449,17 +424,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
     setState(() {
       _isSearching = true;
-      _searchResults = [
-        '$query 관련 공모전',
-        '$query 취업 정보',
-        '$query 연구 기회',
-      ];
+      _searchResults = ['$query 관련 공모전', '$query 취업 정보', '$query 연구 기회'];
     });
   }
 }
 
-/// 🎛️ 필터 바텀시트 위젯
+/// 🎛️ 필터 바텀시트 위젯 - 프로 디자인 버전!
 class _FilterBottomSheet extends StatefulWidget {
+  const _FilterBottomSheet();
+
   @override
   State<_FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
@@ -475,7 +448,12 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        boxShadow: AppShadows.strong,
+      ),
+      padding: AppSpacing.modalPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,18 +466,18 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 style: TextStyle(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1F2937),
+                  color: AppColors.textPrimary,
                 ),
               ),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close, color: AppColors.textSecondary),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
 
-          SizedBox(height: 24.h),
+          AppSpacing.verticalSpaceXXL,
 
           // 카테고리
           Text(
@@ -507,13 +485,13 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+              color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 12.h),
+          AppSpacing.verticalSpaceMD,
           Wrap(
-            spacing: 8.w,
-            runSpacing: 8.h,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm.h,
             children: _categories.map((category) {
               final isSelected = category == _selectedCategory;
               return GestureDetector(
@@ -523,25 +501,30 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   });
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm.h,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFFDC143C)
-                        : const Color(0xFFF9FAFB),
+                        ? AppColors.brandCrimson
+                        : AppColors.surface,
                     borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFFDC143C)
-                          : const Color(0xFFE5E7EB),
+                          ? AppColors.brandCrimson
+                          : AppColors.divider,
                     ),
+                    boxShadow: isSelected ? AppShadows.crimsonGlow : null,
                   ),
                   child: Text(
                     category,
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
-                      color:
-                          isSelected ? Colors.white : const Color(0xFF374151),
+                      color: isSelected
+                          ? AppColors.white
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -549,7 +532,12 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             }).toList(),
           ),
 
-          SizedBox(height: 24.h),
+          AppSpacing.verticalSpaceXXL,
+
+          // 구분선 추가
+          Divider(thickness: 1, color: AppColors.divider),
+
+          AppSpacing.verticalSpaceXL,
 
           // 신뢰도
           Text(
@@ -557,13 +545,13 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+              color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 12.h),
+          AppSpacing.verticalSpaceMD,
           Wrap(
-            spacing: 8.w,
-            runSpacing: 8.h,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm.h,
             children: _trustLevels.map((trust) {
               final isSelected = trust == _selectedTrust;
               return GestureDetector(
@@ -573,25 +561,30 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   });
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm.h,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFFDC143C)
-                        : const Color(0xFFF9FAFB),
+                        ? AppColors.brandCrimson
+                        : AppColors.surface,
                     borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFFDC143C)
-                          : const Color(0xFFE5E7EB),
+                          ? AppColors.brandCrimson
+                          : AppColors.divider,
                     ),
+                    boxShadow: isSelected ? AppShadows.crimsonGlow : null,
                   ),
                   child: Text(
                     trust,
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
-                      color:
-                          isSelected ? Colors.white : const Color(0xFF374151),
+                      color: isSelected
+                          ? AppColors.white
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -599,7 +592,12 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             }).toList(),
           ),
 
-          SizedBox(height: 24.h),
+          AppSpacing.verticalSpaceXXL,
+
+          // 구분선 추가
+          Divider(thickness: 1, color: AppColors.divider),
+
+          AppSpacing.verticalSpaceXL,
 
           // 마감일
           Text(
@@ -607,7 +605,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+              color: AppColors.textPrimary,
             ),
           ),
           RangeSlider(
@@ -615,7 +613,8 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             min: 0,
             max: 90,
             divisions: 18,
-            activeColor: const Color(0xFFDC143C),
+            activeColor: AppColors.brandCrimson,
+            inactiveColor: AppColors.divider,
             onChanged: (values) {
               setState(() {
                 _deadlineRange = values;
@@ -623,7 +622,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             },
           ),
 
-          SizedBox(height: 24.h),
+          AppSpacing.verticalSpaceXXL,
 
           // 적용 버튼
           SizedBox(
@@ -631,23 +630,25 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('필터가 적용되었어요! 🎯')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('필터가 적용되었어요! 🎯')));
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDC143C),
+                backgroundColor: AppColors.brandCrimson,
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
+                elevation: 0,
+                shadowColor: Colors.transparent,
               ),
               child: Text(
                 '필터 적용',
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               ),
             ),
