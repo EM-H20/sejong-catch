@@ -11,7 +11,6 @@ import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../services/token_storage_service.dart';
-import '../services/onboarding_service.dart';
 
 /// 🧭 세종 캐치 앱의 GoRouter 중앙 설정
 ///
@@ -26,7 +25,7 @@ class AppRouter {
   // 🎯 GoRouter 인스턴스 생성 (ProviderContainer 필요)
   static GoRouter createRouter(ProviderContainer container) {
     return GoRouter(
-      initialLocation: AppRoutes.onboarding, // 앱 시작 시 온보딩 → redirect에서 자동 라우팅
+      initialLocation: AppRoutes.feed, // 앱 시작 시 피드 시도 → redirect에서 상태별 자동 라우팅
 
       routes: [
         // 🏠 메인 앱 ShellRoute - BottomNavigationBar 포함
@@ -134,18 +133,8 @@ class AppRouter {
         final tokenStorage = container.read(tokenStorageServiceProvider.notifier);
         final accessToken = await tokenStorage.getAccessToken();
 
-        // 토큰이 없으면 → 온보딩 체크
+        // 토큰이 없으면 → 무조건 로그인 페이지로 (온보딩은 로그인 후)
         if (accessToken == null || accessToken.isEmpty) {
-          // 2️⃣ 온보딩 완료 여부 확인
-          final onboardingService = container.read(onboardingServiceProvider);
-          final hasSeenOnboarding = await onboardingService.hasSeenOnboarding();
-
-          // 온보딩 안 봤으면 → 온보딩 페이지로
-          if (!hasSeenOnboarding) {
-            return AppRoutes.onboarding;
-          }
-
-          // 온보딩 봤지만 토큰 없음 → 로그인 페이지로
           return AppRoutes.auth;
         }
 

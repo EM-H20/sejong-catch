@@ -27,6 +27,9 @@ class OnboardingService {
   }
 
   /// 로컬 데이터 전체 삭제 (로그아웃)
+  ///
+  /// **동작**: SharedPreferences의 모든 데이터를 삭제합니다.
+  /// 온보딩 상태도 삭제되어 다음 실행 시 온보딩부터 시작합니다.
   Future<void> clearAllLocalData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

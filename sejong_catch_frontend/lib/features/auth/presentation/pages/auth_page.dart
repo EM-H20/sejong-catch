@@ -7,6 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
+import '../../../../core/services/onboarding_service.dart';
 import '../controllers/login_controller.dart';
 
 /// 세종 캐치 로그인 화면
@@ -37,12 +38,22 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     final loginState = ref.watch(loginControllerProvider);
     final controller = ref.read(loginControllerProvider.notifier);
 
-    // 🎯 로그인 성공 시 온보딩으로 네비게이션
-    ref.listen(loginControllerProvider, (previous, next) {
+    // 🎯 로그인 성공 시 온보딩 체크 후 네비게이션
+    ref.listen(loginControllerProvider, (previous, next) async {
       if (next.isLoggedIn && !next.isLoading) {
-        // 로그인 성공! 온보딩 페이지로 이동
-        // app_router의 redirect가 자동으로 온보딩 완료 여부 체크 → 피드로
-        context.go('/onboarding');
+        // 로그인 성공! 온보딩 체크
+        final onboardingService = ref.read(onboardingServiceProvider);
+        final hasSeenOnboarding = await onboardingService.hasSeenOnboarding();
+
+        if (mounted) {
+          if (!hasSeenOnboarding) {
+            // 온보딩 안 봤으면 → 온보딩 페이지
+            context.go('/onboarding');
+          } else {
+            // 온보딩 봤으면 → 피드 페이지
+            context.go('/feed');
+          }
+        }
       }
     });
 

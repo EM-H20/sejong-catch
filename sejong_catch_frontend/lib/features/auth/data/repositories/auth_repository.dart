@@ -111,7 +111,6 @@ class AuthRepository extends _$AuthRepository {
         await api.logout();
       } catch (e) {
         // API 로그아웃 실패해도 로컬 데이터는 이미 삭제됨
-        // 실패해도 계속 진행 (로컬 삭제가 더 중요함)
       }
     }
   }

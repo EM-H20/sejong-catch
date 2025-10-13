@@ -96,9 +96,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           icon: Icon(Icons.settings_outlined, size: 24.sp),
           color: AppColors.textSecondary,
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('설정 페이지 준비 중! ⚙️')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('설정 페이지 준비 중! ⚙️')));
           },
         ),
       ],
@@ -115,10 +115,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       padding: AppSpacing.screenPaddingLarge,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.brandCrimson,
-            AppColors.brandCrimsonDark,
-          ],
+          colors: [AppColors.brandCrimson, AppColors.brandCrimsonDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -132,10 +129,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             decoration: BoxDecoration(
               color: AppColors.white,
               shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.white,
-                width: 4,
-              ),
+              border: Border.all(color: AppColors.white, width: 4),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -294,11 +288,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               color: AppColors.brandCrimson.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8.r),
             ),
-            child: Icon(
-              icon,
-              size: 20.sp,
-              color: AppColors.brandCrimson,
-            ),
+            child: Icon(icon, size: 20.sp, color: AppColors.brandCrimson),
           ),
           AppSpacing.horizontalSpaceLG,
           Expanded(
@@ -362,9 +352,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             icon: Icons.notifications_outlined,
             label: '알림 설정',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('알림 설정 페이지 준비 중!')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('알림 설정 페이지 준비 중!')));
             },
           ),
 
@@ -375,9 +365,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             icon: Icons.bookmark_outline,
             label: '북마크 관리',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('북마크 페이지 준비 중!')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('북마크 페이지 준비 중!')));
             },
           ),
 
@@ -399,9 +389,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             icon: Icons.help_outline,
             label: '문의하기',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('문의 페이지 준비 중!')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('문의 페이지 준비 중!')));
             },
           ),
         ],
@@ -427,11 +417,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Icon(
-                icon,
-                size: 20.sp,
-                color: AppColors.textSecondary,
-              ),
+              child: Icon(icon, size: 20.sp, color: AppColors.textSecondary),
             ),
             AppSpacing.horizontalSpaceLG,
             Expanded(
@@ -466,10 +452,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         },
         style: OutlinedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 14.h),
-          side: BorderSide(
-            color: AppColors.error,
-            width: 1.5,
-          ),
+          side: BorderSide(color: AppColors.error, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),
@@ -477,11 +460,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.logout,
-              size: 20.sp,
-              color: AppColors.error,
-            ),
+            Icon(Icons.logout, size: 20.sp, color: AppColors.error),
             AppSpacing.horizontalSpaceSM,
             Text(
               '로그아웃',
@@ -515,10 +494,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             AppSpacing.horizontalSpaceSM,
             Text(
               '앱 정보',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-              ),
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
             ),
           ],
         ),
@@ -600,10 +576,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ),
         title: Text(
           '로그아웃',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
         ),
         content: Text(
           '정말 로그아웃 하시겠어요?\n다시 로그인하려면 세종 포털 계정이 필요해요.',
@@ -631,14 +604,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               Navigator.pop(context);
 
               // 로그아웃 처리
-              final loginController =
-                  ref.read(loginControllerProvider.notifier);
+              final loginController = ref.read(
+                loginControllerProvider.notifier,
+              );
               final success = await loginController.logout();
 
               if (mounted) {
                 if (success) {
                   // 로그아웃 성공 → 로그인 페이지로 이동
-                  context.go('/login');
+                  context.go('/auth');
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('로그아웃되었습니다. 다시 만나요! 👋'),
