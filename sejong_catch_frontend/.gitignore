@@ -33,6 +33,10 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# iOS Flutter 자동 생성 파일 (빌드 시마다 재생성됨)
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+
 # Symbolication related
 app.*.symbols
 
