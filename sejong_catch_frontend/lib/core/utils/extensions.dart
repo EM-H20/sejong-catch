@@ -3,6 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+
 /// 세종 캐치 앱에서 사용하는 모든 확장 함수들
 ///
 /// 기존 클래스에 편리한 메서드를 추가해서
@@ -404,12 +407,12 @@ extension BuildContextExtensions on BuildContext {
 
   /// 성공 스낵바 표시
   void showSuccessSnackBar(String message) {
-    showSnackBar(message, backgroundColor: Colors.green);
+    showSnackBar(message, backgroundColor: AppColors.success);
   }
 
   /// 경고 스낵바 표시
   void showWarningSnackBar(String message) {
-    showSnackBar(message, backgroundColor: Colors.orange);
+    showSnackBar(message, backgroundColor: AppColors.warning);
   }
 
   /// 다이얼로그 표시
@@ -458,7 +461,10 @@ extension BuildContextExtensions on BuildContext {
           mainAxisSize: MainAxisSize.min,
           children: [
             const CircularProgressIndicator(),
-            if (message != null) ...[SizedBox(width: 16.w), Text(message)],
+            if (message != null) ...[
+              AppSpacing.horizontalSpaceLG,
+              Text(message),
+            ],
           ],
         ),
       ),

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 
 class AppErrorWidget extends StatelessWidget {
   final String message;
@@ -32,7 +33,7 @@ class AppErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(32.w),
+        padding: AppSpacing.screenPaddingLarge,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -51,7 +52,7 @@ class AppErrorWidget extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 24.h),
+            AppSpacing.verticalSpaceXXL,
 
             // 📝 에러 메시지
             Text(
@@ -59,18 +60,18 @@ class AppErrorWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[900],
+                color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
 
-            SizedBox(height: 8.h),
+            AppSpacing.verticalSpaceSM,
 
             Text(
               message,
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -78,13 +79,13 @@ class AppErrorWidget extends StatelessWidget {
 
             // 🔄 재시도 버튼
             if (showRetryButton && onRetry != null) ...[
-              SizedBox(height: 24.h),
+              AppSpacing.verticalSpaceXXL,
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: Icon(
                   Icons.refresh,
                   size: 18.sp,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
                 label: Text(
                   retryText ?? '다시 시도',
@@ -95,11 +96,8 @@ class AppErrorWidget extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.brandCrimson,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24.w,
-                    vertical: 12.h,
-                  ),
+                  foregroundColor: AppColors.white,
+                  padding: AppSpacing.buttonPadding,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/text_styles.dart';
 
 /// 📋 세종 캐치 Dialog 유틸리티
 ///
@@ -24,13 +26,12 @@ class DialogUtils {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          title,
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: AppTextStyles.heading3),
         content: Text(
           message,
-          style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
@@ -40,17 +41,17 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               cancelText,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(
               confirmText,
-              style: TextStyle(
+              style: AppTextStyles.label.copyWith(
                 color: isDangerous ? AppColors.error : AppColors.brandCrimson,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -75,7 +76,7 @@ class DialogUtils {
             borderRadius: BorderRadius.circular(12.r),
           ),
           content: Container(
-            padding: EdgeInsets.all(20.w),
+            padding: AppSpacing.all(20),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -85,9 +86,9 @@ class DialogUtils {
                   child: const CircularProgressIndicator(strokeWidth: 2),
                 ),
                 if (message != null) ...[
-                  SizedBox(width: 16.w),
+                  AppSpacing.horizontalSpaceLG,
                   Flexible(
-                    child: Text(message, style: TextStyle(fontSize: 14.sp)),
+                    child: Text(message, style: AppTextStyles.bodyMedium),
                   ),
                 ],
               ],
@@ -116,10 +117,7 @@ class DialogUtils {
     return showDialog<T>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          title,
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: AppTextStyles.heading3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
         ),
@@ -135,8 +133,7 @@ class DialogUtils {
               return ListTile(
                 title: Text(
                   itemBuilder(item),
-                  style: TextStyle(
-                    fontSize: 14.sp,
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: isSelected
                         ? AppColors.brandCrimson
                         : AppColors.textPrimary,
@@ -162,7 +159,9 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               '취소',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         ],
@@ -189,10 +188,7 @@ class DialogUtils {
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          title,
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: AppTextStyles.heading3),
         content: Form(
           key: formKey,
           child: Column(
@@ -201,12 +197,11 @@ class DialogUtils {
               if (message != null) ...[
                 Text(
                   message,
-                  style: TextStyle(
-                    fontSize: 14.sp,
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
-                SizedBox(height: 16.h),
+                AppSpacing.verticalSpaceLG,
               ],
               TextFormField(
                 controller: controller,
@@ -230,7 +225,9 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               cancelText,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           TextButton(
@@ -241,10 +238,8 @@ class DialogUtils {
             },
             child: Text(
               confirmText,
-              style: TextStyle(
+              style: AppTextStyles.label.copyWith(
                 color: AppColors.brandCrimson,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/text_styles.dart';
 
 /// 🚨 세종 캐치 공통 에러 처리 유틸리티
 ///
@@ -24,28 +26,27 @@ class ErrorHandler {
           children: [
             Icon(
               Icons.error_outline,
-              color: Colors.white,
+              color: AppColors.white,
               size: 20.r,
             ),
-            SizedBox(width: 8.w),
+            AppSpacing.horizontalSpaceSM,
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.white,
                 ),
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.red[600],
+        backgroundColor: AppColors.error,
         duration: duration,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
         ),
-        margin: EdgeInsets.all(16.w),
+        margin: AppSpacing.cardPadding,
       ),
     );
   }
@@ -62,16 +63,15 @@ class ErrorHandler {
           children: [
             Icon(
               Icons.check_circle_outline,
-              color: Colors.white,
+              color: AppColors.white,
               size: 20.r,
             ),
-            SizedBox(width: 8.w),
+            AppSpacing.horizontalSpaceSM,
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.white,
                 ),
               ),
             ),
@@ -83,7 +83,7 @@ class ErrorHandler {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
         ),
-        margin: EdgeInsets.all(16.w),
+        margin: AppSpacing.cardPadding,
       ),
     );
   }
@@ -100,16 +100,15 @@ class ErrorHandler {
           children: [
             Icon(
               Icons.warning_outlined,
-              color: Colors.white,
+              color: AppColors.white,
               size: 20.r,
             ),
-            SizedBox(width: 8.w),
+            AppSpacing.horizontalSpaceSM,
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.white,
                 ),
               ),
             ),
@@ -121,7 +120,7 @@ class ErrorHandler {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
         ),
-        margin: EdgeInsets.all(16.w),
+        margin: AppSpacing.cardPadding,
       ),
     );
   }
@@ -140,10 +139,10 @@ class ErrorHandler {
           children: [
             Icon(
               Icons.error_outline,
-              color: Colors.red[600],
+              color: AppColors.error,
               size: 24.r,
             ),
-            SizedBox(width: 8.w),
+            AppSpacing.horizontalSpaceSM,
             Text(title),
           ],
         ),

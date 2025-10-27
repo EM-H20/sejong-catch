@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app_colors.dart';
 import 'app_spacing.dart';
 import 'text_styles.dart';
@@ -243,33 +244,29 @@ class AppTheme {
     );
   }
 
-  /// 🎨 Pretendard 폰트를 적용한 텍스트 테마 생성
+  /// 🎨 Material 3 TextTheme 생성
   ///
-  /// Material 3의 TextTheme을 기반으로 하되,
-  /// 모든 텍스트 스타일에 Pretendard 폰트를 적용하고
-  /// 적절한 FontWeight를 설정합니다.
+  /// Material 3의 TextTheme을 기반으로 반응형 폰트 크기 적용
+  /// fontFamily는 ThemeData의 전역 설정(Line 41)을 자동 상속합니다.
+  ///
+  /// CLAUDE.md 원칙: 모든 크기 값은 ScreenUtil(.sp) 필수 적용!
   static TextTheme _buildTextTheme() {
-    const fontFamily = 'Pretendard';
-
-    return const TextTheme(
+    return TextTheme(
       // 📖 Display 스타일 (큰 제목)
       displayLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 57,
+        fontSize: 57.sp,
         fontWeight: FontWeight.w700, // Bold
         color: AppColors.textPrimary,
         height: 1.12,
       ),
       displayMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 45,
+        fontSize: 45.sp,
         fontWeight: FontWeight.w700, // Bold
         color: AppColors.textPrimary,
         height: 1.16,
       ),
       displaySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 36,
+        fontSize: 36.sp,
         fontWeight: FontWeight.w600, // SemiBold
         color: AppColors.textPrimary,
         height: 1.22,
@@ -277,22 +274,19 @@ class AppTheme {
 
       // 📰 Headline 스타일 (헤드라인)
       headlineLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 32,
+        fontSize: 32.sp,
         fontWeight: FontWeight.w600, // SemiBold
         color: AppColors.textPrimary,
         height: 1.25,
       ),
       headlineMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 28,
+        fontSize: 28.sp,
         fontWeight: FontWeight.w600, // SemiBold
         color: AppColors.textPrimary,
         height: 1.29,
       ),
       headlineSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 24,
+        fontSize: 24.sp,
         fontWeight: FontWeight.w600, // SemiBold
         color: AppColors.textPrimary,
         height: 1.33,
@@ -300,22 +294,19 @@ class AppTheme {
 
       // 📝 Title 스타일 (제목)
       titleLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 22,
+        fontSize: 22.sp,
         fontWeight: FontWeight.w500, // Medium
         color: AppColors.textPrimary,
         height: 1.27,
       ),
       titleMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16,
+        fontSize: 16.sp,
         fontWeight: FontWeight.w500, // Medium
         color: AppColors.textPrimary,
         height: 1.5,
       ),
       titleSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.w500, // Medium
         color: AppColors.textPrimary,
         height: 1.43,
@@ -323,22 +314,19 @@ class AppTheme {
 
       // 📄 Body 스타일 (본문)
       bodyLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16,
+        fontSize: 16.sp,
         fontWeight: FontWeight.w400, // Regular
         color: AppColors.textPrimary,
         height: 1.5,
       ),
       bodyMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.w400, // Regular
         color: AppColors.textPrimary,
         height: 1.43,
       ),
       bodySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12,
+        fontSize: 12.sp,
         fontWeight: FontWeight.w400, // Regular
         color: AppColors.textSecondary,
         height: 1.33,
@@ -346,22 +334,19 @@ class AppTheme {
 
       // 🏷️ Label 스타일 (라벨, 버튼)
       labelLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.w500, // Medium
         color: AppColors.textPrimary,
         height: 1.43,
       ),
       labelMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12,
+        fontSize: 12.sp,
         fontWeight: FontWeight.w500, // Medium
         color: AppColors.textPrimary,
         height: 1.33,
       ),
       labelSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 11,
+        fontSize: 11.sp,
         fontWeight: FontWeight.w500, // Medium
         color: AppColors.textSecondary,
         height: 1.45,

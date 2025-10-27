@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 
 class AppEmptyWidget extends StatelessWidget {
   final String title;
@@ -34,7 +35,7 @@ class AppEmptyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(32.w),
+        padding: AppSpacing.screenPaddingLarge,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -46,17 +47,17 @@ class AppEmptyWidget extends StatelessWidget {
                 width: 80.w,
                 height: 80.w,
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(40.r),
                 ),
                 child: Icon(
                   icon!,
                   size: 40.sp,
-                  color: Colors.grey[400],
+                  color: AppColors.disabled,
                 ),
               ),
 
-            SizedBox(height: 24.h),
+            AppSpacing.verticalSpaceXXL,
 
             // 📝 제목
             Text(
@@ -64,19 +65,19 @@ class AppEmptyWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[900],
+                color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
 
-            SizedBox(height: 8.h),
+            AppSpacing.verticalSpaceSM,
 
             // 📝 설명
             Text(
               subtitle,
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -84,16 +85,13 @@ class AppEmptyWidget extends StatelessWidget {
 
             // 🔥 액션 버튼
             if (actionText != null && onActionPressed != null) ...[
-              SizedBox(height: 24.h),
+              AppSpacing.verticalSpaceXXL,
               ElevatedButton(
                 onPressed: onActionPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.brandCrimson,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24.w,
-                    vertical: 12.h,
-                  ),
+                  foregroundColor: AppColors.white,
+                  padding: AppSpacing.buttonPadding,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
@@ -128,21 +126,21 @@ class EmptyListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(32.w),
+      padding: AppSpacing.screenPaddingLarge,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             icon ?? Icons.inbox_outlined,
             size: 48.sp,
-            color: Colors.grey[400],
+            color: AppColors.disabled,
           ),
-          SizedBox(height: 16.h),
+          AppSpacing.verticalSpaceLG,
           Text(
             message,
             style: TextStyle(
               fontSize: 14.sp,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),

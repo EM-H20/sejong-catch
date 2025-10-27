@@ -175,8 +175,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           // 짧은 설명
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg.w,
-              vertical: AppSpacing.md.h,
+              horizontal: 16.w,
+              vertical: 12.h,
             ),
             decoration: BoxDecoration(
               color: AppColors.brandCrimsonLight,
@@ -313,7 +313,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       borderRadius: BorderRadius.circular(20.r),
       shadowColor: AppColors.brandCrimson.withValues(alpha: 0.2),
       child: Container(
-        padding: EdgeInsets.all(AppSpacing.lg.w),
+        padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(20.r),

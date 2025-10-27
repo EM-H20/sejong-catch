@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? message;
@@ -43,12 +44,12 @@ class LoadingWidget extends StatelessWidget {
             ),
 
           if (message != null) ...[
-            if (showSpinner) SizedBox(height: 16.h),
+            if (showSpinner) AppSpacing.verticalSpaceLG,
             Text(
               message!,
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -67,10 +68,10 @@ class LoadingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      margin: AppSpacing.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         height: 120.h,
-        padding: EdgeInsets.all(16.w),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -81,11 +82,11 @@ class LoadingCard extends StatelessWidget {
                   width: 40.w,
                   height: 40.w,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: AppColors.disabled,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                SizedBox(width: 12.w),
+                AppSpacing.horizontalSpaceMD,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,16 +95,16 @@ class LoadingCard extends StatelessWidget {
                         height: 16.h,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Colors.grey[300],
+                          color: AppColors.disabled,
                           borderRadius: BorderRadius.circular(4.r),
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      AppSpacing.verticalSpaceSM,
                       Container(
                         height: 12.h,
                         width: 100.w,
                         decoration: BoxDecoration(
-                          color: Colors.grey[300],
+                          color: AppColors.disabled,
                           borderRadius: BorderRadius.circular(4.r),
                         ),
                       ),
@@ -113,7 +114,7 @@ class LoadingCard extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 16.h),
+            AppSpacing.verticalSpaceLG,
 
             // 하단 영역
             Row(
@@ -123,7 +124,7 @@ class LoadingCard extends StatelessWidget {
                   height: 12.h,
                   width: 80.w,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: AppColors.disabled,
                     borderRadius: BorderRadius.circular(4.r),
                   ),
                 ),
@@ -131,7 +132,7 @@ class LoadingCard extends StatelessWidget {
                   height: 20.h,
                   width: 60.w,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: AppColors.disabled,
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                 ),

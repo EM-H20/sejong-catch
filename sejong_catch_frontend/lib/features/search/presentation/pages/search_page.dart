@@ -193,7 +193,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           // 인기 키워드 칩들
           Wrap(
             spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm.h,
+            runSpacing: 8.h,
             children: _popularKeywords.asMap().entries.map((entry) {
               final index = entry.key;
               final keyword = entry.value;
@@ -234,7 +234,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
-          vertical: AppSpacing.sm.h + 2.h,
+          vertical: 10.h,
         ),
         decoration: BoxDecoration(
           color: isTopRank ? AppColors.brandCrimsonLight : AppColors.surface,
@@ -491,7 +491,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
           AppSpacing.verticalSpaceMD,
           Wrap(
             spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm.h,
+            runSpacing: 8.h,
             children: _categories.map((category) {
               final isSelected = category == _selectedCategory;
               return GestureDetector(
@@ -503,7 +503,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.sm.h,
+                    vertical: 8.h,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/text_styles.dart';
 
 /// 📄 세종 캐치 BottomSheet 유틸리티
 ///
@@ -42,7 +44,7 @@ class BottomSheetUtils {
             Container(
               width: 40.w,
               height: 4.h,
-              margin: EdgeInsets.symmetric(vertical: 12.h),
+              margin: AppSpacing.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: AppColors.divider,
                 borderRadius: BorderRadius.circular(2.r),
@@ -70,10 +72,10 @@ class BottomSheetUtils {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: AppSpacing.symmetric(horizontal: 20, vertical: 16),
             child: Text(
               title,
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+              style: AppTextStyles.heading3,
             ),
           ),
           Flexible(
@@ -88,8 +90,7 @@ class BottomSheetUtils {
                   leading: iconBuilder?.call(item),
                   title: Text(
                     itemBuilder(item),
-                    style: TextStyle(
-                      fontSize: 16.sp,
+                    style: AppTextStyles.bodyLarge.copyWith(
                       color: isSelected
                           ? AppColors.brandCrimson
                           : AppColors.textPrimary,

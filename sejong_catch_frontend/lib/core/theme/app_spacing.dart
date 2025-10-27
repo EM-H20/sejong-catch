@@ -73,54 +73,54 @@ class AppSpacing {
 
   /// 버튼 큰 패딩: 가로 32, 세로 16
   static EdgeInsets get buttonPaddingLarge =>
-      EdgeInsets.symmetric(horizontal: xxxl, vertical: lg.h);
+      EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h);
 
   // ==================== 수직 간격 (SizedBox용) ====================
   /// 최소 수직 간격: 4
-  static SizedBox get verticalSpaceXS => SizedBox(height: xs.h);
+  static SizedBox get verticalSpaceXS => SizedBox(height: 4.h);
 
   /// 아주 작은 수직 간격: 8
-  static SizedBox get verticalSpaceSM => SizedBox(height: sm.h);
+  static SizedBox get verticalSpaceSM => SizedBox(height: 8.h);
 
   /// 작은 수직 간격: 12
-  static SizedBox get verticalSpaceMD => SizedBox(height: md.h);
+  static SizedBox get verticalSpaceMD => SizedBox(height: 12.h);
 
   /// 중간 수직 간격: 16
-  static SizedBox get verticalSpaceLG => SizedBox(height: lg.h);
+  static SizedBox get verticalSpaceLG => SizedBox(height: 16.h);
 
   /// 큰 수직 간격: 20
-  static SizedBox get verticalSpaceXL => SizedBox(height: xl.h);
+  static SizedBox get verticalSpaceXL => SizedBox(height: 20.h);
 
   /// 아주 큰 수직 간격: 24
-  static SizedBox get verticalSpaceXXL => SizedBox(height: xxl.h);
+  static SizedBox get verticalSpaceXXL => SizedBox(height: 24.h);
 
   /// 매우 큰 수직 간격: 32
-  static SizedBox get verticalSpaceXXXL => SizedBox(height: xxxl.h);
+  static SizedBox get verticalSpaceXXXL => SizedBox(height: 32.h);
 
   /// 초대형 수직 간격: 40
-  static SizedBox get verticalSpaceHuge => SizedBox(height: huge.h);
+  static SizedBox get verticalSpaceHuge => SizedBox(height: 40.h);
 
   // ==================== 수평 간격 (SizedBox용) ====================
   /// 최소 수평 간격: 4
-  static SizedBox get horizontalSpaceXS => SizedBox(width: xs);
+  static SizedBox get horizontalSpaceXS => SizedBox(width: 4.w);
 
   /// 아주 작은 수평 간격: 8
-  static SizedBox get horizontalSpaceSM => SizedBox(width: sm);
+  static SizedBox get horizontalSpaceSM => SizedBox(width: 8.w);
 
   /// 작은 수평 간격: 12
-  static SizedBox get horizontalSpaceMD => SizedBox(width: md);
+  static SizedBox get horizontalSpaceMD => SizedBox(width: 12.w);
 
   /// 중간 수평 간격: 16
-  static SizedBox get horizontalSpaceLG => SizedBox(width: lg);
+  static SizedBox get horizontalSpaceLG => SizedBox(width: 16.w);
 
   /// 큰 수평 간격: 20
-  static SizedBox get horizontalSpaceXL => SizedBox(width: xl);
+  static SizedBox get horizontalSpaceXL => SizedBox(width: 20.w);
 
   /// 아주 큰 수평 간격: 24
-  static SizedBox get horizontalSpaceXXL => SizedBox(width: xxl);
+  static SizedBox get horizontalSpaceXXL => SizedBox(width: 24.w);
 
   /// 매우 큰 수평 간격: 32
-  static SizedBox get horizontalSpaceXXXL => SizedBox(width: xxxl);
+  static SizedBox get horizontalSpaceXXXL => SizedBox(width: 32.w);
 
   // ==================== 모달/다이얼로그 패딩 ====================
   /// 모달 내부 패딩: 24
@@ -132,13 +132,13 @@ class AppSpacing {
   // ==================== 특수 패딩 ====================
   /// 세션 정보 컨테이너 패딩: 가로 16, 세로 12
   static EdgeInsets get sessionInfoPadding =>
-      EdgeInsets.symmetric(horizontal: lg, vertical: md.h);
+      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h);
 
   /// AppBar 타이틀 좌측 패딩: 8
-  static EdgeInsets get appBarTitlePadding => EdgeInsets.only(left: sm);
+  static EdgeInsets get appBarTitlePadding => EdgeInsets.only(left: 8.w);
 
   /// AppBar 액션 우측 패딩: 8
-  static EdgeInsets get appBarActionPadding => EdgeInsets.only(right: sm);
+  static EdgeInsets get appBarActionPadding => EdgeInsets.only(right: 8.w);
 
   /// 리스트 하단 여백 (스크롤용): 80
   static SizedBox get listBottomSpace => SizedBox(height: 80.h);
