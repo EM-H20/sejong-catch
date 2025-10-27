@@ -50,13 +50,13 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         foregroundColor: AppColors.textPrimary,
-        surfaceTintColor: Colors.transparent, // Material 3 tint 제거
+        surfaceTintColor: AppColors.transparent, // Material 3 tint 제거
         titleTextStyle: AppTextStyles.heading3,
         // 상태바 스타일 설정
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
+          statusBarColor: AppColors.transparent,
           statusBarIconBrightness: Brightness.dark, // 아이콘 어둡게
           statusBarBrightness: Brightness.light, // iOS용 라이트 바
         ),
@@ -78,9 +78,9 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.brandCrimson,
-          foregroundColor: AppColors.white,
+          foregroundColor: AppColors.pureWhite,
           disabledBackgroundColor: AppColors.disabled,
-          disabledForegroundColor: AppColors.white.withValues(alpha: 0.7),
+          disabledForegroundColor: AppColors.pureWhite.withValues(alpha: 0.7),
           elevation: 2,
           shadowColor: AppColors.brandCrimson.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -217,9 +217,9 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return AppColors.brandCrimson;
           }
-          return Colors.transparent;
+          return AppColors.transparent;
         }),
-        checkColor: WidgetStateProperty.all(AppColors.white),
+        checkColor: WidgetStateProperty.all(AppColors.pureWhite),
         side: const BorderSide(color: AppColors.divider, width: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
@@ -237,7 +237,7 @@ class AppTheme {
       // Floating Action Button 테마
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.brandCrimson,
-        foregroundColor: AppColors.white,
+        foregroundColor: AppColors.pureWhite,
         elevation: 4,
         shape: CircleBorder(),
       ),

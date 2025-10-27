@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 /// Sejong Catch 앱의 모든 색상 토큰을 정의합니다.
 ///
-/// Crimson Red를 메인 컬러로 하는 브랜딩 색상과
-/// Material 3 디자인 시스템에 맞는 보조 색상들을 포함합니다.
+/// Crimson Red를 메인 컬러로 하며,
+/// Soft Ivory (#FAF9F6) 기반의 따뜻하고 세련된 색상 팔레트를 사용합니다.
+///
+/// 디자인 철학:
+/// - 눈의 피로를 줄이는 부드러운 오프화이트 배경
+/// - 크림슨 레드의 정열과 소프트 그레이의 우아함 조화
+/// - 프리미엄 대학교 앱다운 세련미
 class AppColors {
   // Private constructor to prevent instantiation
   AppColors._();
@@ -22,34 +27,42 @@ class AppColors {
 
   /// 밝은 크림슨 - 선택된 칩, 라이트 배경용
   /// FilterChip 선택 상태, 하이라이트 배경에 사용
-  static const Color brandCrimsonLight = Color(0xFFF7E3E8);
+  /// 기존보다 더 소프트하게 조정
+  static const Color brandCrimsonLight = Color(0xFFF9E8EC);
 
   // ============================================================================
-  // Base Colors
+  // Base Colors (Soft Ivory Palette)
   // ============================================================================
 
-  /// 순수 흰색 - 카드 배경, 텍스트
-  static const Color white = Color(0xFFFFFFFF);
+  /// 소프트 아이보리 - 기본 배경, 카드 색상
+  /// 순수 흰색보다 따뜻하고 눈의 피로가 적음
+  /// 앱의 주요 배경색으로 사용
+  static const Color white = Color(0xFFFAF9F6);
 
-  /// 메인 배경 색상
-  /// 앱 전체 배경, AppBar 배경에 사용
-  static const Color surface = Color(0xFFF7F7F8);
+  /// 라이트 웜 그레이 - 앱 메인 배경
+  /// white보다 살짝 어두워 계층 구분에 사용
+  static const Color surface = Color(0xFFF5F4F1);
+
+  /// 미드 웜 그레이 - 더 어두운 배경
+  /// 3단계 계층 구조에서 가장 어두운 배경
+  static const Color background = Color(0xFFEFEEEB);
 
   // ============================================================================
-  // Text Colors
+  // Text Colors (Warm Gray Palette)
   // ============================================================================
 
-  /// 주요 텍스트 색상
+  /// 주요 텍스트 색상 - 따뜻한 다크 그레이
   /// 제목, 중요한 텍스트에 사용
-  static const Color textPrimary = Color(0xFF111111);
+  /// 순흑색보다 부드럽고 따뜻함
+  static const Color textPrimary = Color(0xFF2C2C2C);
 
-  /// 보조 텍스트 색상
+  /// 보조 텍스트 색상 - 중립 그레이
   /// 설명 텍스트, 메타데이터에 사용
-  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textSecondary = Color(0xFF6B6B6B);
 
-  /// 3차 텍스트 색상
+  /// 3차 텍스트 색상 - 라이트 그레이
   /// 캡션, 덜 중요한 정보에 사용
-  static const Color textTertiary = Color(0xFF9CA3AF);
+  static const Color textTertiary = Color(0xFF9E9E9E);
 
   // ============================================================================
   // Semantic Colors
@@ -68,14 +81,36 @@ class AppColors {
   // UI Element Colors
   // ============================================================================
 
-  /// 구분선 색상
-  static const Color divider = Color(0xFFE5E7EB);
+  /// 구분선 색상 - 따뜻한 베이지 톤
+  /// 소프트 아이보리와 조화로운 구분선
+  static const Color divider = Color(0xFFE0DED9);
 
-  /// 비활성화된 요소 색상
-  static const Color disabled = Color(0xFF9CA3AF);
+  /// 비활성화된 요소 색상 - 소프트 그레이
+  static const Color disabled = Color(0xFFB8B5B0);
 
-  /// 그림자 색상 (투명도 적용 필요)
-  static const Color shadow = Color(0xFF000000);
+  /// 그림자 색상 - 부드러운 다크 그레이
+  /// 순흑색보다 자연스러운 그림자 표현
+  static const Color shadow = Color(0xFF3C3C3C);
+
+  // ============================================================================
+  // Special Colors
+  // ============================================================================
+
+  /// 투명 색상 (Material 3 표준)
+  /// AppBar 배경, StatusBar, Checkbox 등에 사용
+  static const Color transparent = Colors.transparent;
+
+  /// 미세한 오버레이용 색상
+  /// 모달 배경, hover 효과 등에 사용
+  static const Color overlay = Color(0x0A000000); // 4% 검정
+
+  /// 순수 흰색 (특수 용도)
+  /// 크림슨 버튼의 텍스트 등 특별한 경우에만 사용
+  static const Color pureWhite = Color(0xFFFFFFFF);
+
+  /// 순수 검정 (특수 용도)
+  /// 극도로 강한 대비가 필요한 경우에만 사용
+  static const Color pureBlack = Color(0xFF000000);
 
   // ============================================================================
   // Trust & Priority Colors (앱 특화 색상)
