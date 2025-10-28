@@ -7,6 +7,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/badges/gradient_circle_badge.dart';
+import '../../../../core/widgets/badges/gradient_icon_badge.dart';
+import '../../../../core/widgets/chips/gradient_chip.dart';
+import '../../../../core/widgets/cards/feature_card.dart';
 import '../../../../core/services/onboarding_service.dart';
 
 /// 🎨 세종 캐치 온보딩 화면 (개선된 UI)
@@ -121,29 +125,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           AppSpacing.verticalSpaceHuge,
 
           // 큰 그라데이션 원형 배경 + 로고
-          Container(
-            width: 180.w,
-            height: 180.w,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.brandCrimson, AppColors.brandCrimsonDark],
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.brandCrimson.withValues(alpha: 0.3),
-                  blurRadius: 30.r,
-                  offset: Offset(0, 15.h),
-                ),
-              ],
-            ),
-            child: Icon(
-              Icons.school_rounded,
-              size: 90.sp,
-              color: AppColors.white,
-            ),
+          GradientCircleBadge(
+            icon: Icons.school_rounded,
+            size: 180.w,
           ),
           AppSpacing.verticalSpaceHuge,
 
@@ -173,23 +157,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           AppSpacing.verticalSpaceLG,
 
           // 짧은 설명
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 12.h,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.brandCrimsonLight,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              '공모전·취업·논문·학교공지를 한 곳에서',
-              style: AppTextStyles.bodyLarge.copyWith(
-                color: AppColors.brandCrimson,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
+          GradientChip(
+            text: '공모전·취업·논문·학교공지를 한 곳에서',
           ),
           AppSpacing.verticalSpaceHuge,
         ],
@@ -217,30 +186,29 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           AppSpacing.verticalSpaceXXL,
 
           // Feature Cards
-          _buildFeatureCard(
+          FeatureCard(
             icon: Icons.emoji_events_rounded,
             title: '정보 통합',
             description: '공모전·취업·논문을 한눈에 확인하고\n중복 없이 깔끔하게 정리돼요',
-            gradient: [AppColors.brandCrimson, AppColors.brandCrimsonDark],
           ),
           AppSpacing.verticalSpaceLG,
 
-          _buildFeatureCard(
+          FeatureCard(
             icon: Icons.filter_list_rounded,
             title: '스마트 필터링',
             description: '학과와 관심사 기반으로\n딱 맞는 정보만 추천받아요',
-            gradient: [
+            gradientColors: [
               AppColors.brandCrimson.withValues(alpha: 0.8),
               AppColors.brandCrimsonDark.withValues(alpha: 0.8),
             ],
           ),
           AppSpacing.verticalSpaceLG,
 
-          _buildFeatureCard(
+          FeatureCard(
             icon: Icons.verified_rounded,
             title: '신뢰도 표시',
             description: '출처별 신뢰도와 우선순위를\n한눈에 파악할 수 있어요',
-            gradient: [
+            gradientColors: [
               AppColors.brandCrimson.withValues(alpha: 0.6),
               AppColors.brandCrimsonDark.withValues(alpha: 0.6),
             ],
@@ -260,7 +228,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           AppSpacing.verticalSpaceXXL,
 
           // 큰 아이콘
-          _buildGradientIconBadge(icon: Icons.celebration_rounded, size: 100.w),
+          GradientIconBadge(icon: Icons.celebration_rounded, size: 100.w),
           AppSpacing.verticalSpaceXXL,
 
           // 임팩트 메시지
@@ -301,78 +269,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     );
   }
 
-  /// 🎨 Feature Card (Material + Elevation)
-  Widget _buildFeatureCard({
-    required IconData icon,
-    required String title,
-    required String description,
-    required List<Color> gradient,
-  }) {
-    return Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(20.r),
-      shadowColor: AppColors.brandCrimson.withValues(alpha: 0.2),
-      child: Container(
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: AppColors.brandCrimsonLight, width: 2),
-        ),
-        child: Row(
-          children: [
-            // 아이콘 배지
-            Container(
-              width: 60.w,
-              height: 60.w,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: gradient,
-                ),
-                borderRadius: BorderRadius.circular(15.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: gradient[0].withValues(alpha: 0.3),
-                    blurRadius: 10.r,
-                    offset: Offset(0, 5.h),
-                  ),
-                ],
-              ),
-              child: Icon(icon, size: 32.sp, color: AppColors.white),
-            ),
-            AppSpacing.horizontalSpaceLG,
-
-            // 텍스트
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTextStyles.heading3.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  AppSpacing.verticalSpaceXS,
-                  Text(
-                    description,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   /// 🎁 Benefit Item
   Widget _buildBenefitItem({
     required IconData icon,
@@ -381,7 +277,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }) {
     return Row(
       children: [
-        _buildGradientIconBadge(icon: icon, size: 56.w),
+        GradientIconBadge(icon: icon, size: 56.w),
         AppSpacing.horizontalSpaceLG,
         Expanded(
           child: Column(
@@ -405,33 +301,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           ),
         ),
       ],
-    );
-  }
-
-  /// ⭐ Gradient Icon Badge (재사용 컴포넌트)
-  Widget _buildGradientIconBadge({
-    required IconData icon,
-    required double size,
-  }) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.brandCrimson, AppColors.brandCrimsonDark],
-        ),
-        borderRadius: BorderRadius.circular(size * 0.25),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.brandCrimson.withValues(alpha: 0.3),
-            blurRadius: 15.r,
-            offset: Offset(0, 8.h),
-          ),
-        ],
-      ),
-      child: Icon(icon, size: size * 0.5, color: AppColors.white),
     );
   }
 }

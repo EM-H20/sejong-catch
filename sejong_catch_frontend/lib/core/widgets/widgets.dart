@@ -11,4 +11,8 @@ export 'error_widget.dart';
 // UI 컴포넌트들
 export 'buttons/app_button.dart';
 export 'cards/app_card.dart';
+export 'cards/feature_card.dart';
 export 'inputs/app_text_field.dart';
+export 'badges/gradient_circle_badge.dart';
+export 'badges/gradient_icon_badge.dart';
+export 'chips/gradient_chip.dart';
