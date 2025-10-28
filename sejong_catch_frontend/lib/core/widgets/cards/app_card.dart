@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/text_styles.dart';
 import '../../utils/formatters.dart';
 
 /// 세종 캐치 앱의 표준 정보 카드 위젯
@@ -91,7 +93,7 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: margin ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      margin: margin ?? AppSpacing.symmetric(horizontal: 16, vertical: 6),
       child: Material(
         color: backgroundColor ?? _getCardBackgroundColor(context),
         borderRadius: BorderRadius.circular(12.r),
@@ -101,7 +103,7 @@ class AppCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12.r),
           child: Container(
-            padding: EdgeInsets.all(16.w),
+            padding: AppSpacing.cardPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -174,7 +176,7 @@ class AppCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 3.h,
-      margin: EdgeInsets.only(bottom: 8.h),
+      margin: AppSpacing.only(bottom: 8),
       decoration: BoxDecoration(
         color: barColor,
         borderRadius: BorderRadius.circular(2.r),
@@ -195,9 +197,7 @@ class AppCard extends StatelessWidget {
         Expanded(
           child: Text(
             sourceDomain ?? '알 수 없음',
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: AppColors.textSecondary,
+            style: AppTextStyles.bodySmall.copyWith(
               fontWeight: FontWeight.w500,
             ),
             overflow: TextOverflow.ellipsis,
@@ -293,7 +293,7 @@ class AppCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(4.w),
+        padding: AppSpacing.all(4),
         child: Icon(icon, size: 20.w, color: color),
       ),
     );
@@ -303,8 +303,7 @@ class AppCard extends StatelessWidget {
   Widget _buildTitle(BuildContext context) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 16.sp,
+      style: AppTextStyles.bodyLarge.copyWith(
         fontWeight: FontWeight.w600,
         color: isExpired ? AppColors.textSecondary : AppColors.textPrimary,
         height: 1.3,
@@ -318,8 +317,7 @@ class AppCard extends StatelessWidget {
   Widget _buildSubtitle(BuildContext context) {
     return Text(
       subtitle!,
-      style: TextStyle(
-        fontSize: 14.sp,
+      style: AppTextStyles.bodyMedium.copyWith(
         color: isExpired
             ? AppColors.textSecondary.withValues(alpha: 0.7)
             : AppColors.textSecondary,
@@ -409,8 +407,7 @@ class AppCard extends StatelessWidget {
         SizedBox(width: 4.w),
         Text(
           text.length > 10 ? '${text.substring(0, 8)}..' : text,
-          style: TextStyle(
-            fontSize: 12.sp,
+          style: AppTextStyles.bodySmall.copyWith(
             color: color,
             fontWeight: FontWeight.w500,
           ),
@@ -422,10 +419,10 @@ class AppCard extends StatelessWidget {
   /// 구분점 (•)
   Widget _buildDot() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8.w),
+      margin: AppSpacing.symmetric(horizontal: 8),
       child: Text(
         '•',
-        style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
+        style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
       ),
     );
   }
@@ -480,7 +477,7 @@ class AppCard extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      padding: AppSpacing.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12.r),
@@ -496,8 +493,7 @@ class AppCard extends StatelessWidget {
           SizedBox(width: 4.w),
           Text(
             badgeText,
-            style: TextStyle(
-              fontSize: 10.sp,
+            style: AppTextStyles.caption.copyWith(
               color: badgeColor,
               fontWeight: FontWeight.w600,
             ),

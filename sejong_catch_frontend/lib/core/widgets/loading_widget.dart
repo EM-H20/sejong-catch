@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/text_styles.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? message;
@@ -47,8 +48,7 @@ class LoadingWidget extends StatelessWidget {
             if (showSpinner) AppSpacing.verticalSpaceLG,
             Text(
               message!,
-              style: TextStyle(
-                fontSize: 14.sp,
+              style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),

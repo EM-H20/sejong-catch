@@ -183,7 +183,7 @@ class AppButton extends StatelessWidget {
       case AppButtonStyle.primary:
         return _ButtonColors(
           background: AppColors.brandCrimson,
-          foreground: Colors.white,
+          foreground: AppColors.pureWhite,
         );
 
       case AppButtonStyle.secondary:
@@ -194,21 +194,21 @@ class AppButton extends StatelessWidget {
 
       case AppButtonStyle.outline:
         return _ButtonColors(
-          background: Colors.transparent,
+          background: AppColors.transparent,
           foreground: AppColors.brandCrimson,
           border: AppColors.brandCrimson,
         );
 
       case AppButtonStyle.text:
         return _ButtonColors(
-          background: Colors.transparent,
+          background: AppColors.transparent,
           foreground: AppColors.brandCrimson,
         );
 
       case AppButtonStyle.danger:
         return _ButtonColors(
           background: AppColors.error,
-          foreground: Colors.white,
+          foreground: AppColors.pureWhite,
         );
     }
   }

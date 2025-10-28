@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/text_styles.dart';
 
 /// 세종 캐치 앱의 표준 텍스트 입력 필드
 ///
@@ -314,13 +317,12 @@ class _AppTextFieldState extends State<AppTextField> {
             widget.style == AppTextFieldStyle.filled) ...[
           Text(
             widget.labelText!,
-            style: TextStyle(
-              fontSize: 14.sp,
+            style: AppTextStyles.bodyMedium.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 8.h),
+          AppSpacing.verticalSpaceSM,
         ],
 
         // 텍스트 필드
@@ -344,8 +346,7 @@ class _AppTextFieldState extends State<AppTextField> {
           textDirection: widget.textDirection,
           inputFormatters: widget.inputFormatters,
           autofillHints: widget.autofillHints,
-          style: TextStyle(
-            fontSize: 16.sp,
+          style: AppTextStyles.bodyLarge.copyWith(
             color: widget.enabled
                 ? AppColors.textPrimary
                 : AppColors.textSecondary,
@@ -359,7 +360,7 @@ class _AppTextFieldState extends State<AppTextField> {
           SizedBox(height: 4.h),
           Text(
             widget.helperText!,
-            style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ],
@@ -403,30 +404,28 @@ class _AppTextFieldState extends State<AppTextField> {
       contentPadding: _getContentPadding(),
 
       // 라벨 스타일
-      labelStyle: TextStyle(fontSize: 16.sp, color: AppColors.textSecondary),
-      floatingLabelStyle: TextStyle(
-        fontSize: 14.sp,
+      labelStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
+      floatingLabelStyle: AppTextStyles.bodyMedium.copyWith(
         color: _isFocused ? AppColors.brandCrimson : AppColors.textSecondary,
         fontWeight: FontWeight.w600,
       ),
 
       // 힌트 스타일
-      hintStyle: TextStyle(
-        fontSize: 16.sp,
+      hintStyle: AppTextStyles.bodyLarge.copyWith(
         color: AppColors.textSecondary.withValues(alpha: 0.6),
       ),
 
       // 에러 스타일
-      errorStyle: TextStyle(fontSize: 12.sp, color: AppColors.error),
+      errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
 
       // 헬퍼 스타일
-      helperStyle: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
+      helperStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
     );
   }
 
   Widget _buildPrefixIcon() {
     return Container(
-      margin: EdgeInsets.only(left: 16.w, right: 8.w),
+      margin: AppSpacing.only(left: 16, right: 8),
       child: Icon(
         widget.prefixIcon,
         size: 20.w,
@@ -460,7 +459,7 @@ class _AppTextFieldState extends State<AppTextField> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(left: 8.w, right: 16.w),
+        margin: AppSpacing.only(left: 8, right: 16),
         child: Icon(icon, size: 20.w, color: AppColors.textSecondary),
       ),
     );
@@ -477,11 +476,11 @@ class _AppTextFieldState extends State<AppTextField> {
   EdgeInsets _getContentPadding() {
     switch (widget.style) {
       case AppTextFieldStyle.filled:
-        return EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h);
+        return AppSpacing.symmetric(horizontal: 16, vertical: 16);
       case AppTextFieldStyle.outlined:
-        return EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h);
+        return AppSpacing.symmetric(horizontal: 16, vertical: 14);
       case AppTextFieldStyle.underlined:
-        return EdgeInsets.symmetric(horizontal: 0, vertical: 16.h);
+        return AppSpacing.symmetric(horizontal: 0, vertical: 16);
     }
   }
 

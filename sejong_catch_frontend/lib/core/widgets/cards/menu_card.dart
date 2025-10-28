@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/text_styles.dart';
+
 /// 📋 범용 메뉴 카드 컴포넌트
 ///
 /// CLAUDE.md 원칙:
 /// ✅ 재사용 가능한 UI 위젯 (프로필, 설정, 기타 메뉴)
 /// ✅ ScreenUtil 반응형 디자인
 /// ✅ 분리된 단일 책임 컴포넌트
+/// ✅ 디자인 토큰 100% 사용 (AppColors, AppSpacing, AppTextStyles)
 class MenuCard extends StatelessWidget {
   const MenuCard({
     super.key,
@@ -56,18 +61,17 @@ class MenuCard extends StatelessWidget {
     Color? titleColor,
   }) {
     return ListTile(
-      leading: Icon(icon, size: 24.r, color: titleColor ?? Colors.grey[700]),
+      leading: Icon(icon, size: 24.r, color: titleColor ?? AppColors.textSecondary),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 14.sp,
-          color: titleColor ?? Colors.grey[800],
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: titleColor ?? AppColors.textPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: trailing ?? Icon(Icons.chevron_right, size: 20.r, color: Colors.grey[400]),
+      trailing: trailing ?? Icon(Icons.chevron_right, size: 20.r, color: AppColors.textTertiary),
       onTap: onTap,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+      contentPadding: AppSpacing.symmetric(horizontal: 16, vertical: 4),
     );
   }
 
@@ -76,7 +80,7 @@ class MenuCard extends StatelessWidget {
     return Divider(
       height: 1.h,
       thickness: 1,
-      color: Colors.grey[200],
+      color: AppColors.divider,
       indent: 56.w,
     );
   }

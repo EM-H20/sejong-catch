@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/text_styles.dart';
 
 class AppErrorWidget extends StatelessWidget {
   final String message;
@@ -57,9 +58,7 @@ class AppErrorWidget extends StatelessWidget {
             // 📝 에러 메시지
             Text(
               '앗, 문제가 발생했어요',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
+              style: AppTextStyles.heading3.copyWith(
                 color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
@@ -69,10 +68,8 @@ class AppErrorWidget extends StatelessWidget {
 
             Text(
               message,
-              style: TextStyle(
-                fontSize: 14.sp,
+              style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
-                height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
@@ -89,9 +86,8 @@ class AppErrorWidget extends StatelessWidget {
                 ),
                 label: Text(
                   retryText ?? '다시 시도',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.white,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
