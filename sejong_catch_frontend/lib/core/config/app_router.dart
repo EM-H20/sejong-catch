@@ -122,26 +122,33 @@ class AppRouter {
       redirect: (context, state) async {
         final currentPath = state.uri.path;
 
-        // ✅ 로그인 페이지나 온보딩 페이지는 리디렉션 하지 않음
+        // ✅ 로그인 페이지나 온보딩 페이지는 리디렉션 하지 않음 (무한 루프 방지)
         if (currentPath == AppRoutes.auth ||
-            currentPath == AppRoutes.onboarding ||
-            currentPath == AppRoutes.tossOnboarding) {
+            currentPath == AppRoutes.onboarding) {
           return null;
         }
 
         // 1️⃣ 인증 상태 확인 (토큰 존재 여부 체크)
-        final tokenStorage = container.read(tokenStorageServiceProvider.notifier);
-        final accessToken = await tokenStorage.getAccessToken();
+        try {
+          final tokenStorage = container.read(tokenStorageServiceProvider.notifier);
+          final accessToken = await tokenStorage.getAccessToken();
 
-        // 토큰이 없으면 → 무조건 로그인 페이지로 (온보딩은 로그인 후)
-        if (accessToken == null || accessToken.isEmpty) {
-          return AppRoutes.auth;
+          // 토큰이 없으면 → 로그인 페이지로 (온보딩은 로그인 후)
+          // (이미 125-129줄에서 auth 경로는 리디렉션 방지됨)
+          if (accessToken == null || accessToken.isEmpty) {
+            return AppRoutes.auth;
+          }
+
+          // ✅ 토큰 있음 → 인증된 상태, 계속 진행
+          // TODO: 2️⃣ 온보딩 완료 여부 확인 (SharedPreferences)
+          // TODO: 3️⃣ 권한별 접근 제한 구현 (role guard)
+
+          return null;
+        } catch (e) {
+          // Storage 에러 등 예외 발생 시 → 안전하게 로그인으로 이동
+          debugPrint('[AppRouter] Error during redirect: $e');
+          return currentPath == AppRoutes.auth ? null : AppRoutes.auth;
         }
-
-        // ✅ 토큰 있음 → 인증된 상태, 계속 진행
-        // TODO: 3. 권한별 접근 제한 구현 (role guard)
-
-        return null;
       },
 
       // ❌ 에러 페이지 (라우트를 찾을 수 없는 경우)

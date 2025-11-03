@@ -9,6 +9,7 @@
 /// ✅ 에러 핸들링 및 재시도 로직
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../repositories/token_repository.dart';
 
 class AuthInterceptor extends Interceptor {
@@ -33,10 +34,16 @@ class AuthInterceptor extends Interceptor {
       return handler.next(options);
     }
 
-    // Access Token 자동 추가
-    final accessToken = await _tokenRepository.getAccessToken();
-    if (accessToken != null) {
-      options.headers['Authorization'] = 'Bearer $accessToken';
+    try {
+      // Access Token 자동 추가
+      final accessToken = await _tokenRepository.getAccessToken();
+      if (accessToken != null) {
+        options.headers['Authorization'] = 'Bearer $accessToken';
+      }
+    } catch (e) {
+      // 극단적인 상황 대비 (Storage 에러 등, 정상적으로는 발생하지 않음)
+      debugPrint('[AuthInterceptor] Error getting access token in onRequest: $e');
+      // 토큰 없이 계속 진행 (API 서버에서 401 처리)
     }
 
     return handler.next(options);
@@ -63,12 +70,31 @@ class AuthInterceptor extends Interceptor {
               'Bearer $newAccessToken';
           final response = await _dio.fetch(err.requestOptions);
           return handler.resolve(response);
+        } else {
+          // Refresh Token 없음 또는 만료 → 로그아웃
+          await _tokenRepository.clearTokens();
+          return handler.next(err);
         }
-      } catch (refreshError) {
-        // Refresh 실패 → 로그아웃 처리
-        await _tokenRepository.clearTokens();
+      } on DioException catch (refreshError) {
+        // Refresh API 호출 실패
+        if (refreshError.response?.statusCode == 401 ||
+            refreshError.response?.statusCode == 403) {
+          // Refresh Token 만료 또는 유효하지 않음 → 로그아웃
+          await _tokenRepository.clearTokens();
+        }
+        // 원래 401 에러 전달
+        return handler.next(err);
+      } catch (e) {
+        // 예상치 못한 에러 (Storage 에러 등)
+        debugPrint('[AuthInterceptor] Unexpected error during token refresh: $e');
         return handler.next(err);
       }
+    }
+
+    // 403 에러 → 권한 없음 (토큰은 유효하지만 권한 부족)
+    if (err.response?.statusCode == 403) {
+      debugPrint('[AuthInterceptor] Access forbidden: ${err.requestOptions.path}');
+      return handler.next(err);
     }
 
     return handler.next(err);
@@ -78,25 +104,48 @@ class AuthInterceptor extends Interceptor {
   ///
   /// 참조: AUTH_API_SPEC.md - Interceptor 무한 루프 수정
   /// 🚨 중요: Interceptor가 적용되지 않은 독립적인 Dio 인스턴스 생성!
+  ///
+  /// Returns:
+  /// - 새로운 Access Token (성공 시)
+  /// - null (Refresh Token 없음, 만료, 또는 네트워크 에러)
+  ///
+  /// Throws:
+  /// - DioException: API 호출 실패 (상위에서 처리)
   Future<String?> _refreshAccessToken() async {
-    final refreshToken = await _tokenRepository.getRefreshToken();
-    if (refreshToken == null) return null;
-
-    // Interceptor 없는 별도 Dio 인스턴스
-    final refreshDio = Dio(BaseOptions(
-      baseUrl: _baseUrl,
-      headers: {'Content-Type': 'application/json'},
-    ));
-
     try {
+      final refreshToken = await _tokenRepository.getRefreshToken();
+      if (refreshToken == null) {
+        debugPrint('[AuthInterceptor] No refresh token available');
+        return null;
+      }
+
+      // Interceptor 없는 별도 Dio 인스턴스
+      final refreshDio = Dio(BaseOptions(
+        baseUrl: _baseUrl,
+        headers: {'Content-Type': 'application/json'},
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      ));
+
       final response = await refreshDio.post(
         '/api/auth/refresh',
         data: {'refresh_token': refreshToken},
       );
 
-      return response.data['access_token'] as String?;
+      // 응답 검증
+      if (response.data == null || response.data['access_token'] == null) {
+        debugPrint('[AuthInterceptor] Invalid refresh response: missing access_token');
+        return null;
+      }
+
+      return response.data['access_token'] as String;
+    } on DioException catch (e) {
+      // Dio 관련 에러는 상위로 전달 (onError에서 처리)
+      debugPrint('[AuthInterceptor] Refresh API failed: ${e.type} - ${e.message}');
+      rethrow;
     } catch (e) {
-      // Refresh 실패
+      // Storage 에러 등 예상치 못한 에러
+      debugPrint('[AuthInterceptor] Unexpected error in _refreshAccessToken: $e');
       return null;
     }
   }
