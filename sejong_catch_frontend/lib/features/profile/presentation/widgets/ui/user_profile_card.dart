@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/widgets/buttons/app_button.dart';
 
 /// 👤 사용자 프로필 카드 컴포넌트
@@ -32,7 +33,7 @@ class UserProfileCard extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Padding(
-        padding: EdgeInsets.all(20.w),
+        padding: AppSpacing.cardPadding,
         child: Column(
           children: [
             // 프로필 이미지
@@ -46,7 +47,7 @@ class UserProfileCard extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 16.h),
+            AppSpacing.verticalSpaceLG,
 
             // 사용자 이름
             Text(
@@ -54,7 +55,7 @@ class UserProfileCard extends StatelessWidget {
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(height: 4.h),
+            AppSpacing.verticalSpaceXS,
 
             // 학과/전공
             Text(
@@ -62,7 +63,7 @@ class UserProfileCard extends StatelessWidget {
               style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
             ),
 
-            SizedBox(height: 8.h),
+            AppSpacing.verticalSpaceSM,
 
             // 권한 배지
             Container(
@@ -81,7 +82,7 @@ class UserProfileCard extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 16.h),
+            AppSpacing.verticalSpaceLG,
 
             // 프로필 편집 버튼
             AppButton.outline(

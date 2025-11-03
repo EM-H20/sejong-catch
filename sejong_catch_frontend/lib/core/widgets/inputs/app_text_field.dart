@@ -357,7 +357,7 @@ class _AppTextFieldState extends State<AppTextField> {
 
         // 헬퍼 텍스트
         if (widget.helperText != null) ...[
-          SizedBox(height: 4.h),
+          AppSpacing.verticalSpaceXS,
           Text(
             widget.helperText!,
             style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),

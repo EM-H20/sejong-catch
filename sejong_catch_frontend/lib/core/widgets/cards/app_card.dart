@@ -113,25 +113,25 @@ class AppCard extends StatelessWidget {
                 // 헤더 (출처 정보 + 북마크)
                 _buildHeader(context),
 
-                SizedBox(height: 12.h),
+                AppSpacing.verticalSpaceMD,
 
                 // 제목
                 _buildTitle(context),
 
                 // 부제목
                 if (subtitle != null) ...[
-                  SizedBox(height: 8.h),
+                  AppSpacing.verticalSpaceSM,
                   _buildSubtitle(context),
                 ],
 
-                SizedBox(height: 12.h),
+                AppSpacing.verticalSpaceMD,
 
                 // 메타 정보 (카테고리, D-Day, 생성일 등)
                 _buildMetaInfo(context),
 
                 // 신뢰도 배지 (하단)
                 if (trustLevel != null) ...[
-                  SizedBox(height: 12.h),
+                  AppSpacing.verticalSpaceMD,
                   _buildTrustBadge(context),
                 ],
               ],
@@ -191,7 +191,7 @@ class AppCard extends StatelessWidget {
         // 출처 로고
         _buildSourceLogo(),
 
-        SizedBox(width: 8.w),
+        AppSpacing.horizontalSpaceSM,
 
         // 출처 도메인
         Expanded(
@@ -404,7 +404,7 @@ class AppCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 14.w, color: color),
-        SizedBox(width: 4.w),
+        AppSpacing.horizontalSpaceXS,
         Text(
           text.length > 10 ? '${text.substring(0, 8)}..' : text,
           style: AppTextStyles.bodySmall.copyWith(
@@ -490,7 +490,7 @@ class AppCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(badgeIcon, size: 12.w, color: badgeColor),
-          SizedBox(width: 4.w),
+          AppSpacing.horizontalSpaceXS,
           Text(
             badgeText,
             style: AppTextStyles.caption.copyWith(

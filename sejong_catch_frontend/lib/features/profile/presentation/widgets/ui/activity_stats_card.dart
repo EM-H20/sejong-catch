@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_spacing.dart';
 
 /// 📊 활동 통계 카드 컴포넌트
 ///
@@ -27,7 +28,7 @@ class ActivityStatsCard extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
-        padding: EdgeInsets.all(20.w),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,14 +37,14 @@ class ActivityStatsCard extends StatelessWidget {
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(height: 16.h),
+            AppSpacing.verticalSpaceLG,
 
             Row(
               children: [
                 _buildStatItem('북마크', bookmarkCount.toString(), Icons.bookmark),
-                SizedBox(width: 24.w),
+                AppSpacing.horizontalSpaceXXL,
                 _buildStatItem('지원완료', completedCount.toString(), Icons.check_circle),
-                SizedBox(width: 24.w),
+                AppSpacing.horizontalSpaceXXL,
                 _buildStatItem('대기중', pendingCount.toString(), Icons.access_time),
               ],
             ),
@@ -58,7 +59,7 @@ class ActivityStatsCard extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, size: 24.r, color: AppColors.brandCrimson),
-        SizedBox(height: 8.h),
+        AppSpacing.verticalSpaceSM,
         Text(
           count,
           style: TextStyle(
@@ -67,7 +68,7 @@ class ActivityStatsCard extends StatelessWidget {
             color: AppColors.brandCrimson,
           ),
         ),
-        SizedBox(height: 4.h),
+        AppSpacing.verticalSpaceXS,
         Text(
           label,
           style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),

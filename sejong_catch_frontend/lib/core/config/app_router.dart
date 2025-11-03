@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app_routes.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
@@ -11,6 +12,7 @@ import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../services/token_storage_service.dart';
+import '../theme/app_spacing.dart';
 
 /// 🧭 세종 캐치 앱의 GoRouter 중앙 설정
 ///
@@ -158,15 +160,15 @@ class AppRouter {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
+              Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
+              AppSpacing.verticalSpaceLG,
               Text(
                 '요청하신 페이지를 찾을 수 없습니다',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 8),
+              AppSpacing.verticalSpaceSM,
               Text('경로: ${state.uri.path}'),
-              const SizedBox(height: 24),
+              AppSpacing.verticalSpaceXXL,
               ElevatedButton(
                 onPressed: () => context.go(AppRoutes.feed),
                 child: const Text('홈으로 돌아가기'),
@@ -248,9 +250,9 @@ class DetailPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('상세 페이지', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 16),
+            AppSpacing.verticalSpaceLG,
             Text('ID: $id'),
-            const SizedBox(height: 24),
+            AppSpacing.verticalSpaceXXL,
             ElevatedButton(
               onPressed: () => context.pop(),
               child: const Text('뒤로 가기'),

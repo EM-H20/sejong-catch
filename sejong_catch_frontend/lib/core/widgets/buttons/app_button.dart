@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// 세종 캐치 앱의 표준 버튼 위젯
 ///
@@ -296,7 +297,7 @@ class AppButton extends StatelessWidget {
       children.add(
         Icon(leftIcon, size: dimensions.iconSize, color: colors.foreground),
       );
-      children.add(SizedBox(width: 8.w));
+      children.add(AppSpacing.horizontalSpaceSM);
     }
 
     // 텍스트
@@ -318,7 +319,7 @@ class AppButton extends StatelessWidget {
 
     // 우측 아이콘
     if (rightIcon != null) {
-      children.add(SizedBox(width: 8.w));
+      children.add(AppSpacing.horizontalSpaceSM);
       children.add(
         Icon(rightIcon, size: dimensions.iconSize, color: colors.foreground),
       );

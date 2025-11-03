@@ -86,7 +86,7 @@ class AppColors {
   static const Color divider = Color(0xFFE0DED9);
 
   /// 비활성화된 요소 색상 - 소프트 그레이
-  static const Color disabled = Color(0xFFB8B5B0);
+  static const Color disabled = Color(0xFF8F8C87);
 
   /// 그림자 색상 - 부드러운 다크 그레이
   /// 순흑색보다 자연스러운 그림자 표현
