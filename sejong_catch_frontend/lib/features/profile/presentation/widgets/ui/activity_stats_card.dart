@@ -43,9 +43,17 @@ class ActivityStatsCard extends StatelessWidget {
               children: [
                 _buildStatItem('북마크', bookmarkCount.toString(), Icons.bookmark),
                 AppSpacing.horizontalSpaceXXL,
-                _buildStatItem('지원완료', completedCount.toString(), Icons.check_circle),
+                _buildStatItem(
+                  '지원완료',
+                  completedCount.toString(),
+                  Icons.check_circle,
+                ),
                 AppSpacing.horizontalSpaceXXL,
-                _buildStatItem('대기중', pendingCount.toString(), Icons.access_time),
+                _buildStatItem(
+                  '대기중',
+                  pendingCount.toString(),
+                  Icons.access_time,
+                ),
               ],
             ),
           ],

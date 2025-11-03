@@ -59,10 +59,7 @@ class AuthRepository extends _$AuthRepository {
           success: true,
           isAuth: true,
           code: '200',
-          body: SsoBodyDto(
-            name: '홍길동',
-            major: '컴퓨터공학과',
-          ),
+          body: SsoBodyDto(name: '홍길동', major: '컴퓨터공학과'),
         ),
       );
     }

@@ -11,9 +11,7 @@
 class ErrorResponse {
   final String error;
 
-  const ErrorResponse({
-    required this.error,
-  });
+  const ErrorResponse({required this.error});
 
   /// JSON → ErrorResponse 변환
   ///
@@ -22,9 +20,7 @@ class ErrorResponse {
   /// final errorResponse = ErrorResponse.fromJson(response.data);
   /// ```
   factory ErrorResponse.fromJson(Map<String, dynamic> json) {
-    return ErrorResponse(
-      error: json['error'] as String,
-    );
+    return ErrorResponse(error: json['error'] as String);
   }
 
   /// ErrorResponse → JSON 변환
@@ -33,9 +29,7 @@ class ErrorResponse {
   /// ```dart
   /// final json = errorResponse.toJson();
   /// ```
-  Map<String, dynamic> toJson() => {
-        'error': error,
-      };
+  Map<String, dynamic> toJson() => {'error': error};
 
   @override
   String toString() => 'ErrorResponse(error: $error)';

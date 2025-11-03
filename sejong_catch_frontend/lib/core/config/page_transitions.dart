@@ -33,16 +33,15 @@ CustomTransitionPage<T> buildFadeSlideTransition<T>({
       // Slide 애니메이션 (위치)
       const slideBegin = Offset(0.0, 0.03); // 화면 높이의 3% 아래에서 시작
       const slideEnd = Offset.zero;
-      final slideTween = Tween(begin: slideBegin, end: slideEnd)
-          .chain(CurveTween(curve: Curves.easeOutCubic));
+      final slideTween = Tween(
+        begin: slideBegin,
+        end: slideEnd,
+      ).chain(CurveTween(curve: Curves.easeOutCubic));
       final slideAnimation = animation.drive(slideTween);
 
       return FadeTransition(
         opacity: fadeAnimation,
-        child: SlideTransition(
-          position: slideAnimation,
-          child: child,
-        ),
+        child: SlideTransition(position: slideAnimation, child: child),
       );
     },
     transitionDuration: const Duration(milliseconds: 300),
@@ -65,10 +64,7 @@ CustomTransitionPage<T> buildFadeTransition<T>({
     key: state.pageKey,
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
+      return FadeTransition(opacity: animation, child: child);
     },
     transitionDuration: const Duration(milliseconds: 200),
     reverseTransitionDuration: const Duration(milliseconds: 150),

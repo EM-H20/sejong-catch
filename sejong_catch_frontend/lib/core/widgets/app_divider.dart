@@ -163,10 +163,7 @@ class AppDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget divider = Container(
-      height: height,
-      color: color,
-    );
+    Widget divider = Container(height: height, color: color);
 
     // indent/endIndent가 있으면 Divider 위젯 사용 (Material에서 지원)
     if (indent != null || endIndent != null) {
@@ -181,10 +178,7 @@ class AppDivider extends StatelessWidget {
 
     // margin이 있으면 Padding으로 감싸기
     if (margin != null) {
-      return Padding(
-        padding: margin!,
-        child: divider,
-      );
+      return Padding(padding: margin!, child: divider);
     }
 
     return divider;

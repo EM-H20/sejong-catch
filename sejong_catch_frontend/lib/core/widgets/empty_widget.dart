@@ -51,11 +51,7 @@ class AppEmptyWidget extends StatelessWidget {
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(40.r),
                 ),
-                child: Icon(
-                  icon!,
-                  size: 40.sp,
-                  color: AppColors.disabled,
-                ),
+                child: Icon(icon!, size: 40.sp, color: AppColors.disabled),
               ),
 
             AppSpacing.verticalSpaceXXL,
@@ -93,10 +89,7 @@ class AppEmptyWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: Text(
-                  actionText!,
-                  style: AppTextStyles.label,
-                ),
+                child: Text(actionText!, style: AppTextStyles.label),
               ),
             ],
           ],
@@ -111,11 +104,7 @@ class EmptyListWidget extends StatelessWidget {
   final String message;
   final IconData? icon;
 
-  const EmptyListWidget({
-    super.key,
-    required this.message,
-    this.icon,
-  });
+  const EmptyListWidget({super.key, required this.message, this.icon});
 
   @override
   Widget build(BuildContext context) {

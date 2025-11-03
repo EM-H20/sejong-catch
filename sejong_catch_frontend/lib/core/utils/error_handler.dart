@@ -24,11 +24,7 @@ class ErrorHandler {
       SnackBar(
         content: Row(
           children: [
-            Icon(
-              Icons.error_outline,
-              color: AppColors.white,
-              size: 20.r,
-            ),
+            Icon(Icons.error_outline, color: AppColors.white, size: 20.r),
             AppSpacing.horizontalSpaceSM,
             Expanded(
               child: Text(
@@ -43,9 +39,7 @@ class ErrorHandler {
         backgroundColor: AppColors.error,
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         margin: AppSpacing.cardPadding,
       ),
     );
@@ -80,9 +74,7 @@ class ErrorHandler {
         backgroundColor: AppColors.success,
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         margin: AppSpacing.cardPadding,
       ),
     );
@@ -98,11 +90,7 @@ class ErrorHandler {
       SnackBar(
         content: Row(
           children: [
-            Icon(
-              Icons.warning_outlined,
-              color: AppColors.white,
-              size: 20.r,
-            ),
+            Icon(Icons.warning_outlined, color: AppColors.white, size: 20.r),
             AppSpacing.horizontalSpaceSM,
             Expanded(
               child: Text(
@@ -117,9 +105,7 @@ class ErrorHandler {
         backgroundColor: AppColors.warning,
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         margin: AppSpacing.cardPadding,
       ),
     );
@@ -137,11 +123,7 @@ class ErrorHandler {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(
-              Icons.error_outline,
-              color: AppColors.error,
-              size: 24.r,
-            ),
+            Icon(Icons.error_outline, color: AppColors.error, size: 24.r),
             AppSpacing.horizontalSpaceSM,
             Text(title),
           ],
@@ -222,9 +204,6 @@ class ErrorHandler {
 
   /// 🎉 성공 액션 피드백
   static void showActionSuccess(BuildContext context, String action) {
-    showSuccessSnackBar(
-      context,
-      '$action 완료! 🎉',
-    );
+    showSuccessSnackBar(context, '$action 완료! 🎉');
   }
 }

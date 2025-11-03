@@ -29,7 +29,9 @@ class TokenRepositoryImpl implements TokenRepository {
       return await _storage.read(key: _accessTokenKey);
     } on PlatformException catch (e) {
       // iOS Keychain, Android KeyStore 에러
-      debugPrint('[TokenRepository] Platform error reading access token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenRepository] Platform error reading access token: ${e.code} - ${e.message}',
+      );
       return null;
     } catch (e) {
       // 예상치 못한 에러
@@ -44,11 +46,15 @@ class TokenRepositoryImpl implements TokenRepository {
       return await _storage.read(key: _refreshTokenKey);
     } on PlatformException catch (e) {
       // iOS Keychain, Android KeyStore 에러
-      debugPrint('[TokenRepository] Platform error reading refresh token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenRepository] Platform error reading refresh token: ${e.code} - ${e.message}',
+      );
       return null;
     } catch (e) {
       // 예상치 못한 에러
-      debugPrint('[TokenRepository] Unexpected error reading refresh token: $e');
+      debugPrint(
+        '[TokenRepository] Unexpected error reading refresh token: $e',
+      );
       return null;
     }
   }
@@ -59,7 +65,9 @@ class TokenRepositoryImpl implements TokenRepository {
       await _storage.write(key: _accessTokenKey, value: token);
     } on PlatformException catch (e) {
       // iOS Keychain, Android KeyStore 에러
-      debugPrint('[TokenRepository] Platform error saving access token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenRepository] Platform error saving access token: ${e.code} - ${e.message}',
+      );
       rethrow; // 저장 실패는 상위에서 처리해야 함
     } catch (e) {
       // 예상치 못한 에러
@@ -74,7 +82,9 @@ class TokenRepositoryImpl implements TokenRepository {
       await _storage.write(key: _refreshTokenKey, value: token);
     } on PlatformException catch (e) {
       // iOS Keychain, Android KeyStore 에러
-      debugPrint('[TokenRepository] Platform error saving refresh token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenRepository] Platform error saving refresh token: ${e.code} - ${e.message}',
+      );
       rethrow; // 저장 실패는 상위에서 처리해야 함
     } catch (e) {
       // 예상치 못한 에러
@@ -93,7 +103,9 @@ class TokenRepositoryImpl implements TokenRepository {
     } on PlatformException catch (e) {
       // iOS Keychain, Android KeyStore 에러
       // 삭제 실패는 로그만 남기고 무시 (로그아웃은 계속 진행)
-      debugPrint('[TokenRepository] Platform error clearing tokens: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenRepository] Platform error clearing tokens: ${e.code} - ${e.message}',
+      );
     } catch (e) {
       // 예상치 못한 에러
       debugPrint('[TokenRepository] Unexpected error clearing tokens: $e');

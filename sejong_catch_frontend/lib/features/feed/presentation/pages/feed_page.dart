@@ -97,9 +97,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
           AppDivider.thin(),
 
           // 피드 리스트
-          Expanded(
-            child: _buildFeedList(),
-          ),
+          Expanded(child: _buildFeedList()),
         ],
       ),
     );
@@ -136,9 +134,9 @@ class _FeedPageState extends ConsumerState<FeedPage> {
           icon: Icon(Icons.notifications_outlined, size: 24.sp),
           color: AppColors.textSecondary,
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('알림 기능 준비 중! 🔔')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('알림 기능 준비 중! 🔔')));
           },
         ),
       ],
@@ -149,9 +147,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
   Widget _buildCategoryFilter() {
     return Container(
       height: 56.h,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-      ),
+      decoration: BoxDecoration(color: AppColors.white),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
@@ -173,7 +169,9 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                 color: isSelected ? AppColors.brandCrimson : AppColors.white,
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
-                  color: isSelected ? AppColors.brandCrimson : AppColors.divider,
+                  color: isSelected
+                      ? AppColors.brandCrimson
+                      : AppColors.divider,
                   width: 1.5,
                 ),
               ),
@@ -183,7 +181,9 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected ? AppColors.white : AppColors.textSecondary,
+                    color: isSelected
+                        ? AppColors.white
+                        : AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -199,8 +199,8 @@ class _FeedPageState extends ConsumerState<FeedPage> {
     final filteredItems = _selectedCategory == '전체'
         ? _dummyFeedItems
         : _dummyFeedItems
-            .where((item) => item['category'] == _selectedCategory)
-            .toList();
+              .where((item) => item['category'] == _selectedCategory)
+              .toList();
 
     if (filteredItems.isEmpty) {
       return _buildEmptyState();
@@ -225,9 +225,9 @@ class _FeedPageState extends ConsumerState<FeedPage> {
 
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${item['title']} 상세보기 (준비 중)')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${item['title']} 상세보기 (준비 중)')));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -276,7 +276,8 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          item['isBookmarked'] = !(item['isBookmarked'] as bool);
+                          item['isBookmarked'] =
+                              !(item['isBookmarked'] as bool);
                         });
                       },
                       child: Container(
@@ -348,7 +349,9 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                       _buildInfoChip(
                         icon: Icons.access_time,
                         label: 'D-$dDay',
-                        color: isUrgent ? AppColors.error : AppColors.textSecondary,
+                        color: isUrgent
+                            ? AppColors.error
+                            : AppColors.textSecondary,
                         backgroundColor: isUrgent
                             ? AppColors.error.withValues(alpha: 0.1)
                             : AppColors.surface,
@@ -500,11 +503,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.inbox_outlined,
-            size: 64.sp,
-            color: AppColors.disabled,
-          ),
+          Icon(Icons.inbox_outlined, size: 64.sp, color: AppColors.disabled),
           AppSpacing.verticalSpaceLG,
           Text(
             '$_selectedCategory 정보가 없어요',
@@ -517,10 +516,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
           AppSpacing.verticalSpaceSM,
           Text(
             '다른 카테고리를 확인해보세요',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
           ),
         ],
       ),

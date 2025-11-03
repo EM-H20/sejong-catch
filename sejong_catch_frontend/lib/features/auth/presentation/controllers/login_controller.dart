@@ -58,11 +58,7 @@ class LoginController extends _$LoginController {
       );
 
       // 3. 성공 상태로 업데이트
-      state = state.copyWith(
-        isLoading: false,
-        isLoggedIn: true,
-        error: null,
-      );
+      state = state.copyWith(isLoading: false, isLoggedIn: true, error: null);
 
       // ✅ 로그인 성공!
       // TODO: 홈 화면으로 네비게이션 (context.go('/feed'))
@@ -81,10 +77,7 @@ class LoginController extends _$LoginController {
         errorMessage = '인터넷 연결을 확인해주세요.';
       }
 
-      state = state.copyWith(
-        isLoading: false,
-        error: errorMessage,
-      );
+      state = state.copyWith(isLoading: false, error: errorMessage);
     } catch (e) {
       // 기타 에러 처리
       state = state.copyWith(

@@ -132,7 +132,9 @@ class AppRouter {
 
         // 1️⃣ 인증 상태 확인 (토큰 존재 여부 체크)
         try {
-          final tokenStorage = container.read(tokenStorageServiceProvider.notifier);
+          final tokenStorage = container.read(
+            tokenStorageServiceProvider.notifier,
+          );
           final accessToken = await tokenStorage.getAccessToken();
 
           // 토큰이 없으면 → 로그인 페이지로 (온보딩은 로그인 후)

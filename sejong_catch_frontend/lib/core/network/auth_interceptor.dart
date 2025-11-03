@@ -17,11 +17,7 @@ class AuthInterceptor extends Interceptor {
   final TokenRepository _tokenRepository;
   final String _baseUrl;
 
-  AuthInterceptor(
-    this._dio,
-    this._tokenRepository,
-    this._baseUrl,
-  );
+  AuthInterceptor(this._dio, this._tokenRepository, this._baseUrl);
 
   @override
   Future<void> onRequest(
@@ -42,7 +38,9 @@ class AuthInterceptor extends Interceptor {
       }
     } catch (e) {
       // 극단적인 상황 대비 (Storage 에러 등, 정상적으로는 발생하지 않음)
-      debugPrint('[AuthInterceptor] Error getting access token in onRequest: $e');
+      debugPrint(
+        '[AuthInterceptor] Error getting access token in onRequest: $e',
+      );
       // 토큰 없이 계속 진행 (API 서버에서 401 처리)
     }
 
@@ -86,14 +84,18 @@ class AuthInterceptor extends Interceptor {
         return handler.next(err);
       } catch (e) {
         // 예상치 못한 에러 (Storage 에러 등)
-        debugPrint('[AuthInterceptor] Unexpected error during token refresh: $e');
+        debugPrint(
+          '[AuthInterceptor] Unexpected error during token refresh: $e',
+        );
         return handler.next(err);
       }
     }
 
     // 403 에러 → 권한 없음 (토큰은 유효하지만 권한 부족)
     if (err.response?.statusCode == 403) {
-      debugPrint('[AuthInterceptor] Access forbidden: ${err.requestOptions.path}');
+      debugPrint(
+        '[AuthInterceptor] Access forbidden: ${err.requestOptions.path}',
+      );
       return handler.next(err);
     }
 
@@ -120,12 +122,14 @@ class AuthInterceptor extends Interceptor {
       }
 
       // Interceptor 없는 별도 Dio 인스턴스
-      final refreshDio = Dio(BaseOptions(
-        baseUrl: _baseUrl,
-        headers: {'Content-Type': 'application/json'},
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-      ));
+      final refreshDio = Dio(
+        BaseOptions(
+          baseUrl: _baseUrl,
+          headers: {'Content-Type': 'application/json'},
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      );
 
       final response = await refreshDio.post(
         '/api/auth/refresh',
@@ -134,18 +138,24 @@ class AuthInterceptor extends Interceptor {
 
       // 응답 검증
       if (response.data == null || response.data['access_token'] == null) {
-        debugPrint('[AuthInterceptor] Invalid refresh response: missing access_token');
+        debugPrint(
+          '[AuthInterceptor] Invalid refresh response: missing access_token',
+        );
         return null;
       }
 
       return response.data['access_token'] as String;
     } on DioException catch (e) {
       // Dio 관련 에러는 상위로 전달 (onError에서 처리)
-      debugPrint('[AuthInterceptor] Refresh API failed: ${e.type} - ${e.message}');
+      debugPrint(
+        '[AuthInterceptor] Refresh API failed: ${e.type} - ${e.message}',
+      );
       rethrow;
     } catch (e) {
       // Storage 에러 등 예상치 못한 에러
-      debugPrint('[AuthInterceptor] Unexpected error in _refreshAccessToken: $e');
+      debugPrint(
+        '[AuthInterceptor] Unexpected error in _refreshAccessToken: $e',
+      );
       return null;
     }
   }

@@ -26,7 +26,9 @@ class TokenStorageService extends _$TokenStorageService {
       final storage = ref.read(secureStorageProvider);
       await storage.write(key: _accessTokenKey, value: token);
     } on PlatformException catch (e) {
-      debugPrint('[TokenStorage] Platform error saving access token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenStorage] Platform error saving access token: ${e.code} - ${e.message}',
+      );
       rethrow;
     } catch (e) {
       debugPrint('[TokenStorage] Unexpected error saving access token: $e');
@@ -40,7 +42,9 @@ class TokenStorageService extends _$TokenStorageService {
       final storage = ref.read(secureStorageProvider);
       await storage.write(key: _refreshTokenKey, value: token);
     } on PlatformException catch (e) {
-      debugPrint('[TokenStorage] Platform error saving refresh token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenStorage] Platform error saving refresh token: ${e.code} - ${e.message}',
+      );
       rethrow;
     } catch (e) {
       debugPrint('[TokenStorage] Unexpected error saving refresh token: $e');
@@ -67,7 +71,9 @@ class TokenStorageService extends _$TokenStorageService {
       final storage = ref.read(secureStorageProvider);
       return await storage.read(key: _accessTokenKey);
     } on PlatformException catch (e) {
-      debugPrint('[TokenStorage] Platform error reading access token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenStorage] Platform error reading access token: ${e.code} - ${e.message}',
+      );
       return null;
     } catch (e) {
       debugPrint('[TokenStorage] Unexpected error reading access token: $e');
@@ -81,7 +87,9 @@ class TokenStorageService extends _$TokenStorageService {
       final storage = ref.read(secureStorageProvider);
       return await storage.read(key: _refreshTokenKey);
     } on PlatformException catch (e) {
-      debugPrint('[TokenStorage] Platform error reading refresh token: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenStorage] Platform error reading refresh token: ${e.code} - ${e.message}',
+      );
       return null;
     } catch (e) {
       debugPrint('[TokenStorage] Unexpected error reading refresh token: $e');
@@ -99,7 +107,9 @@ class TokenStorageService extends _$TokenStorageService {
       ]);
     } on PlatformException catch (e) {
       // 삭제 실패는 로그만 남기고 무시 (로그아웃은 계속 진행)
-      debugPrint('[TokenStorage] Platform error clearing tokens: ${e.code} - ${e.message}');
+      debugPrint(
+        '[TokenStorage] Platform error clearing tokens: ${e.code} - ${e.message}',
+      );
     } catch (e) {
       debugPrint('[TokenStorage] Unexpected error clearing tokens: $e');
     }

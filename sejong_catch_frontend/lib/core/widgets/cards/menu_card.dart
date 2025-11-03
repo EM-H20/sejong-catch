@@ -13,11 +13,7 @@ import '../../theme/text_styles.dart';
 /// ✅ 분리된 단일 책임 컴포넌트
 /// ✅ 디자인 토큰 100% 사용 (AppColors, AppSpacing, AppTextStyles)
 class MenuCard extends StatelessWidget {
-  const MenuCard({
-    super.key,
-    required this.title,
-    required this.menuItems,
-  });
+  const MenuCard({super.key, required this.title, required this.menuItems});
 
   final String title;
   final List<MenuItem> menuItems;
@@ -28,26 +24,22 @@ class MenuCard extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Column(
-        children: menuItems
-            .asMap()
-            .entries
-            .map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              return Column(
-                children: [
-                  _buildMenuTile(
-                    icon: item.icon,
-                    title: item.title,
-                    onTap: item.onTap,
-                    trailing: item.trailing,
-                    titleColor: item.titleColor,
-                  ),
-                  if (index < menuItems.length - 1) _buildDivider(),
-                ],
-              );
-            })
-            .toList(),
+        children: menuItems.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+          return Column(
+            children: [
+              _buildMenuTile(
+                icon: item.icon,
+                title: item.title,
+                onTap: item.onTap,
+                trailing: item.trailing,
+                titleColor: item.titleColor,
+              ),
+              if (index < menuItems.length - 1) _buildDivider(),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -61,7 +53,11 @@ class MenuCard extends StatelessWidget {
     Color? titleColor,
   }) {
     return ListTile(
-      leading: Icon(icon, size: 24.r, color: titleColor ?? AppColors.textSecondary),
+      leading: Icon(
+        icon,
+        size: 24.r,
+        color: titleColor ?? AppColors.textSecondary,
+      ),
       title: Text(
         title,
         style: AppTextStyles.bodyMedium.copyWith(
@@ -69,7 +65,9 @@ class MenuCard extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: trailing ?? Icon(Icons.chevron_right, size: 20.r, color: AppColors.textTertiary),
+      trailing:
+          trailing ??
+          Icon(Icons.chevron_right, size: 20.r, color: AppColors.textTertiary),
       onTap: onTap,
       contentPadding: AppSpacing.symmetric(horizontal: 16, vertical: 4),
     );

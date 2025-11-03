@@ -73,10 +73,7 @@ class BottomSheetUtils {
         children: [
           Padding(
             padding: AppSpacing.symmetric(horizontal: 20, vertical: 16),
-            child: Text(
-              title,
-              style: AppTextStyles.heading3,
-            ),
+            child: Text(title, style: AppTextStyles.heading3),
           ),
           Flexible(
             child: ListView.builder(

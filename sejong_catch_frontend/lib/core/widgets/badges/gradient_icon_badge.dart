@@ -63,8 +63,8 @@ class GradientIconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = gradientColors ??
-        [AppColors.brandCrimson, AppColors.brandCrimsonDark];
+    final colors =
+        gradientColors ?? [AppColors.brandCrimson, AppColors.brandCrimsonDark];
 
     return Container(
       width: size,

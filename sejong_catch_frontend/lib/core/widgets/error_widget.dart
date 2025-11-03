@@ -79,16 +79,10 @@ class AppErrorWidget extends StatelessWidget {
               AppSpacing.verticalSpaceXXL,
               ElevatedButton.icon(
                 onPressed: onRetry,
-                icon: Icon(
-                  Icons.refresh,
-                  size: 18.sp,
-                  color: AppColors.white,
-                ),
+                icon: Icon(Icons.refresh, size: 18.sp, color: AppColors.white),
                 label: Text(
                   retryText ?? '다시 시도',
-                  style: AppTextStyles.label.copyWith(
-                    color: AppColors.white,
-                  ),
+                  style: AppTextStyles.label.copyWith(color: AppColors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.brandCrimson,
@@ -111,10 +105,7 @@ class AppErrorWidget extends StatelessWidget {
 class NetworkErrorWidget extends StatelessWidget {
   final VoidCallback? onRetry;
 
-  const NetworkErrorWidget({
-    super.key,
-    this.onRetry,
-  });
+  const NetworkErrorWidget({super.key, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -131,10 +122,7 @@ class NetworkErrorWidget extends StatelessWidget {
 class ServerErrorWidget extends StatelessWidget {
   final VoidCallback? onRetry;
 
-  const ServerErrorWidget({
-    super.key,
-    this.onRetry,
-  });
+  const ServerErrorWidget({super.key, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -152,11 +140,7 @@ class PermissionErrorWidget extends StatelessWidget {
   final VoidCallback? onAction;
   final String? actionText;
 
-  const PermissionErrorWidget({
-    super.key,
-    this.onAction,
-    this.actionText,
-  });
+  const PermissionErrorWidget({super.key, this.onAction, this.actionText});
 
   @override
   Widget build(BuildContext context) {

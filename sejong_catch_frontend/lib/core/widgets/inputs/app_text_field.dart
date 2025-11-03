@@ -360,7 +360,9 @@ class _AppTextFieldState extends State<AppTextField> {
           AppSpacing.verticalSpaceXS,
           Text(
             widget.helperText!,
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ],
@@ -404,7 +406,9 @@ class _AppTextFieldState extends State<AppTextField> {
       contentPadding: _getContentPadding(),
 
       // 라벨 스타일
-      labelStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
+      labelStyle: AppTextStyles.bodyLarge.copyWith(
+        color: AppColors.textSecondary,
+      ),
       floatingLabelStyle: AppTextStyles.bodyMedium.copyWith(
         color: _isFocused ? AppColors.brandCrimson : AppColors.textSecondary,
         fontWeight: FontWeight.w600,
@@ -419,7 +423,9 @@ class _AppTextFieldState extends State<AppTextField> {
       errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
 
       // 헬퍼 스타일
-      helperStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+      helperStyle: AppTextStyles.bodySmall.copyWith(
+        color: AppColors.textSecondary,
+      ),
     );
   }
 

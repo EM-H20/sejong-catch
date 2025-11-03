@@ -24,9 +24,7 @@ Dio createDio(TokenRepository tokenRepository, String baseUrl) {
       baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     ),
   );
 
@@ -35,11 +33,13 @@ Dio createDio(TokenRepository tokenRepository, String baseUrl) {
 
   // 디버그 모드에서만 로깅
   if (kDebugMode) {
-    dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      logPrint: (log) => debugPrint(log.toString()),
-    ));
+    dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        logPrint: (log) => debugPrint(log.toString()),
+      ),
+    );
   }
 
   return dio;

@@ -8,11 +8,7 @@
 /// ✅ 하드코딩 제거
 /// ✅ --dart-define으로 환경 지정
 
-enum Environment {
-  development,
-  staging,
-  production,
-}
+enum Environment { development, staging, production }
 
 class EnvConfig {
   final Environment environment;

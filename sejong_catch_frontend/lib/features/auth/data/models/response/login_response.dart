@@ -43,17 +43,14 @@ class SsoDto with _$SsoDto {
     required SsoBodyDto body,
   }) = _SsoDto;
 
-  factory SsoDto.fromJson(Map<String, dynamic> json) =>
-      _$SsoDtoFromJson(json);
+  factory SsoDto.fromJson(Map<String, dynamic> json) => _$SsoDtoFromJson(json);
 }
 
 /// SSO Body DTO
 @freezed
 class SsoBodyDto with _$SsoBodyDto {
-  const factory SsoBodyDto({
-    required String name,
-    required String major,
-  }) = _SsoBodyDto;
+  const factory SsoBodyDto({required String name, required String major}) =
+      _SsoBodyDto;
 
   factory SsoBodyDto.fromJson(Map<String, dynamic> json) =>
       _$SsoBodyDtoFromJson(json);

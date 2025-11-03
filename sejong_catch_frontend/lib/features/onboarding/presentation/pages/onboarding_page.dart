@@ -125,10 +125,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           AppSpacing.verticalSpaceHuge,
 
           // 큰 그라데이션 원형 배경 + 로고
-          GradientCircleBadge(
-            icon: Icons.school_rounded,
-            size: 180.w,
-          ),
+          GradientCircleBadge(icon: Icons.school_rounded, size: 180.w),
           AppSpacing.verticalSpaceHuge,
 
           // 임팩트 타이틀
@@ -157,9 +154,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           AppSpacing.verticalSpaceLG,
 
           // 짧은 설명
-          GradientChip(
-            text: '공모전·취업·논문·학교공지를 한 곳에서',
-          ),
+          GradientChip(text: '공모전·취업·논문·학교공지를 한 곳에서'),
           AppSpacing.verticalSpaceHuge,
         ],
       ),
