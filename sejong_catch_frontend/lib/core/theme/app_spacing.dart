@@ -33,6 +33,31 @@ class AppSpacing {
   /// 초대형 간격: 40
   static double get huge => 40.w;
 
+  // ==================== SliverAppBar 전용 높이 ====================
+  /// SliverAppBar 확장 높이: 220 (축소 시 Overflow 완전 방지)
+  static double get sliverAppBarExpandedHeight => 220.h;
+
+  /// 카테고리 필터 높이: 56
+  static double get categoryFilterHeight => 56.h;
+
+  // ==================== Feed 전용 크기 ====================
+  /// 피드 카드 썸네일 높이: 140
+  static double get feedThumbnailHeight => 140.h;
+
+  /// 썸네일 내부 요소 간격: 12 (배지, 북마크 버튼 위치)
+  static double get thumbnailElementSpacing => 12.w;
+
+  /// 북마크 버튼 패딩: 8
+  static EdgeInsets get bookmarkButtonPadding => EdgeInsets.all(8.w);
+
+  /// 카테고리 칩 패딩: 가로 16, 세로 8
+  static EdgeInsets get categoryChipPadding =>
+      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h);
+
+  /// 카테고리 필터 리스트 패딩: 가로 18, 세로 8
+  static EdgeInsets get categoryFilterPadding =>
+      EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h);
+
   // ==================== 화면별 패딩 ====================
   /// 화면 메인 패딩 (기본): 18
   static EdgeInsets get screenPadding => EdgeInsets.all(18.w);

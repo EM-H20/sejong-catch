@@ -7,6 +7,7 @@ import 'app_routes.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/home/presentation/home_shell.dart';
 import '../../features/feed/presentation/pages/feed_page.dart';
+import '../../features/feed/presentation/pages/feed_detail_page.dart';
 import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
@@ -41,17 +42,6 @@ class AppRouter {
               path: AppRoutes.feed,
               name: 'feed',
               builder: (context, state) => const FeedPage(),
-              routes: [
-                // 📄 상세 페이지 (피드 하위 페이지, BottomNav 유지)
-                GoRoute(
-                  path: 'detail/:id',
-                  name: 'feed_detail',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id']!;
-                    return DetailPage(id: id);
-                  },
-                ),
-              ],
             ),
 
             // 🔍 검색 탭
@@ -59,17 +49,6 @@ class AppRouter {
               path: AppRoutes.search,
               name: 'search',
               builder: (context, state) => const SearchPage(),
-              routes: [
-                // 📄 검색 결과 상세 페이지 (검색 하위 페이지)
-                GoRoute(
-                  path: 'detail/:id',
-                  name: 'search_detail',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id']!;
-                    return DetailPage(id: id);
-                  },
-                ),
-              ],
             ),
 
             // 📋 줄서기 탭 (Student 이상 권한 필요)
@@ -111,10 +90,25 @@ class AppRouter {
           builder: (context, state) => const OnboardingPage(),
         ),
 
-        // ⚠️ 주의: 위의 nested routes로 이동됨
-        // 상세 페이지: /feed/detail/:id, /search/detail/:id
-        // 설정 페이지: /profile/settings
-        // 큐 생성: QueuePage 내부 바텀시트로 처리 (라우트 없음)
+        // 📄 피드 상세 페이지 (독립 페이지, BottomNav 없음, 전체 화면)
+        GoRoute(
+          path: '/feed/detail/:id',
+          name: 'feed_detail',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FeedDetailPage(id: id);
+          },
+        ),
+
+        // 🔍 검색 결과 상세 페이지 (독립 페이지, BottomNav 없음, 전체 화면)
+        GoRoute(
+          path: '/search/detail/:id',
+          name: 'search_detail',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FeedDetailPage(id: id);
+          },
+        ),
 
         // 🔧 관리자 콘솔 ShellRoute (별도 네비게이션)
         // TODO: 향후 Operator/Admin 권한용 콘솔 구현 예정

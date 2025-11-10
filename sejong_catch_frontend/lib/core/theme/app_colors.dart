@@ -30,6 +30,13 @@ class AppColors {
   /// 기존보다 더 소프트하게 조정
   static const Color brandCrimsonLight = Color(0xFFF9E8EC);
 
+  /// 투명도 30% 적용된 밝은 크림슨 - SliverAppBar 배경용
+  static final Color brandCrimsonLight30 =
+      brandCrimsonLight.withValues(alpha: 0.3);
+
+  /// 투명도 10% 적용된 크림슨 - 섬세한 테두리용
+  static final Color brandCrimson10 = brandCrimson.withValues(alpha: 0.1);
+
   // ============================================================================
   // Base Colors (Soft Ivory Palette)
   // ============================================================================
