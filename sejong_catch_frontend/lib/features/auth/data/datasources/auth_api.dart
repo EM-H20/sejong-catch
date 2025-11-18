@@ -10,19 +10,19 @@ part 'auth_api.g.dart';
 abstract class AuthApi {
   factory AuthApi(Dio dio, {String baseUrl}) = _AuthApi;
 
-  /// 로그인
-  @POST('/api/auth/login')
+  /// 로그인 (백엔드 API 스펙: POST /auth/login)
+  @POST('/auth/login')
   Future<LoginResponse> login(@Body() LoginRequest request);
 
-  /// 토큰 갱신
-  @POST('/api/auth/refresh')
+  /// 토큰 갱신 (백엔드 API 스펙: POST /auth/refresh)
+  @POST('/auth/refresh')
   Future<HttpResponse<dynamic>> refresh(@Body() Map<String, String> body);
 
-  /// 로그아웃
-  @POST('/api/auth/logout')
+  /// 로그아웃 (백엔드 API 스펙: POST /auth/logout)
+  @POST('/auth/logout')
   Future<HttpResponse<dynamic>> logout();
 
-  /// 내 정보 조회
-  @GET('/api/users/me')
+  /// 내 정보 조회 (백엔드 API 스펙: GET /users/me)
+  @GET('/users/me')
   Future<HttpResponse<dynamic>> getMe();
 }

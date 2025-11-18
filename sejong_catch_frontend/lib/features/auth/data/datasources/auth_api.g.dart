@@ -27,7 +27,7 @@ class _AuthApi implements AuthApi {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/auth/login',
+            '/auth/login',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -55,7 +55,7 @@ class _AuthApi implements AuthApi {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/auth/refresh',
+            '/auth/refresh',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -77,7 +77,7 @@ class _AuthApi implements AuthApi {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/auth/logout',
+            '/auth/logout',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -99,7 +99,7 @@ class _AuthApi implements AuthApi {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/users/me',
+            '/users/me',
             queryParameters: queryParameters,
             data: _data,
           )
