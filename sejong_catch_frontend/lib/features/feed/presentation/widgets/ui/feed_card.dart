@@ -85,7 +85,7 @@ class FeedCard extends StatelessWidget {
                   // 제목
                   Text(
                     item['title'] as String,
-                    style: AppTextStyles.cardTitle,
+                    style: AppTextStyles.titleSemiBold16,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -95,7 +95,7 @@ class FeedCard extends StatelessWidget {
                   // 설명
                   Text(
                     item['description'] as String,
-                    style: AppTextStyles.cardDescription,
+                    style: AppTextStyles.bodyRegular14,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app_colors.dart';
 import 'app_spacing.dart';
-import 'text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// Sejong Catch 앱의 테마를 정의하는 클래스입니다.
 ///
@@ -53,7 +53,7 @@ class AppTheme {
         backgroundColor: AppColors.transparent,
         foregroundColor: AppColors.textPrimary,
         surfaceTintColor: AppColors.transparent, // Material 3 tint 제거
-        titleTextStyle: AppTextStyles.heading3,
+        titleTextStyle: AppTextStyles.headingSemiBold20,
         // 상태바 스타일 설정
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: AppColors.transparent,
@@ -86,7 +86,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           minimumSize: const Size(44, 44), // 접근성을 위한 최소 터치 영역
           padding: AppSpacing.buttonPadding,
-          textStyle: AppTextStyles.button,
+          textStyle: AppTextStyles.buttonSemiBold16,
         ),
       ),
 
@@ -118,8 +118,8 @@ class AppTheme {
         backgroundColor: AppColors.surface,
         selectedColor: AppColors.brandCrimsonLight,
         disabledColor: AppColors.disabled.withValues(alpha: 0.3),
-        labelStyle: AppTextStyles.bodyMedium,
-        secondaryLabelStyle: AppTextStyles.label.copyWith(
+        labelStyle: AppTextStyles.bodyRegular14,
+        secondaryLabelStyle: AppTextStyles.labelMedium14.copyWith(
           color: AppColors.brandCrimson,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -151,7 +151,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         contentPadding: AppSpacing.cardPadding,
-        hintStyle: AppTextStyles.bodyMedium.copyWith(
+        hintStyle: AppTextStyles.bodyRegular14.copyWith(
           color: AppColors.textSecondary,
         ),
       ),
@@ -163,10 +163,10 @@ class AppTheme {
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: AppTextStyles.caption.copyWith(
+        selectedLabelStyle: AppTextStyles.captionRegular10.copyWith(
           fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: AppTextStyles.caption,
+        unselectedLabelStyle: AppTextStyles.captionRegular10,
       ),
 
       // Tab Bar 테마
@@ -175,10 +175,10 @@ class AppTheme {
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppColors.brandCrimson,
         indicatorSize: TabBarIndicatorSize.label,
-        labelStyle: AppTextStyles.bodyLarge.copyWith(
+        labelStyle: AppTextStyles.bodySemiBold16.copyWith(
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: AppTextStyles.bodyLarge,
+        unselectedLabelStyle: AppTextStyles.bodySemiBold16,
       ),
 
       // Divider 테마

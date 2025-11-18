@@ -96,7 +96,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
           children: [
             Text(
               '세종 캐치',
-              style: AppTextStyles.appBarTitle,
+              style: AppTextStyles.headingBold20,
             ),
           ],
         ),
@@ -186,12 +186,12 @@ class _FeedPageState extends ConsumerState<FeedPage> {
           AppSpacing.verticalSpaceLG,
           Text(
             '$_selectedCategory 정보가 없어요',
-            style: AppTextStyles.heading3,
+            style: AppTextStyles.headingSemiBold20,
           ),
           AppSpacing.verticalSpaceSM,
           Text(
             '다른 카테고리를 확인해보세요',
-            style: AppTextStyles.bodyMedium,
+            style: AppTextStyles.bodyRegular14,
           ),
         ],
       ),

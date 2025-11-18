@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// 📄 세종 캐치 BottomSheet 유틸리티
 ///
@@ -73,7 +73,7 @@ class BottomSheetUtils {
         children: [
           Padding(
             padding: AppSpacing.symmetric(horizontal: 20, vertical: 16),
-            child: Text(title, style: AppTextStyles.heading3),
+            child: Text(title, style: AppTextStyles.headingSemiBold20),
           ),
           Flexible(
             child: ListView.builder(
@@ -87,7 +87,7 @@ class BottomSheetUtils {
                   leading: iconBuilder?.call(item),
                   title: Text(
                     itemBuilder(item),
-                    style: AppTextStyles.bodyLarge.copyWith(
+                    style: AppTextStyles.bodySemiBold16.copyWith(
                       color: isSelected
                           ? AppColors.brandCrimson
                           : AppColors.textPrimary,

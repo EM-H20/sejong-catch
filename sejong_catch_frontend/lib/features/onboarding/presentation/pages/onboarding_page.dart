@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/badges/gradient_circle_badge.dart';
@@ -131,7 +131,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           // 임팩트 타이틀
           Text(
             '세종 캐치',
-            style: AppTextStyles.display1.copyWith(
+            style: AppTextStyles.displayBold48.copyWith(
               fontSize: 36.sp,
               fontWeight: FontWeight.w900,
               color: AppColors.brandCrimson,
@@ -144,7 +144,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           // 서브타이틀
           Text(
             '세종인을 위한\n올인원 정보 허브',
-            style: AppTextStyles.bodyLarge.copyWith(
+            style: AppTextStyles.bodySemiBold16.copyWith(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
               height: 1.3,
@@ -172,7 +172,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           // 페이지 타이틀
           Text(
             '무엇을 할 수 있나요?',
-            style: AppTextStyles.heading1.copyWith(
+            style: AppTextStyles.headingBold32.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -229,7 +229,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           // 임팩트 메시지
           Text(
             '이제 정보 찾기가\n쉬워집니다',
-            style: AppTextStyles.heading1.copyWith(
+            style: AppTextStyles.headingBold32.copyWith(
               fontWeight: FontWeight.w900,
               color: AppColors.textPrimary,
               height: 1.2,
@@ -280,7 +280,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             children: [
               Text(
                 title,
-                style: AppTextStyles.heading3.copyWith(
+                style: AppTextStyles.headingSemiBold20.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
@@ -288,7 +288,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               AppSpacing.verticalSpaceXS,
               Text(
                 description,
-                style: AppTextStyles.bodyMedium.copyWith(
+                style: AppTextStyles.bodyRegular14.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),

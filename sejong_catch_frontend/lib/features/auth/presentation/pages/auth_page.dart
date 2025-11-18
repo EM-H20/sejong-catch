@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/services/onboarding_service.dart';
@@ -86,7 +86,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       // 앱 이름
                       Text(
                         '세종 캐치',
-                        style: AppTextStyles.display2.copyWith(
+                        style: AppTextStyles.displayBold36.copyWith(
                           color: AppColors.brandCrimson,
                         ),
                       ),
@@ -95,7 +95,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       // 서브 타이틀
                       Text(
                         '세종인을 위한 정보 허브',
-                        style: AppTextStyles.bodyLarge.copyWith(
+                        style: AppTextStyles.bodySemiBold16.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -158,7 +158,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         Expanded(
                           child: Text(
                             loginState.error!,
-                            style: AppTextStyles.bodySmall.copyWith(
+                            style: AppTextStyles.bodyRegular12.copyWith(
                               color: AppColors.error,
                             ),
                           ),
@@ -188,7 +188,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 Center(
                   child: Text(
                     '세종대학교 포털 계정으로 로그인해요',
-                    style: AppTextStyles.caption.copyWith(
+                    style: AppTextStyles.captionRegular10.copyWith(
                       color: AppColors.textTertiary,
                     ),
                   ),

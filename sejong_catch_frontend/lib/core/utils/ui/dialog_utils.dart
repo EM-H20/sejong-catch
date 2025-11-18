@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// 📋 세종 캐치 Dialog 유틸리티
 ///
@@ -26,10 +26,10 @@ class DialogUtils {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title, style: AppTextStyles.heading3),
+        title: Text(title, style: AppTextStyles.headingSemiBold20),
         content: Text(
           message,
-          style: AppTextStyles.bodyMedium.copyWith(
+          style: AppTextStyles.bodyRegular14.copyWith(
             color: AppColors.textSecondary,
           ),
         ),
@@ -41,7 +41,7 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               cancelText,
-              style: AppTextStyles.bodyMedium.copyWith(
+              style: AppTextStyles.bodyRegular14.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -50,7 +50,7 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(
               confirmText,
-              style: AppTextStyles.label.copyWith(
+              style: AppTextStyles.labelMedium14.copyWith(
                 color: isDangerous ? AppColors.error : AppColors.brandCrimson,
               ),
             ),
@@ -88,7 +88,7 @@ class DialogUtils {
                 if (message != null) ...[
                   AppSpacing.horizontalSpaceLG,
                   Flexible(
-                    child: Text(message, style: AppTextStyles.bodyMedium),
+                    child: Text(message, style: AppTextStyles.bodyRegular14),
                   ),
                 ],
               ],
@@ -117,7 +117,7 @@ class DialogUtils {
     return showDialog<T>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title, style: AppTextStyles.heading3),
+        title: Text(title, style: AppTextStyles.headingSemiBold20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
         ),
@@ -133,7 +133,7 @@ class DialogUtils {
               return ListTile(
                 title: Text(
                   itemBuilder(item),
-                  style: AppTextStyles.bodyMedium.copyWith(
+                  style: AppTextStyles.bodyRegular14.copyWith(
                     color: isSelected
                         ? AppColors.brandCrimson
                         : AppColors.textPrimary,
@@ -159,7 +159,7 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               '취소',
-              style: AppTextStyles.bodyMedium.copyWith(
+              style: AppTextStyles.bodyRegular14.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -188,7 +188,7 @@ class DialogUtils {
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title, style: AppTextStyles.heading3),
+        title: Text(title, style: AppTextStyles.headingSemiBold20),
         content: Form(
           key: formKey,
           child: Column(
@@ -197,7 +197,7 @@ class DialogUtils {
               if (message != null) ...[
                 Text(
                   message,
-                  style: AppTextStyles.bodyMedium.copyWith(
+                  style: AppTextStyles.bodyRegular14.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -225,7 +225,7 @@ class DialogUtils {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               cancelText,
-              style: AppTextStyles.bodyMedium.copyWith(
+              style: AppTextStyles.bodyRegular14.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -238,7 +238,7 @@ class DialogUtils {
             },
             child: Text(
               confirmText,
-              style: AppTextStyles.label.copyWith(
+              style: AppTextStyles.labelMedium14.copyWith(
                 color: AppColors.brandCrimson,
               ),
             ),

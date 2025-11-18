@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// 🎨 그라데이션 칩 (정보 강조 태그)
 ///
@@ -68,7 +68,7 @@ class GradientChip extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: AppTextStyles.bodyLarge.copyWith(
+        style: AppTextStyles.bodySemiBold16.copyWith(
           color: textColor ?? AppColors.brandCrimson,
           fontWeight: FontWeight.w600,
         ),

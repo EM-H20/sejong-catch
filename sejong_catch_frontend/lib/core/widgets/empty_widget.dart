@@ -12,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
-import '../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 class AppEmptyWidget extends StatelessWidget {
   final String title;
@@ -59,7 +59,7 @@ class AppEmptyWidget extends StatelessWidget {
             // 📝 제목
             Text(
               title,
-              style: AppTextStyles.heading3.copyWith(
+              style: AppTextStyles.headingSemiBold20.copyWith(
                 color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
@@ -70,7 +70,7 @@ class AppEmptyWidget extends StatelessWidget {
             // 📝 설명
             Text(
               subtitle,
-              style: AppTextStyles.bodyMedium.copyWith(
+              style: AppTextStyles.bodyRegular14.copyWith(
                 color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,
@@ -89,7 +89,7 @@ class AppEmptyWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: Text(actionText!, style: AppTextStyles.label),
+                child: Text(actionText!, style: AppTextStyles.labelMedium14),
               ),
             ],
           ],
@@ -121,7 +121,7 @@ class EmptyListWidget extends StatelessWidget {
           AppSpacing.verticalSpaceLG,
           Text(
             message,
-            style: AppTextStyles.bodyMedium.copyWith(
+            style: AppTextStyles.bodyRegular14.copyWith(
               color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,

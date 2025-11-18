@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 import '../../theme/app_shadows.dart';
 
 /// 🎨 기능 소개 카드
@@ -109,7 +109,7 @@ class FeatureCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.heading3.copyWith(
+                    style: AppTextStyles.headingSemiBold20.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
@@ -117,7 +117,7 @@ class FeatureCard extends StatelessWidget {
                   AppSpacing.verticalSpaceXS,
                   Text(
                     description,
-                    style: AppTextStyles.bodyMedium.copyWith(
+                    style: AppTextStyles.bodyRegular14.copyWith(
                       color: AppColors.textSecondary,
                       height: 1.4,
                     ),

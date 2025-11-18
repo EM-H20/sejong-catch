@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
-import '../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// 🚨 세종 캐치 공통 에러 처리 유틸리티
 ///
@@ -29,7 +29,7 @@ class ErrorHandler {
             Expanded(
               child: Text(
                 message,
-                style: AppTextStyles.bodyMedium.copyWith(
+                style: AppTextStyles.bodyRegular14.copyWith(
                   color: AppColors.white,
                 ),
               ),
@@ -64,7 +64,7 @@ class ErrorHandler {
             Expanded(
               child: Text(
                 message,
-                style: AppTextStyles.bodyMedium.copyWith(
+                style: AppTextStyles.bodyRegular14.copyWith(
                   color: AppColors.white,
                 ),
               ),
@@ -95,7 +95,7 @@ class ErrorHandler {
             Expanded(
               child: Text(
                 message,
-                style: AppTextStyles.bodyMedium.copyWith(
+                style: AppTextStyles.bodyRegular14.copyWith(
                   color: AppColors.white,
                 ),
               ),

@@ -128,7 +128,7 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
                     AppSpacing.verticalSpaceMD,
 
                     // 📝 제목
-                    Text(_feedItem.title, style: AppTextStyles.heading2),
+                    Text(_feedItem.title, style: AppTextStyles.headingBold24),
 
                     AppSpacing.verticalSpaceSM,
 
@@ -248,7 +248,7 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('기본 정보', style: AppTextStyles.heading3),
+        Text('기본 정보', style: AppTextStyles.headingSemiBold20),
         AppSpacing.verticalSpaceMD,
         _buildInfoRow(
           icon: Icons.business_outlined,
@@ -286,13 +286,13 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
         AppSpacing.horizontalSpaceSM,
         Text(
           '$label:',
-          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
+          style: AppTextStyles.bodyRegular14.copyWith(fontWeight: FontWeight.w500),
         ),
         AppSpacing.horizontalSpaceSM,
         Expanded(
           child: Text(
             value,
-            style: AppTextStyles.bodyMedium.copyWith(
+            style: AppTextStyles.bodyRegular14.copyWith(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,
             ),
@@ -307,11 +307,11 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('상세 내용', style: AppTextStyles.heading3),
+        Text('상세 내용', style: AppTextStyles.headingSemiBold20),
         AppSpacing.verticalSpaceMD,
         Text(
           _feedItem.content ?? _feedItem.description,
-          style: AppTextStyles.bodyLarge.copyWith(
+          style: AppTextStyles.bodySemiBold16.copyWith(
             fontWeight: FontWeight.w400,
             height: 1.6,
           ),
@@ -382,7 +382,7 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
             AppSpacing.horizontalSpaceSM,
             Text(
               label,
-              style: AppTextStyles.button.copyWith(color: buttonColor),
+              style: AppTextStyles.buttonSemiBold16.copyWith(color: buttonColor),
             ),
           ],
         ),

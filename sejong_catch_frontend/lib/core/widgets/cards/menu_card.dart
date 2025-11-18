@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// 📋 범용 메뉴 카드 컴포넌트
 ///
@@ -60,7 +60,7 @@ class MenuCard extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: AppTextStyles.bodyMedium.copyWith(
+        style: AppTextStyles.bodyRegular14.copyWith(
           color: titleColor ?? AppColors.textPrimary,
           fontWeight: FontWeight.w500,
         ),

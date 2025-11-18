@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 
 /// 세종 캐치 앱의 표준 텍스트 입력 필드
 ///
@@ -317,7 +317,7 @@ class _AppTextFieldState extends State<AppTextField> {
             widget.style == AppTextFieldStyle.filled) ...[
           Text(
             widget.labelText!,
-            style: AppTextStyles.bodyMedium.copyWith(
+            style: AppTextStyles.bodyRegular14.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
@@ -346,7 +346,7 @@ class _AppTextFieldState extends State<AppTextField> {
           textDirection: widget.textDirection,
           inputFormatters: widget.inputFormatters,
           autofillHints: widget.autofillHints,
-          style: AppTextStyles.bodyLarge.copyWith(
+          style: AppTextStyles.bodySemiBold16.copyWith(
             color: widget.enabled
                 ? AppColors.textPrimary
                 : AppColors.textSecondary,
@@ -360,7 +360,7 @@ class _AppTextFieldState extends State<AppTextField> {
           AppSpacing.verticalSpaceXS,
           Text(
             widget.helperText!,
-            style: AppTextStyles.bodySmall.copyWith(
+            style: AppTextStyles.bodyRegular12.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
@@ -406,24 +406,24 @@ class _AppTextFieldState extends State<AppTextField> {
       contentPadding: _getContentPadding(),
 
       // 라벨 스타일
-      labelStyle: AppTextStyles.bodyLarge.copyWith(
+      labelStyle: AppTextStyles.bodySemiBold16.copyWith(
         color: AppColors.textSecondary,
       ),
-      floatingLabelStyle: AppTextStyles.bodyMedium.copyWith(
+      floatingLabelStyle: AppTextStyles.bodyRegular14.copyWith(
         color: _isFocused ? AppColors.brandCrimson : AppColors.textSecondary,
         fontWeight: FontWeight.w600,
       ),
 
       // 힌트 스타일
-      hintStyle: AppTextStyles.bodyLarge.copyWith(
+      hintStyle: AppTextStyles.bodySemiBold16.copyWith(
         color: AppColors.textSecondary.withValues(alpha: 0.6),
       ),
 
       // 에러 스타일
-      errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
+      errorStyle: AppTextStyles.bodyRegular12.copyWith(color: AppColors.error),
 
       // 헬퍼 스타일
-      helperStyle: AppTextStyles.bodySmall.copyWith(
+      helperStyle: AppTextStyles.bodyRegular12.copyWith(
         color: AppColors.textSecondary,
       ),
     );

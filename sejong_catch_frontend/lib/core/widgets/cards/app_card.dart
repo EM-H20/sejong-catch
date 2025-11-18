@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/text_styles.dart';
+import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 import '../../utils/formatters.dart';
 
 /// 세종 캐치 앱의 표준 정보 카드 위젯
@@ -197,7 +197,7 @@ class AppCard extends StatelessWidget {
         Expanded(
           child: Text(
             sourceDomain ?? '알 수 없음',
-            style: AppTextStyles.bodySmall.copyWith(
+            style: AppTextStyles.bodyRegular12.copyWith(
               fontWeight: FontWeight.w500,
             ),
             overflow: TextOverflow.ellipsis,
@@ -303,7 +303,7 @@ class AppCard extends StatelessWidget {
   Widget _buildTitle(BuildContext context) {
     return Text(
       title,
-      style: AppTextStyles.bodyLarge.copyWith(
+      style: AppTextStyles.bodySemiBold16.copyWith(
         fontWeight: FontWeight.w600,
         color: isExpired ? AppColors.textSecondary : AppColors.textPrimary,
         height: 1.3,
@@ -317,7 +317,7 @@ class AppCard extends StatelessWidget {
   Widget _buildSubtitle(BuildContext context) {
     return Text(
       subtitle!,
-      style: AppTextStyles.bodyMedium.copyWith(
+      style: AppTextStyles.bodyRegular14.copyWith(
         color: isExpired
             ? AppColors.textSecondary.withValues(alpha: 0.7)
             : AppColors.textSecondary,
@@ -407,7 +407,7 @@ class AppCard extends StatelessWidget {
         AppSpacing.horizontalSpaceXS,
         Text(
           text.length > 10 ? '${text.substring(0, 8)}..' : text,
-          style: AppTextStyles.bodySmall.copyWith(
+          style: AppTextStyles.bodyRegular12.copyWith(
             color: color,
             fontWeight: FontWeight.w500,
           ),
@@ -422,7 +422,7 @@ class AppCard extends StatelessWidget {
       margin: AppSpacing.symmetric(horizontal: 8),
       child: Text(
         '•',
-        style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+        style: AppTextStyles.bodyRegular12.copyWith(color: AppColors.textSecondary),
       ),
     );
   }
@@ -493,7 +493,7 @@ class AppCard extends StatelessWidget {
           AppSpacing.horizontalSpaceXS,
           Text(
             badgeText,
-            style: AppTextStyles.caption.copyWith(
+            style: AppTextStyles.captionRegular10.copyWith(
               color: badgeColor,
               fontWeight: FontWeight.w600,
             ),
