@@ -7,14 +7,16 @@ import 'package:sejong_catch_frontend/core/theme/app_spacing.dart';
 import 'package:sejong_catch_frontend/core/theme/app_shadows.dart';
 import 'package:sejong_catch_frontend/core/widgets/app_divider.dart';
 import 'package:sejong_catch_frontend/features/auth/presentation/controllers/login_controller.dart';
+import 'package:sejong_catch_frontend/features/auth/presentation/controllers/auth_state_controller.dart';
+import 'package:sejong_catch_frontend/features/auth/data/models/response/login_response.dart';
 
 /// 👤 프로필 페이지 - 사용자 정보 및 설정
 ///
 /// CLAUDE.md 원칙:
 /// ✅ UI만 담당하는 깔끔한 페이지
-/// ✅ 로그인 정보 표시 (학번, 이름, 학과, 역할)
+/// ✅ AuthStateController에서 실제 사용자 정보 가져오기
+/// ✅ Mock/Real 모드 모두 지원
 /// ✅ 디자인 토큰 사용 (AppColors, AppSpacing, AppDivider)
-/// ✅ 더미 데이터 하드코딩
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
@@ -23,17 +25,52 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  // 더미 사용자 정보 (실제로는 로그인 응답에서 가져옴)
-  final Map<String, dynamic> _dummyUser = {
-    'id': 'user_001',
-    'studentId': '20210001',
-    'name': '홍길동',
-    'major': '컴퓨터공학과',
-    'role': 'student', // student, operator
-  };
-
   @override
   Widget build(BuildContext context) {
+    // 🔥 AuthState에서 사용자 정보 가져오기
+    final authState = ref.watch(authStateControllerProvider);
+
+    // 로딩 중
+    if (authState.isLoading) {
+      return Scaffold(
+        backgroundColor: AppColors.surface,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.brandCrimson),
+        ),
+      );
+    }
+
+    // 로그인 안 됨 (방어 코드 - 라우팅 가드가 있지만 안전장치)
+    if (!authState.isAuthenticated || authState.currentUser == null) {
+      return Scaffold(
+        backgroundColor: AppColors.surface,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.person_off_outlined,
+                size: 64.sp,
+                color: AppColors.textTertiary,
+              ),
+              AppSpacing.verticalSpaceLG,
+              Text(
+                '로그인이 필요합니다',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // 🎉 실제 사용자 정보 사용!
+    final user = authState.currentUser!;
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: _buildAppBar(),
@@ -41,12 +78,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         child: Column(
           children: [
             // 프로필 헤더
-            _buildProfileHeader(),
+            _buildProfileHeader(user),
 
             AppSpacing.verticalSpaceLG,
 
             // 내 정보
-            _buildMyInfoSection(),
+            _buildMyInfoSection(user),
 
             AppSpacing.verticalSpaceLG,
 
@@ -106,9 +143,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   /// 👤 프로필 헤더
-  Widget _buildProfileHeader() {
-    final role = _dummyUser['role'] as String;
-    final isOperator = role == 'operator';
+  Widget _buildProfileHeader(UserDto user) {
+    final isOperator = user.role == 'operator';
 
     return Container(
       width: double.infinity,
@@ -149,7 +185,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
           // 이름
           Text(
-            _dummyUser['name'] as String,
+            user.name,
             style: TextStyle(
               fontSize: 24.sp,
               fontWeight: FontWeight.w700,
@@ -161,7 +197,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
           // 학과
           Text(
-            _dummyUser['major'] as String,
+            user.major,
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
@@ -192,7 +228,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
                 AppSpacing.horizontalSpaceXS,
                 Text(
-                  isOperator ? '운영자' : '학생',
+                  user.role,
                   style: TextStyle(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
@@ -208,7 +244,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   /// 📋 내 정보 섹션
-  Widget _buildMyInfoSection() {
+  Widget _buildMyInfoSection(UserDto user) {
     return Container(
       margin: AppSpacing.screenHorizontal,
       decoration: BoxDecoration(
@@ -234,11 +270,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
           AppDivider.thin(),
 
-          // 학번
+          // 이메일
           _buildInfoTile(
-            icon: Icons.badge_outlined,
-            label: '학번',
-            value: _dummyUser['studentId'] as String,
+            icon: Icons.email_outlined,
+            label: '이메일',
+            value: user.email,
           ),
 
           AppDivider.thin(),
@@ -247,7 +283,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           _buildInfoTile(
             icon: Icons.person_outline,
             label: '이름',
-            value: _dummyUser['name'] as String,
+            value: user.name,
           ),
 
           AppDivider.thin(),
@@ -256,7 +292,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           _buildInfoTile(
             icon: Icons.school_outlined,
             label: '학과',
-            value: _dummyUser['major'] as String,
+            value: user.major,
           ),
 
           AppDivider.thin(),
@@ -265,8 +301,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           _buildInfoTile(
             icon: Icons.verified_user_outlined,
             label: '역할',
-            value: (_dummyUser['role'] as String) == 'operator' ? '운영자' : '학생',
+            value: user.role,
           ),
+
+          // 학년 (nullable이므로 조건부 렌더링)
+          if (user.year != null) ...[
+            AppDivider.thin(),
+            _buildInfoTile(
+              icon: Icons.grade_outlined,
+              label: '학년',
+              value: '${user.year}학년',
+            ),
+          ],
         ],
       ),
     );

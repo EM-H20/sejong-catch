@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../../../core/services/token_storage_service.dart';
 import '../models/login_state.dart';
+import 'auth_state_controller.dart';
 
 part 'login_controller.g.dart';
 
@@ -57,7 +58,11 @@ class LoginController extends _$LoginController {
         response.refreshToken,
       );
 
-      // 3. 성공 상태로 업데이트
+      // 🔥 3. AuthStateController에 사용자 정보 저장
+      final authStateController = ref.read(authStateControllerProvider.notifier);
+      await authStateController.setAuthenticated(response.user);
+
+      // 4. 성공 상태로 업데이트
       state = state.copyWith(isLoading: false, isLoggedIn: true, error: null);
 
       // ✅ 로그인 성공!
@@ -95,24 +100,31 @@ class LoginController extends _$LoginController {
   /// 로그아웃
   ///
   /// **동작**:
-  /// 1. AuthRepository.logout() 호출 (토큰 삭제 + SharedPreferences 삭제)
-  /// 2. State를 초기 상태로 리셋
-  /// 3. Mock/Real 모드 모두 지원
+  /// 1. AuthRepository.logout() 호출 (토큰 삭제)
+  /// 2. AuthStateController 상태 초기화 (사용자 정보 삭제)
+  /// 3. LoginController State 리셋
+  /// 4. Mock/Real 모드 모두 지원
   ///
   /// **반환**: 성공 시 true, 실패 시 false
   Future<bool> logout() async {
     try {
-      // 1. Repository logout 호출 (토큰 + 로컬 데이터 삭제)
+      // 1. Repository logout 호출 (토큰 삭제)
       final authRepository = ref.read(authRepositoryProvider.notifier);
       await authRepository.logout();
 
-      // 2. State 초기화
+      // 🔥 2. AuthStateController 상태 초기화 (사용자 정보 삭제)
+      final authStateController = ref.read(authStateControllerProvider.notifier);
+      await authStateController.setUnauthenticated();
+
+      // 3. State 초기화
       state = const LoginState();
 
       // ✅ 로그아웃 성공!
       return true;
     } catch (e) {
       // 에러 발생 시에도 State는 초기화 (로컬 삭제가 더 중요)
+      final authStateController = ref.read(authStateControllerProvider.notifier);
+      await authStateController.setUnauthenticated();
       state = const LoginState();
       return false;
     }
