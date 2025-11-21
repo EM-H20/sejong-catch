@@ -21,8 +21,8 @@ LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$LoginRequest {
-  @JsonKey(name: 'student_id')
-  String get studentId => throw _privateConstructorUsedError;
+  String get studentId =>
+      throw _privateConstructorUsedError; // camelCase로 백엔드에 전송!
   String get password => throw _privateConstructorUsedError;
 
   /// Serializes this LoginRequest to a JSON map.
@@ -42,7 +42,7 @@ abstract class $LoginRequestCopyWith<$Res> {
     $Res Function(LoginRequest) then,
   ) = _$LoginRequestCopyWithImpl<$Res, LoginRequest>;
   @useResult
-  $Res call({@JsonKey(name: 'student_id') String studentId, String password});
+  $Res call({String studentId, String password});
 }
 
 /// @nodoc
@@ -85,7 +85,7 @@ abstract class _$$LoginRequestImplCopyWith<$Res>
   ) = __$$LoginRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({@JsonKey(name: 'student_id') String studentId, String password});
+  $Res call({String studentId, String password});
 }
 
 /// @nodoc
@@ -120,17 +120,14 @@ class __$$LoginRequestImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$LoginRequestImpl implements _LoginRequest {
-  const _$LoginRequestImpl({
-    @JsonKey(name: 'student_id') required this.studentId,
-    required this.password,
-  });
+  const _$LoginRequestImpl({required this.studentId, required this.password});
 
   factory _$LoginRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$LoginRequestImplFromJson(json);
 
   @override
-  @JsonKey(name: 'student_id')
   final String studentId;
+  // camelCase로 백엔드에 전송!
   @override
   final String password;
 
@@ -170,7 +167,7 @@ class _$LoginRequestImpl implements _LoginRequest {
 
 abstract class _LoginRequest implements LoginRequest {
   const factory _LoginRequest({
-    @JsonKey(name: 'student_id') required final String studentId,
+    required final String studentId,
     required final String password,
   }) = _$LoginRequestImpl;
 
@@ -178,8 +175,7 @@ abstract class _LoginRequest implements LoginRequest {
       _$LoginRequestImpl.fromJson;
 
   @override
-  @JsonKey(name: 'student_id')
-  String get studentId;
+  String get studentId; // camelCase로 백엔드에 전송!
   @override
   String get password;
 

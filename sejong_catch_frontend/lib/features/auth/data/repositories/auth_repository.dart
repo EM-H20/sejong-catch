@@ -37,29 +37,25 @@ class AuthRepository extends _$AuthRepository {
     }
   }
 
-  /// Mock 로그인 (개발 전용)
+  /// Mock 로그인 (개발 전용) - 백엔드 응답 구조와 일치!
   Future<LoginResponse> _mockLogin(String studentId, String password) async {
     // 학번 1234 / 비밀번호 1234만 허용
     if (studentId == '1234' && password == '1234') {
       // 네트워크 지연 시뮬레이션 (1초)
       await Future.delayed(const Duration(seconds: 1));
 
-      return const LoginResponse(
+      return LoginResponse(
         accessToken: 'mock_access_token_abc123xyz',
         refreshToken: 'mock_refresh_token_def456uvw',
         user: UserDto(
           id: 'mock_user_001',
-          studentId: '1234',
+          email: '1234@sejong.local',
           role: 'student',
           name: '홍길동',
           major: '컴퓨터공학과',
-        ),
-        linked: true,
-        sso: SsoDto(
-          success: true,
-          isAuth: true,
-          code: '200',
-          body: SsoBodyDto(name: '홍길동', major: '컴퓨터공학과'),
+          year: null,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         ),
       );
     }

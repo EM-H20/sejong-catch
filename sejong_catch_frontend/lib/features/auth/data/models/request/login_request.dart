@@ -7,7 +7,7 @@ part 'login_request.g.dart';
 @freezed
 class LoginRequest with _$LoginRequest {
   const factory LoginRequest({
-    @JsonKey(name: 'student_id') required String studentId,
+    required String studentId,  // camelCase로 백엔드에 전송!
     required String password,
   }) = _LoginRequest;
 
