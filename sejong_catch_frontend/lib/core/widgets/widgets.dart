@@ -9,6 +9,7 @@ export 'empty_widget.dart';
 export 'error_widget.dart';
 
 // UI 컴포넌트들
+export 'app_divider.dart';
 export 'buttons/app_button.dart';
 export 'cards/app_card.dart';
 export 'cards/feature_card.dart';
