@@ -52,6 +52,9 @@ dependencies:
   infinite_scroll_pagination: ^5.1.1 # 무한 스크롤 페이징 처리
   pull_to_refresh: ^2.0.0            # 당겨서 새로고침 UI 패턴
 
+  # 외부 링크 & 유틸리티
+  url_launcher: ^6.3.1               # 외부 URL 열기 (브라우저, 전화, 이메일)
+
   # 애니메이션 & 모션 (Toss-Style 온보딩)
   lottie: ^3.1.2                     # Lottie 애니메이션 지원
   flutter_animate: ^4.5.2            # 고급 애니메이션 효과

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import '../models/response/feed_item.dart';
+import '../models/response/crawler_result.dart';
 
 part 'feed_api.g.dart';
 
@@ -31,4 +32,12 @@ abstract class FeedApi {
   /// 북마크 토글 (백엔드 API 스펙: POST /feed/{id}/bookmark)
   @POST('/feed/{id}/bookmark')
   Future<HttpResponse<dynamic>> toggleBookmark(@Path('id') String id);
+
+  /// 크롤러 전체 결과 조회 (크롤러 백엔드 API 스펙: GET /crawler/crawl-results)
+  ///
+  /// **사용 모드**: USE_CRAWLER=true 일 때만 사용
+  /// **데이터 규모**: ~1,000개 공지사항
+  /// **카테고리**: 10개 (일반공지, 입학공지, 학사공지, 국제교류(KR), 국제교류(EN), 취업, 장학, 교내모집, 법무감사, 입찰공고)
+  @GET('/crawler/crawl-results')
+  Future<CrawlerResultsResponse> getCrawlerResults();
 }
