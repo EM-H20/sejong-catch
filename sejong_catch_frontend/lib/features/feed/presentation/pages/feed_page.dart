@@ -9,8 +9,10 @@ import 'package:sejong_catch_frontend/core/widgets/loading_widget.dart';
 import 'package:sejong_catch_frontend/features/feed/data/models/response/feed_item.dart';
 import 'package:sejong_catch_frontend/features/feed/data/repositories/feed_repository.dart';
 import 'package:sejong_catch_frontend/features/feed/presentation/controllers/selected_category_controller.dart';
+import 'package:sejong_catch_frontend/features/feed/presentation/controllers/feed_sort_controller.dart';
 import 'package:sejong_catch_frontend/features/feed/presentation/widgets/ui/feed_category_filter.dart';
 import 'package:sejong_catch_frontend/features/feed/presentation/widgets/ui/feed_card.dart';
+import 'package:sejong_catch_frontend/features/feed/presentation/widgets/ui/feed_sort_bottom_sheet.dart';
 
 /// 📰 피드 페이지 - 공모전·취업·논문·공지·축제 통합 피드
 ///
@@ -34,6 +36,9 @@ class FeedPage extends ConsumerWidget {
     // 2. 선택된 카테고리
     final selectedCategory = ref.watch(selectedCategoryProvider);
 
+    // 3. 현재 정렬 타입
+    final currentSort = ref.watch(feedSortProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -49,11 +54,18 @@ class FeedPage extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_outlined, size: 24.sp),
+            icon: Icon(Icons.sort, size: 24.sp),
             color: AppColors.textSecondary,
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('알림 기능 준비 중! 🔔')),
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (context) => FeedSortBottomSheet(
+                  currentSort: currentSort,
+                  onSortChanged: (newSort) {
+                    ref.read(feedSortProvider.notifier).changeSortType(newSort);
+                  },
+                ),
               );
             },
           ),
@@ -69,7 +81,7 @@ class FeedPage extends ConsumerWidget {
           ),
         ),
       ),
-      body: _buildFeedList(ref, selectedCategory),
+      body: _buildFeedList(ref, selectedCategory, currentSort),
     );
   }
 
@@ -77,10 +89,12 @@ class FeedPage extends ConsumerWidget {
   Widget _buildFeedList(
     WidgetRef ref,
     String selectedCategory,
+    FeedSortType sortType,
   ) {
     return FutureBuilder<List<FeedItem>>(
       future: ref.read(feedRepositoryProvider.notifier).getFeedList(
         category: selectedCategory == '전체' ? null : selectedCategory,
+        sortType: sortType,
         page: 1,
         limit: 100, // 첫 페이지는 많이 가져오기 (로컬 필터링용)
       ),

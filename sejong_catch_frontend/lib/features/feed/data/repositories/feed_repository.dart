@@ -4,6 +4,7 @@ import '../../../../core/services/cache_service.dart';
 import '../datasources/feed_api.dart';
 import '../models/response/feed_item.dart';
 import '../models/response/crawler_result.dart';
+import '../../presentation/controllers/feed_sort_controller.dart';
 
 part 'feed_repository.g.dart';
 
@@ -31,6 +32,7 @@ class FeedRepository extends _$FeedRepository {
   /// - Real 모드: 크롤러 API `/crawler/crawl-results` 호출 (1,000개 전체 로딩 + 10분 캐싱 + 로컬 필터링)
   Future<List<FeedItem>> getFeedList({
     String? category,
+    FeedSortType sortType = FeedSortType.latest,
     int page = 1,
     int limit = 20,
   }) async {
@@ -38,16 +40,27 @@ class FeedRepository extends _$FeedRepository {
 
     if (useMock) {
       // Mock 모드 (개발)
-      return _mockFeedList(category: category, page: page, limit: limit);
+      return _mockFeedList(
+        category: category,
+        sortType: sortType,
+        page: page,
+        limit: limit,
+      );
     } else {
       // Real 모드 (프로덕션) → /crawler/crawl-results 사용
-      return _crawlerFeedList(category: category, page: page, limit: limit);
+      return _crawlerFeedList(
+        category: category,
+        sortType: sortType,
+        page: page,
+        limit: limit,
+      );
     }
   }
 
   /// Mock 피드 목록 (개발 전용)
   Future<List<FeedItem>> _mockFeedList({
     String? category,
+    FeedSortType sortType = FeedSortType.latest,
     int page = 1,
     int limit = 20,
   }) async {
@@ -124,7 +137,10 @@ class FeedRepository extends _$FeedRepository {
       filteredItems = allItems.where((item) => item.category == category).toList();
     }
 
-    return filteredItems;
+    // 정렬 적용
+    final sortedItems = _sortFeedItems(filteredItems, sortType);
+
+    return sortedItems;
   }
 
   /// 크롤러 API 피드 목록 (Real 모드 - 프로덕션)
@@ -133,6 +149,7 @@ class FeedRepository extends _$FeedRepository {
   /// **성능**: 캐시 적중 시 즉시 반환 (0 네트워크 요청)
   Future<List<FeedItem>> _crawlerFeedList({
     String? category,
+    FeedSortType sortType = FeedSortType.latest,
     int page = 1,
     int limit = 20,
   }) async {
@@ -178,20 +195,60 @@ class FeedRepository extends _$FeedRepository {
       filteredItems = feedItems.where((item) => item.category == category).toList();
     }
 
-    // 4. 페이지네이션 적용 (로컬)
+    // 4. 정렬 적용 (로컬)
+    final sortedItems = _sortFeedItems(filteredItems, sortType);
+
+    // 5. 페이지네이션 적용 (로컬)
     final startIndex = (page - 1) * limit;
     final endIndex = startIndex + limit;
 
-    if (startIndex >= filteredItems.length) {
+    if (startIndex >= sortedItems.length) {
       return []; // 범위 초과 시 빈 리스트
     }
 
-    final paginatedItems = filteredItems.sublist(
+    final paginatedItems = sortedItems.sublist(
       startIndex,
-      endIndex > filteredItems.length ? filteredItems.length : endIndex,
+      endIndex > sortedItems.length ? sortedItems.length : endIndex,
     );
 
     return paginatedItems;
+  }
+
+  /// 피드 아이템 정렬 헬퍼
+  ///
+  /// **지원 정렬**:
+  /// - 최신순: createdAt 내림차순 (최근 게시물 먼저)
+  /// - 오래된순: createdAt 오름차순 (오래된 게시물 먼저)
+  /// - 조회수 많은순: viewCount 내림차순 (인기 게시물 먼저)
+  /// - 조회수 적은순: viewCount 오름차순 (조회수 적은 게시물 먼저)
+  List<FeedItem> _sortFeedItems(List<FeedItem> items, FeedSortType sortType) {
+    final itemsCopy = List<FeedItem>.from(items);
+
+    switch (sortType) {
+      case FeedSortType.latest:
+        // 최신순: 최근 게시물 먼저 (createdAt 내림차순)
+        itemsCopy.sort((a, b) =>
+            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
+        break;
+
+      case FeedSortType.oldest:
+        // 오래된순: 오래된 게시물 먼저 (createdAt 오름차순)
+        itemsCopy.sort((a, b) =>
+            (a.createdAt ?? DateTime(0)).compareTo(b.createdAt ?? DateTime(0)));
+        break;
+
+      case FeedSortType.mostViewed:
+        // 조회수 많은순: 인기 게시물 먼저 (viewCount 내림차순)
+        itemsCopy.sort((a, b) => b.viewCount.compareTo(a.viewCount));
+        break;
+
+      case FeedSortType.leastViewed:
+        // 조회수 적은순: 조회수 적은 게시물 먼저 (viewCount 오름차순)
+        itemsCopy.sort((a, b) => a.viewCount.compareTo(b.viewCount));
+        break;
+    }
+
+    return itemsCopy;
   }
 
   /// 캐시 강제 갱신
