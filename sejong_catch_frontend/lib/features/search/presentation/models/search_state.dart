@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../feed/data/models/response/feed_item.dart';
@@ -36,7 +35,7 @@ class SearchState with _$SearchState {
     /// 선택된 시간 범위 필터
     @Default('전체') String selectedTimeRange,
 
-    /// 조회수 범위 필터
-    @Default(RangeValues(0, 10000)) RangeValues viewsRange,
+    /// 조회수 범위 필터 (프리셋 방식)
+    @Default('전체') String selectedViewsRange,
   }) = _SearchState;
 }

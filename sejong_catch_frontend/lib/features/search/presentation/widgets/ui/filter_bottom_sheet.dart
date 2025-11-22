@@ -34,6 +34,15 @@ class FilterBottomSheet extends ConsumerWidget {
     '최근 6개월',
   ];
 
+  /// 조회수 범위 프리셋 목록
+  static const List<String> _viewsRanges = [
+    '전체',
+    '1천 미만',
+    '1천~5천',
+    '5천~1만',
+    '1만 이상',
+  ];
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.read(searchControllerProvider.notifier);
@@ -162,28 +171,42 @@ class FilterBottomSheet extends ConsumerWidget {
             '조회수 범위',
             style: AppTextStyles.titleSemiBold16,
           ),
-          AppSpacing.verticalSpaceSM,
-          Text(
-            '${state.viewsRange.start.toInt()} ~ ${state.viewsRange.end.toInt()}회',
-            style: AppTextStyles.labelMedium14.copyWith(
-              color: AppColors.brandCrimson,
-            ),
-          ),
-          AppSpacing.verticalSpaceSM,
-          RangeSlider(
-            values: state.viewsRange,
-            min: 0,
-            max: 10000,
-            divisions: 100,
-            activeColor: AppColors.brandCrimson,
-            inactiveColor: AppColors.divider,
-            labels: RangeLabels(
-              state.viewsRange.start.toInt().toString(),
-              state.viewsRange.end.toInt().toString(),
-            ),
-            onChanged: (RangeValues values) {
-              controller.updateViewsRange(values);
-            },
+          AppSpacing.verticalSpaceMD,
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: _viewsRanges.map((viewsRange) {
+              final isSelected = viewsRange == state.selectedViewsRange;
+              return GestureDetector(
+                onTap: () => controller.updateViewsRange(viewsRange),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.brandCrimson
+                        : AppColors.surface,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.brandCrimson
+                          : AppColors.divider,
+                    ),
+                    boxShadow: isSelected ? AppShadows.crimsonGlow : null,
+                  ),
+                  child: Text(
+                    viewsRange,
+                    style: AppTextStyles.labelMedium14.copyWith(
+                      color: isSelected
+                          ? AppColors.white
+                          : AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
           ),
 
           SizedBox(height: MediaQuery.of(context).padding.bottom),

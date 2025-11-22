@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/services/cache_service.dart';
@@ -26,7 +25,7 @@ class SearchRepository extends _$SearchRepository {
     required String query,
     String? category,
     String? timeRange,
-    RangeValues? viewsRange,
+    String? viewsRangePreset,
   }) async {
     const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
 
@@ -36,7 +35,7 @@ class SearchRepository extends _$SearchRepository {
         query: query,
         category: category,
         timeRange: timeRange,
-        viewsRange: viewsRange,
+        viewsRangePreset: viewsRangePreset,
       );
     } else {
       // Real 모드 (프로덕션) → 크롤러 캐시 데이터 검색
@@ -44,7 +43,7 @@ class SearchRepository extends _$SearchRepository {
         query: query,
         category: category,
         timeRange: timeRange,
-        viewsRange: viewsRange,
+        viewsRangePreset: viewsRangePreset,
       );
     }
   }
@@ -54,7 +53,7 @@ class SearchRepository extends _$SearchRepository {
     required String query,
     String? category,
     String? timeRange,
-    RangeValues? viewsRange,
+    String? viewsRangePreset,
   }) async {
     // 네트워크 지연 시뮬레이션 (300ms)
     await Future.delayed(const Duration(milliseconds: 300));
@@ -115,7 +114,7 @@ class SearchRepository extends _$SearchRepository {
     required String query,
     String? category,
     String? timeRange,
-    RangeValues? viewsRange,
+    String? viewsRangePreset,
   }) async {
     try {
       // 1. 캐시된 크롤러 데이터 조회
@@ -163,12 +162,28 @@ class SearchRepository extends _$SearchRepository {
             .toList();
       }
 
-      // 5. 조회수 범위 필터링
-      if (viewsRange != null) {
+      // 5. 조회수 범위 필터링 (프리셋 방식)
+      if (viewsRangePreset != null && viewsRangePreset != '전체') {
+        int minViews = 0;
+        int maxViews = 999999;
+
+        switch (viewsRangePreset) {
+          case '1천 미만':
+            minViews = 0;
+            maxViews = 1000;
+          case '1천~5천':
+            minViews = 1000;
+            maxViews = 5000;
+          case '5천~1만':
+            minViews = 5000;
+            maxViews = 10000;
+          case '1만 이상':
+            minViews = 10000;
+            maxViews = 999999;
+        }
+
         filtered = filtered
-            .where((item) =>
-                item.views >= viewsRange.start.toInt() &&
-                item.views <= viewsRange.end.toInt())
+            .where((item) => item.views >= minViews && item.views <= maxViews)
             .toList();
       }
 

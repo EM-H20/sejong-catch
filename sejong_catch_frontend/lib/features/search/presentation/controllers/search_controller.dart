@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/services/search_history_service.dart';
@@ -57,7 +56,7 @@ class SearchController extends _$SearchController {
         query: query,
         category: state.selectedCategory != '전체' ? state.selectedCategory : null,
         timeRange: state.selectedTimeRange,
-        viewsRange: state.viewsRange,
+        viewsRangePreset: state.selectedViewsRange,
       );
 
       // 2. 상태 업데이트 (히스토리 추가 안함!)
@@ -93,7 +92,7 @@ class SearchController extends _$SearchController {
         query: query,
         category: state.selectedCategory != '전체' ? state.selectedCategory : null,
         timeRange: state.selectedTimeRange,
-        viewsRange: state.viewsRange,
+        viewsRangePreset: state.selectedViewsRange,
       );
 
       // 2. 검색어 히스토리에 추가
@@ -169,9 +168,9 @@ class SearchController extends _$SearchController {
     }
   }
 
-  /// 조회수 범위 필터 변경
-  void updateViewsRange(RangeValues range) {
-    state = state.copyWith(viewsRange: range);
+  /// 조회수 범위 필터 변경 (프리셋 방식)
+  void updateViewsRange(String viewsRangePreset) {
+    state = state.copyWith(selectedViewsRange: viewsRangePreset);
 
     // 검색어가 있으면 실시간 재검색
     if (state.query.length >= 2) {
@@ -184,7 +183,7 @@ class SearchController extends _$SearchController {
     state = state.copyWith(
       selectedCategory: '전체',
       selectedTimeRange: '전체',
-      viewsRange: const RangeValues(0, 10000),
+      selectedViewsRange: '전체',
     );
   }
 }
