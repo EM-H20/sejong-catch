@@ -171,7 +171,7 @@ class SearchPage extends ConsumerWidget {
         // 최근 검색어 목록
         Expanded(
           child: ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 18.w),
+            padding: AppSpacing.screenPadding,
             itemCount: state.recentSearches.length,
             separatorBuilder: (context, index) => AppDivider.thin(),
             itemBuilder: (context, index) {
@@ -217,7 +217,7 @@ class SearchPage extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => const FilterBottomSheet(),
     );
   }

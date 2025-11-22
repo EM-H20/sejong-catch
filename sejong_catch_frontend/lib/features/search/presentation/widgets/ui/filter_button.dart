@@ -26,17 +26,18 @@ class FilterButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.brandCrimsonLight,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: AppColors.brandCrimson.withValues(alpha: 0.2),
+            color: AppColors.divider,
+            width: 1.5,
           ),
           boxShadow: AppShadows.basic,
         ),
         child: Icon(
           Icons.tune,
           size: 20.sp,
-          color: AppColors.brandCrimson,
+          color: AppColors.textSecondary,
         ),
       ),
     );
