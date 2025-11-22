@@ -35,11 +35,11 @@ mixin _$SearchState {
   /// 선택된 카테고리 필터
   String get selectedCategory => throw _privateConstructorUsedError;
 
-  /// 선택된 신뢰도 필터
-  String get selectedTrust => throw _privateConstructorUsedError;
+  /// 선택된 시간 범위 필터
+  String get selectedTimeRange => throw _privateConstructorUsedError;
 
-  /// 마감일 범위 필터
-  RangeValues get deadlineRange => throw _privateConstructorUsedError;
+  /// 조회수 범위 필터
+  RangeValues get viewsRange => throw _privateConstructorUsedError;
 
   /// Create a copy of SearchState
   /// with the given fields replaced by the non-null parameter values.
@@ -62,8 +62,8 @@ abstract class $SearchStateCopyWith<$Res> {
     List<String> recentSearches,
     String? error,
     String selectedCategory,
-    String selectedTrust,
-    RangeValues deadlineRange,
+    String selectedTimeRange,
+    RangeValues viewsRange,
   });
 }
 
@@ -88,8 +88,8 @@ class _$SearchStateCopyWithImpl<$Res, $Val extends SearchState>
     Object? recentSearches = null,
     Object? error = freezed,
     Object? selectedCategory = null,
-    Object? selectedTrust = null,
-    Object? deadlineRange = null,
+    Object? selectedTimeRange = null,
+    Object? viewsRange = null,
   }) {
     return _then(
       _value.copyWith(
@@ -117,13 +117,13 @@ class _$SearchStateCopyWithImpl<$Res, $Val extends SearchState>
                 ? _value.selectedCategory
                 : selectedCategory // ignore: cast_nullable_to_non_nullable
                       as String,
-            selectedTrust: null == selectedTrust
-                ? _value.selectedTrust
-                : selectedTrust // ignore: cast_nullable_to_non_nullable
+            selectedTimeRange: null == selectedTimeRange
+                ? _value.selectedTimeRange
+                : selectedTimeRange // ignore: cast_nullable_to_non_nullable
                       as String,
-            deadlineRange: null == deadlineRange
-                ? _value.deadlineRange
-                : deadlineRange // ignore: cast_nullable_to_non_nullable
+            viewsRange: null == viewsRange
+                ? _value.viewsRange
+                : viewsRange // ignore: cast_nullable_to_non_nullable
                       as RangeValues,
           )
           as $Val,
@@ -147,8 +147,8 @@ abstract class _$$SearchStateImplCopyWith<$Res>
     List<String> recentSearches,
     String? error,
     String selectedCategory,
-    String selectedTrust,
-    RangeValues deadlineRange,
+    String selectedTimeRange,
+    RangeValues viewsRange,
   });
 }
 
@@ -172,8 +172,8 @@ class __$$SearchStateImplCopyWithImpl<$Res>
     Object? recentSearches = null,
     Object? error = freezed,
     Object? selectedCategory = null,
-    Object? selectedTrust = null,
-    Object? deadlineRange = null,
+    Object? selectedTimeRange = null,
+    Object? viewsRange = null,
   }) {
     return _then(
       _$SearchStateImpl(
@@ -201,13 +201,13 @@ class __$$SearchStateImplCopyWithImpl<$Res>
             ? _value.selectedCategory
             : selectedCategory // ignore: cast_nullable_to_non_nullable
                   as String,
-        selectedTrust: null == selectedTrust
-            ? _value.selectedTrust
-            : selectedTrust // ignore: cast_nullable_to_non_nullable
+        selectedTimeRange: null == selectedTimeRange
+            ? _value.selectedTimeRange
+            : selectedTimeRange // ignore: cast_nullable_to_non_nullable
                   as String,
-        deadlineRange: null == deadlineRange
-            ? _value.deadlineRange
-            : deadlineRange // ignore: cast_nullable_to_non_nullable
+        viewsRange: null == viewsRange
+            ? _value.viewsRange
+            : viewsRange // ignore: cast_nullable_to_non_nullable
                   as RangeValues,
       ),
     );
@@ -224,8 +224,8 @@ class _$SearchStateImpl implements _SearchState {
     final List<String> recentSearches = const [],
     this.error,
     this.selectedCategory = '전체',
-    this.selectedTrust = '전체',
-    this.deadlineRange = const RangeValues(0, 30),
+    this.selectedTimeRange = '전체',
+    this.viewsRange = const RangeValues(0, 10000),
   }) : _searchResults = searchResults,
        _recentSearches = recentSearches;
 
@@ -272,19 +272,19 @@ class _$SearchStateImpl implements _SearchState {
   @JsonKey()
   final String selectedCategory;
 
-  /// 선택된 신뢰도 필터
+  /// 선택된 시간 범위 필터
   @override
   @JsonKey()
-  final String selectedTrust;
+  final String selectedTimeRange;
 
-  /// 마감일 범위 필터
+  /// 조회수 범위 필터
   @override
   @JsonKey()
-  final RangeValues deadlineRange;
+  final RangeValues viewsRange;
 
   @override
   String toString() {
-    return 'SearchState(query: $query, isSearching: $isSearching, searchResults: $searchResults, recentSearches: $recentSearches, error: $error, selectedCategory: $selectedCategory, selectedTrust: $selectedTrust, deadlineRange: $deadlineRange)';
+    return 'SearchState(query: $query, isSearching: $isSearching, searchResults: $searchResults, recentSearches: $recentSearches, error: $error, selectedCategory: $selectedCategory, selectedTimeRange: $selectedTimeRange, viewsRange: $viewsRange)';
   }
 
   @override
@@ -306,10 +306,10 @@ class _$SearchStateImpl implements _SearchState {
             (identical(other.error, error) || other.error == error) &&
             (identical(other.selectedCategory, selectedCategory) ||
                 other.selectedCategory == selectedCategory) &&
-            (identical(other.selectedTrust, selectedTrust) ||
-                other.selectedTrust == selectedTrust) &&
-            (identical(other.deadlineRange, deadlineRange) ||
-                other.deadlineRange == deadlineRange));
+            (identical(other.selectedTimeRange, selectedTimeRange) ||
+                other.selectedTimeRange == selectedTimeRange) &&
+            (identical(other.viewsRange, viewsRange) ||
+                other.viewsRange == viewsRange));
   }
 
   @override
@@ -321,8 +321,8 @@ class _$SearchStateImpl implements _SearchState {
     const DeepCollectionEquality().hash(_recentSearches),
     error,
     selectedCategory,
-    selectedTrust,
-    deadlineRange,
+    selectedTimeRange,
+    viewsRange,
   );
 
   /// Create a copy of SearchState
@@ -342,8 +342,8 @@ abstract class _SearchState implements SearchState {
     final List<String> recentSearches,
     final String? error,
     final String selectedCategory,
-    final String selectedTrust,
-    final RangeValues deadlineRange,
+    final String selectedTimeRange,
+    final RangeValues viewsRange,
   }) = _$SearchStateImpl;
 
   /// 검색어
@@ -370,13 +370,13 @@ abstract class _SearchState implements SearchState {
   @override
   String get selectedCategory;
 
-  /// 선택된 신뢰도 필터
+  /// 선택된 시간 범위 필터
   @override
-  String get selectedTrust;
+  String get selectedTimeRange;
 
-  /// 마감일 범위 필터
+  /// 조회수 범위 필터
   @override
-  RangeValues get deadlineRange;
+  RangeValues get viewsRange;
 
   /// Create a copy of SearchState
   /// with the given fields replaced by the non-null parameter values.

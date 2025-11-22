@@ -11,6 +11,7 @@ part 'search_state.freezed.dart';
 /// ✅ @freezed로 불변 상태 관리
 /// ✅ copyWith() 자동 생성
 /// ✅ 모든 검색 관련 상태를 하나로 통합
+/// ✅ Real 모드 크롤러 데이터에 맞춰 카테고리 필터만 지원
 @freezed
 class SearchState with _$SearchState {
   const factory SearchState({
@@ -32,10 +33,10 @@ class SearchState with _$SearchState {
     /// 선택된 카테고리 필터
     @Default('전체') String selectedCategory,
 
-    /// 선택된 신뢰도 필터
-    @Default('전체') String selectedTrust,
+    /// 선택된 시간 범위 필터
+    @Default('전체') String selectedTimeRange,
 
-    /// 마감일 범위 필터
-    @Default(RangeValues(0, 30)) RangeValues deadlineRange,
+    /// 조회수 범위 필터
+    @Default(RangeValues(0, 10000)) RangeValues viewsRange,
   }) = _SearchState;
 }

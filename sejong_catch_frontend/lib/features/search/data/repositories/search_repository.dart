@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/services/cache_service.dart';
@@ -24,15 +25,27 @@ class SearchRepository extends _$SearchRepository {
   Future<List<FeedItem>> search({
     required String query,
     String? category,
+    String? timeRange,
+    RangeValues? viewsRange,
   }) async {
     const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
 
     if (useMock) {
       // Mock 모드 (개발)
-      return _mockSearch(query: query, category: category);
+      return _mockSearch(
+        query: query,
+        category: category,
+        timeRange: timeRange,
+        viewsRange: viewsRange,
+      );
     } else {
       // Real 모드 (프로덕션) → 크롤러 캐시 데이터 검색
-      return _realSearch(query: query, category: category);
+      return _realSearch(
+        query: query,
+        category: category,
+        timeRange: timeRange,
+        viewsRange: viewsRange,
+      );
     }
   }
 
@@ -40,6 +53,8 @@ class SearchRepository extends _$SearchRepository {
   Future<List<FeedItem>> _mockSearch({
     required String query,
     String? category,
+    String? timeRange,
+    RangeValues? viewsRange,
   }) async {
     // 네트워크 지연 시뮬레이션 (300ms)
     await Future.delayed(const Duration(milliseconds: 300));
@@ -99,6 +114,8 @@ class SearchRepository extends _$SearchRepository {
   Future<List<FeedItem>> _realSearch({
     required String query,
     String? category,
+    String? timeRange,
+    RangeValues? viewsRange,
   }) async {
     try {
       // 1. 캐시된 크롤러 데이터 조회
@@ -123,7 +140,39 @@ class SearchRepository extends _$SearchRepository {
             .toList();
       }
 
-      // 4. CrawlerResult → FeedItem 변환
+      // 4. 시간 범위 필터링
+      if (timeRange != null && timeRange != '전체') {
+        final now = DateTime.now();
+        DateTime cutoffDate;
+
+        switch (timeRange) {
+          case '최근 1주일':
+            cutoffDate = now.subtract(const Duration(days: 7));
+          case '최근 1개월':
+            cutoffDate = now.subtract(const Duration(days: 30));
+          case '최근 3개월':
+            cutoffDate = now.subtract(const Duration(days: 90));
+          case '최근 6개월':
+            cutoffDate = now.subtract(const Duration(days: 180));
+          default:
+            cutoffDate = DateTime(2000);
+        }
+
+        filtered = filtered
+            .where((item) => item.publishedAt.isAfter(cutoffDate))
+            .toList();
+      }
+
+      // 5. 조회수 범위 필터링
+      if (viewsRange != null) {
+        filtered = filtered
+            .where((item) =>
+                item.views >= viewsRange.start.toInt() &&
+                item.views <= viewsRange.end.toInt())
+            .toList();
+      }
+
+      // 6. CrawlerResult → FeedItem 변환
       final feedItems = filtered.map((crawlerResult) {
         // publishedAt부터 현재까지 경과일 계산
         final now = DateTime.now();

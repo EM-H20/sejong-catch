@@ -5,34 +5,33 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_shadows.dart';
 import '../../../../../core/theme/app_spacing.dart';
-import '../../../../../core/widgets/widgets.dart';
+import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../feed/data/models/response/crawler_result.dart';
 import '../../controllers/search_controller.dart';
 
-/// 🎛️ 필터 바텀시트 - Riverpod 연동 버전!
+/// 🎛️ 필터 바텀시트 - 카테고리 필터 전용!
 ///
 /// CLAUDE.md 원칙:
 /// ✅ ConsumerWidget으로 Riverpod 연동
+/// ✅ CrawlerCategory.allCategories 동기화 (Real 모드 대응)
 /// ✅ AppColors, AppSpacing, AppShadows 100% 사용
 /// ✅ ScreenUtil (.w, .h, .sp, .r) 필수
 class FilterBottomSheet extends ConsumerWidget {
   const FilterBottomSheet({super.key});
 
-  // 카테고리 목록
-  static const List<String> _categories = [
-    '전체',
-    '공모전',
-    '취업',
-    '논문',
-    '공지사항',
-  ];
+  /// 카테고리 목록 (동적 생성: '전체' + 크롤러 10개 카테고리)
+  static List<String> get _categories => [
+        '전체',
+        ...CrawlerCategory.allCategories,
+      ];
 
-  // 신뢰도 목록
-  static const List<String> _trustLevels = [
+  /// 시간 범위 목록
+  static const List<String> _timeRanges = [
     '전체',
-    '공식',
-    '학술',
-    '언론',
-    '커뮤니티',
+    '최근 1주일',
+    '최근 1개월',
+    '최근 3개월',
+    '최근 6개월',
   ];
 
   @override
@@ -56,11 +55,7 @@ class FilterBottomSheet extends ConsumerWidget {
             children: [
               Text(
                 '고급 필터',
-                style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: AppTextStyles.headingSemiBold20,
               ),
               const Spacer(),
               IconButton(
@@ -75,16 +70,12 @@ class FilterBottomSheet extends ConsumerWidget {
           // 카테고리
           Text(
             '카테고리',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: AppTextStyles.titleSemiBold16,
           ),
           AppSpacing.verticalSpaceMD,
           Wrap(
             spacing: AppSpacing.sm,
-            runSpacing: 8.h,
+            runSpacing: AppSpacing.sm,
             children: _categories.map((category) {
               final isSelected = category == state.selectedCategory;
               return GestureDetector(
@@ -92,7 +83,7 @@ class FilterBottomSheet extends ConsumerWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.lg,
-                    vertical: 8.h,
+                    vertical: AppSpacing.sm,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
@@ -108,9 +99,7 @@ class FilterBottomSheet extends ConsumerWidget {
                   ),
                   child: Text(
                     category,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
+                    style: AppTextStyles.labelMedium14.copyWith(
                       color: isSelected
                           ? AppColors.white
                           : AppColors.textPrimary,
@@ -123,32 +112,23 @@ class FilterBottomSheet extends ConsumerWidget {
 
           AppSpacing.verticalSpaceXXL,
 
-          // 구분선
-          AppDivider.thin(),
-
-          AppSpacing.verticalSpaceXL,
-
-          // 신뢰도
+          // 시간 범위
           Text(
-            '신뢰도',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            '시간 범위',
+            style: AppTextStyles.titleSemiBold16,
           ),
           AppSpacing.verticalSpaceMD,
           Wrap(
             spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm.h,
-            children: _trustLevels.map((trust) {
-              final isSelected = trust == state.selectedTrust;
+            runSpacing: AppSpacing.sm,
+            children: _timeRanges.map((timeRange) {
+              final isSelected = timeRange == state.selectedTimeRange;
               return GestureDetector(
-                onTap: () => controller.updateTrust(trust),
+                onTap: () => controller.updateTimeRange(timeRange),
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.sm.h,
+                    vertical: AppSpacing.sm,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
@@ -163,10 +143,8 @@ class FilterBottomSheet extends ConsumerWidget {
                     boxShadow: isSelected ? AppShadows.crimsonGlow : null,
                   ),
                   child: Text(
-                    trust,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
+                    timeRange,
+                    style: AppTextStyles.labelMedium14.copyWith(
                       color: isSelected
                           ? AppColors.white
                           : AppColors.textPrimary,
@@ -179,60 +157,33 @@ class FilterBottomSheet extends ConsumerWidget {
 
           AppSpacing.verticalSpaceXXL,
 
-          // 구분선
-          AppDivider.thin(),
-
-          AppSpacing.verticalSpaceXL,
-
-          // 마감일
+          // 조회수 범위
           Text(
-            '마감일 (D-${state.deadlineRange.end.toInt()}일 이내)',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+            '조회수 범위',
+            style: AppTextStyles.titleSemiBold16,
+          ),
+          AppSpacing.verticalSpaceSM,
+          Text(
+            '${state.viewsRange.start.toInt()} ~ ${state.viewsRange.end.toInt()}회',
+            style: AppTextStyles.labelMedium14.copyWith(
+              color: AppColors.brandCrimson,
             ),
           ),
+          AppSpacing.verticalSpaceSM,
           RangeSlider(
-            values: state.deadlineRange,
+            values: state.viewsRange,
             min: 0,
-            max: 90,
-            divisions: 18,
+            max: 10000,
+            divisions: 100,
             activeColor: AppColors.brandCrimson,
             inactiveColor: AppColors.divider,
-            onChanged: (values) => controller.updateDeadlineRange(values),
-          ),
-
-          AppSpacing.verticalSpaceXXL,
-
-          // 적용 버튼
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('필터가 적용되었어요! 🎯')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandCrimson,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                elevation: 0,
-                shadowColor: Colors.transparent,
-              ),
-              child: Text(
-                '필터 적용',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.white,
-                ),
-              ),
+            labels: RangeLabels(
+              state.viewsRange.start.toInt().toString(),
+              state.viewsRange.end.toInt().toString(),
             ),
+            onChanged: (RangeValues values) {
+              controller.updateViewsRange(values);
+            },
           ),
 
           SizedBox(height: MediaQuery.of(context).padding.bottom),
