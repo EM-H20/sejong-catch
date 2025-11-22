@@ -46,6 +46,11 @@ migrate_working_dir/
 ios/Flutter/flutter_export_environment.sh
 ios/Flutter/Generated.xcconfig
 
+# iOS CocoaPods 자동 생성 파일 (pod install 시 재생성)
+ios/Podfile.lock
+ios/Pods/
+ios/.symlinks/
+
 # Symbolication related
 app.*.symbols
 
