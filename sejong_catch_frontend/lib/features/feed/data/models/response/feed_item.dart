@@ -23,8 +23,8 @@ class FeedItem with _$FeedItem {
     /// 제목
     required String title,
 
-    /// 짧은 설명 (리스트용)
-    required String description,
+    /// 짧은 설명 (리스트용) - Real 모드(크롤러)에서는 빈 문자열
+    @Default('') String description,
 
     /// 카테고리 (공모전, 취업, 논문, 학교공지, 축제)
     required String category,
@@ -32,7 +32,8 @@ class FeedItem with _$FeedItem {
     /// 썸네일 이미지 URL (선택사항)
     String? thumbnailUrl,
 
-    /// D-Day (마감일까지 남은 일수)
+    /// 게시 경과일 (양수: N일 전 게시됨)
+    /// 예: 0 = 오늘, 1 = 1일 전, 7 = 1주일 전
     required int dDay,
 
     /// 조회수

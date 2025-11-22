@@ -54,17 +54,36 @@ class AppChip extends StatelessWidget {
     );
   }
 
-  /// ⏰ D-Day 칩 (긴급도에 따라 색상 자동 변경)
+  /// ⏰ 게시 경과일 칩 (최근 게시글 강조)
+  ///
+  /// **표시 형식**: "N일 전", "오늘", "방금"
+  /// **isUrgent**: 7일 이내 게시글은 강조 표시
   factory AppChip.dDay({
     required int daysLeft,
     bool isUrgent = false,
   }) {
+    // 경과일에 따른 표시 텍스트
+    String label;
+    if (daysLeft == 0) {
+      label = '오늘';
+    } else if (daysLeft == 1) {
+      label = '1일 전';
+    } else if (daysLeft >= 7 && daysLeft < 30) {
+      final weeks = (daysLeft / 7).floor();
+      label = '${weeks}주 전';
+    } else if (daysLeft >= 30) {
+      final months = (daysLeft / 30).floor();
+      label = '${months}개월 전';
+    } else {
+      label = '$daysLeft일 전';
+    }
+
     return AppChip(
       icon: Icons.access_time,
-      label: 'D-$daysLeft',
-      color: isUrgent ? AppColors.error : AppColors.textSecondary,
+      label: label,
+      color: isUrgent ? AppColors.success : AppColors.textSecondary,
       backgroundColor: isUrgent
-          ? AppColors.error.withValues(alpha: 0.1)
+          ? AppColors.success.withValues(alpha: 0.1)
           : AppColors.surface,
     );
   }

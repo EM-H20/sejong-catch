@@ -15,7 +15,6 @@ import 'package:sejong_catch_frontend/features/feed/presentation/widgets/ui/feed
 /// - 썸네일 이미지
 /// - 제목, 설명
 /// - D-Day, 조회수, 우선순위 정보
-/// - 북마크 기능
 /// - 탭 시 상세보기
 class FeedCard extends StatelessWidget {
   /// 피드 아이템 데이터 (TODO: 나중에 FeedItem 모델로 변경)
@@ -24,20 +23,16 @@ class FeedCard extends StatelessWidget {
   /// 카드 탭 콜백
   final VoidCallback onTap;
 
-  /// 북마크 토글 콜백
-  final ValueChanged<bool> onBookmarkToggle;
-
   const FeedCard({
     super.key,
     required this.item,
     required this.onTap,
-    required this.onBookmarkToggle,
   });
 
   @override
   Widget build(BuildContext context) {
     final dDay = item['dDay'] as int;
-    final isUrgent = dDay <= 7;
+    final isUrgent = dDay <= 7; // 7일 이내 게시글은 최신으로 강조
     final priority = item['priority'] as String;
 
     return GestureDetector(
@@ -66,11 +61,6 @@ class FeedCard extends StatelessWidget {
             FeedCardThumbnail(
               thumbnailUrl: item['thumbnailUrl'] as String?,
               category: item['category'] as String,
-              isBookmarked: item['isBookmarked'] as bool,
-              onBookmarkToggle: () {
-                final currentState = item['isBookmarked'] as bool;
-                onBookmarkToggle(!currentState);
-              },
             ),
 
             // 구분선 (썸네일과 내용 사이)

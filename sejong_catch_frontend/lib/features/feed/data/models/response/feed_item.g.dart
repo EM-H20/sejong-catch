@@ -10,7 +10,7 @@ _$FeedItemImpl _$$FeedItemImplFromJson(Map<String, dynamic> json) =>
     _$FeedItemImpl(
       id: json['id'] as String,
       title: json['title'] as String,
-      description: json['description'] as String,
+      description: json['description'] as String? ?? '',
       category: json['category'] as String,
       thumbnailUrl: json['thumbnailUrl'] as String?,
       dDay: (json['dDay'] as num).toInt(),

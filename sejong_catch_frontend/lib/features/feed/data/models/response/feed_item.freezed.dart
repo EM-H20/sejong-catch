@@ -27,7 +27,7 @@ mixin _$FeedItem {
   /// 제목
   String get title => throw _privateConstructorUsedError;
 
-  /// 짧은 설명 (리스트용)
+  /// 짧은 설명 (리스트용) - Real 모드(크롤러)에서는 빈 문자열
   String get description => throw _privateConstructorUsedError;
 
   /// 카테고리 (공모전, 취업, 논문, 학교공지, 축제)
@@ -36,7 +36,8 @@ mixin _$FeedItem {
   /// 썸네일 이미지 URL (선택사항)
   String? get thumbnailUrl => throw _privateConstructorUsedError;
 
-  /// D-Day (마감일까지 남은 일수)
+  /// 게시 경과일 (양수: N일 전 게시됨)
+  /// 예: 0 = 오늘, 1 = 1일 전, 7 = 1주일 전
   int get dDay => throw _privateConstructorUsedError;
 
   /// 조회수
@@ -390,7 +391,7 @@ class _$FeedItemImpl implements _FeedItem {
   const _$FeedItemImpl({
     required this.id,
     required this.title,
-    required this.description,
+    this.description = '',
     required this.category,
     this.thumbnailUrl,
     required this.dDay,
@@ -421,8 +422,9 @@ class _$FeedItemImpl implements _FeedItem {
   @override
   final String title;
 
-  /// 짧은 설명 (리스트용)
+  /// 짧은 설명 (리스트용) - Real 모드(크롤러)에서는 빈 문자열
   @override
+  @JsonKey()
   final String description;
 
   /// 카테고리 (공모전, 취업, 논문, 학교공지, 축제)
@@ -433,7 +435,8 @@ class _$FeedItemImpl implements _FeedItem {
   @override
   final String? thumbnailUrl;
 
-  /// D-Day (마감일까지 남은 일수)
+  /// 게시 경과일 (양수: N일 전 게시됨)
+  /// 예: 0 = 오늘, 1 = 1일 전, 7 = 1주일 전
   @override
   final int dDay;
 
@@ -598,7 +601,7 @@ abstract class _FeedItem implements FeedItem {
   const factory _FeedItem({
     required final String id,
     required final String title,
-    required final String description,
+    final String description,
     required final String category,
     final String? thumbnailUrl,
     required final int dDay,
@@ -628,7 +631,7 @@ abstract class _FeedItem implements FeedItem {
   @override
   String get title;
 
-  /// 짧은 설명 (리스트용)
+  /// 짧은 설명 (리스트용) - Real 모드(크롤러)에서는 빈 문자열
   @override
   String get description;
 
@@ -640,7 +643,8 @@ abstract class _FeedItem implements FeedItem {
   @override
   String? get thumbnailUrl;
 
-  /// D-Day (마감일까지 남은 일수)
+  /// 게시 경과일 (양수: N일 전 게시됨)
+  /// 예: 0 = 오늘, 1 = 1일 전, 7 = 1주일 전
   @override
   int get dDay;
 

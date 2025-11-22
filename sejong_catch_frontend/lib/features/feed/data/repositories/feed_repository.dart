@@ -1,7 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/network/dio_provider.dart';
+import '../../../../core/services/cache_service.dart';
 import '../datasources/feed_api.dart';
 import '../models/response/feed_item.dart';
+import '../models/response/crawler_result.dart';
 
 part 'feed_repository.g.dart';
 
@@ -14,9 +16,9 @@ FeedApi feedApi(FeedApiRef ref) {
 
 /// 피드 Repository
 ///
-/// **Mock/Real 자동 전환**:
-/// - `USE_MOCK_AUTH=true` (기본값) → Mock 데이터 반환
-/// - `USE_MOCK_AUTH=false` → 실제 백엔드 API 호출
+/// **2가지 모드 자동 전환**:
+/// - **Mock 모드** (개발): `USE_MOCK_AUTH=true` → 하드코딩 더미 5개
+/// - **Real 모드** (프로덕션): `USE_MOCK_AUTH=false` → /crawler/crawl-results (1,000개 + 10분 캐싱)
 @riverpod
 class FeedRepository extends _$FeedRepository {
   @override
@@ -25,8 +27,8 @@ class FeedRepository extends _$FeedRepository {
   /// 피드 목록 조회
   ///
   /// **동작**:
-  /// - Mock 모드: 하드코딩된 더미 데이터 반환
-  /// - Real 모드: 백엔드 API `/feed` 호출
+  /// - Mock 모드: 하드코딩된 더미 데이터 반환 (5개)
+  /// - Real 모드: 크롤러 API `/crawler/crawl-results` 호출 (1,000개 전체 로딩 + 10분 캐싱 + 로컬 필터링)
   Future<List<FeedItem>> getFeedList({
     String? category,
     int page = 1,
@@ -35,9 +37,11 @@ class FeedRepository extends _$FeedRepository {
     const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
 
     if (useMock) {
+      // Mock 모드 (개발)
       return _mockFeedList(category: category, page: page, limit: limit);
     } else {
-      return _realFeedList(category: category, page: page, limit: limit);
+      // Real 모드 (프로덕션) → /crawler/crawl-results 사용
+      return _crawlerFeedList(category: category, page: page, limit: limit);
     }
   }
 
@@ -123,18 +127,89 @@ class FeedRepository extends _$FeedRepository {
     return filteredItems;
   }
 
-  /// 실제 API 피드 목록 (프로덕션)
-  Future<List<FeedItem>> _realFeedList({
+  /// 크롤러 API 피드 목록 (Real 모드 - 프로덕션)
+  ///
+  /// **전략**: 전체 데이터 1회 로딩 + 10분 캐싱 + 로컬 필터링
+  /// **성능**: 캐시 적중 시 즉시 반환 (0 네트워크 요청)
+  Future<List<FeedItem>> _crawlerFeedList({
     String? category,
     int page = 1,
     int limit = 20,
   }) async {
-    final api = ref.read(feedApiProvider);
-    return await api.getFeedList(
-      category: category == '전체' ? null : category,
-      page: page,
-      limit: limit,
+    // 1. 캐시 확인
+    final cacheService = ref.read(cacheServiceProvider.notifier);
+    final cachedData = await cacheService.getCrawlerCache();
+
+    List<CrawlerResult> crawlerResults;
+
+    if (cachedData != null) {
+      // 캐시 적중 (10분 이내)
+      crawlerResults = cachedData.data;
+    } else {
+      // 캐시 없음 또는 만료 → API 호출
+      final api = ref.read(feedApiProvider);
+      final response = await api.getCrawlerResults();
+      crawlerResults = response.data;
+
+      // 캐시 저장 (10분 TTL)
+      await cacheService.setCrawlerCache(crawlerResults);
+    }
+
+    // 2. CrawlerResult → FeedItem 변환
+    final feedItems = crawlerResults.map((crawlerItem) {
+      return FeedItem(
+        id: crawlerItem.id,
+        title: crawlerItem.title,
+        description: '', // 크롤러 데이터에는 description 없음
+        category: CrawlerCategory.toDisplayName(crawlerItem.category),
+        thumbnailUrl: null, // 크롤러 데이터에는 썸네일 없음
+        dDay: _calculateDDay(crawlerItem.publishedAt),
+        viewCount: crawlerItem.views,
+        priority: 'low', // 기본값 (크롤러 데이터에는 우선순위 없음)
+        isBookmarked: false,
+        createdAt: crawlerItem.publishedAt,
+        externalUrl: crawlerItem.url, // 세종대 공지 원문 URL
+      );
+    }).toList();
+
+    // 3. 카테고리 필터링 (로컬)
+    List<FeedItem> filteredItems = feedItems;
+    if (category != null && category != '전체') {
+      filteredItems = feedItems.where((item) => item.category == category).toList();
+    }
+
+    // 4. 페이지네이션 적용 (로컬)
+    final startIndex = (page - 1) * limit;
+    final endIndex = startIndex + limit;
+
+    if (startIndex >= filteredItems.length) {
+      return []; // 범위 초과 시 빈 리스트
+    }
+
+    final paginatedItems = filteredItems.sublist(
+      startIndex,
+      endIndex > filteredItems.length ? filteredItems.length : endIndex,
     );
+
+    return paginatedItems;
+  }
+
+  /// 캐시 강제 갱신
+  ///
+  /// **사용**: Pull-to-Refresh 시 호출
+  Future<void> refreshCache() async {
+    final cacheService = ref.read(cacheServiceProvider.notifier);
+    await cacheService.clearCrawlerCache();
+  }
+
+  /// 게시 경과일 계산 헬퍼 (publishedAt 기준)
+  ///
+  /// **로직**: 게시된 날짜로부터 경과한 일수 (양수)
+  /// **예시**: 2일 전 게시 → 2, 오늘 게시 → 0, 1주일 전 → 7
+  int _calculateDDay(DateTime publishedAt) {
+    final now = DateTime.now();
+    final difference = now.difference(publishedAt).inDays;
+    return difference; // 양수: 게시 경과일
   }
 
   /// 피드 상세 조회
@@ -168,9 +243,49 @@ class FeedRepository extends _$FeedRepository {
   }
 
   /// 실제 API 피드 상세 (프로덕션)
+  ///
+  /// **전략**: 캐시된 크롤러 데이터에서 ID로 검색 (API 호출 없음)
+  /// **이유**: GET /feed/{id} API가 아직 구현 안 됨
   Future<FeedItem> _realFeedDetail(String id) async {
-    final api = ref.read(feedApiProvider);
-    return await api.getFeedDetail(id);
+    // 1. 캐시된 크롤러 데이터 가져오기
+    final cacheService = ref.read(cacheServiceProvider.notifier);
+    final cachedData = await cacheService.getCrawlerCache();
+
+    List<CrawlerResult> crawlerResults;
+
+    if (cachedData != null) {
+      // 캐시 적중
+      crawlerResults = cachedData.data;
+    } else {
+      // 캐시 없음 → API 호출해서 로드
+      final api = ref.read(feedApiProvider);
+      final response = await api.getCrawlerResults();
+      crawlerResults = response.data;
+
+      // 캐시 저장
+      await cacheService.setCrawlerCache(crawlerResults);
+    }
+
+    // 2. ID로 검색
+    final crawlerItem = crawlerResults.firstWhere(
+      (item) => item.id == id,
+      orElse: () => throw Exception('피드를 찾을 수 없어요 (ID: $id)'),
+    );
+
+    // 3. FeedItem으로 변환
+    return FeedItem(
+      id: crawlerItem.id,
+      title: crawlerItem.title,
+      description: '',
+      category: CrawlerCategory.toDisplayName(crawlerItem.category),
+      thumbnailUrl: null,
+      dDay: _calculateDDay(crawlerItem.publishedAt),
+      viewCount: crawlerItem.views,
+      priority: 'low',
+      isBookmarked: false,
+      createdAt: crawlerItem.publishedAt,
+      externalUrl: crawlerItem.url,
+    );
   }
 
   /// 북마크 토글

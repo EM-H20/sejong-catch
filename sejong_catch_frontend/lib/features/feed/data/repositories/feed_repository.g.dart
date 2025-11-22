@@ -25,13 +25,13 @@ final feedApiProvider = AutoDisposeProvider<FeedApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FeedApiRef = AutoDisposeProviderRef<FeedApi>;
-String _$feedRepositoryHash() => r'237707d5e8e5065ce039c34529d02002b0d4ef56';
+String _$feedRepositoryHash() => r'aea094bd37382f2e1fa9abcd71098cd04255175d';
 
 /// 피드 Repository
 ///
-/// **Mock/Real 자동 전환**:
-/// - `USE_MOCK_AUTH=true` (기본값) → Mock 데이터 반환
-/// - `USE_MOCK_AUTH=false` → 실제 백엔드 API 호출
+/// **2가지 모드 자동 전환**:
+/// - **Mock 모드** (개발): `USE_MOCK_AUTH=true` → 하드코딩 더미 5개
+/// - **Real 모드** (프로덕션): `USE_MOCK_AUTH=false` → /crawler/crawl-results (1,000개 + 10분 캐싱)
 ///
 /// Copied from [FeedRepository].
 @ProviderFor(FeedRepository)

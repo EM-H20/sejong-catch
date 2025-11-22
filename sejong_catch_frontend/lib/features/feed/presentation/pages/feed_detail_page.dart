@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:sejong_catch_frontend/core/theme/app_colors.dart';
 import 'package:sejong_catch_frontend/core/theme/app_spacing.dart';
 import 'package:sejong_catch_frontend/core/theme/app_shadows.dart';
@@ -9,7 +10,9 @@ import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 import 'package:sejong_catch_frontend/core/widgets/app_divider.dart';
 import 'package:sejong_catch_frontend/core/widgets/chips/app_chip.dart';
 import 'package:sejong_catch_frontend/core/widgets/badges/app_badge.dart';
+import 'package:sejong_catch_frontend/core/widgets/loading_widget.dart';
 import 'package:sejong_catch_frontend/features/feed/data/models/response/feed_item.dart';
+import 'package:sejong_catch_frontend/features/feed/data/repositories/feed_repository.dart';
 
 /// 📄 피드 상세보기 페이지
 ///
@@ -29,157 +32,147 @@ class FeedDetailPage extends ConsumerStatefulWidget {
 }
 
 class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
-  late FeedItem _feedItem;
   bool _isBookmarked = false;
 
   @override
-  void initState() {
-    super.initState();
-    // TODO: 실제로는 Provider에서 ID로 데이터 조회
-    // 현재는 더미 데이터 사용
-    _feedItem = _getDummyData(widget.id);
-    _isBookmarked = _feedItem.isBookmarked;
-  }
-
-  /// 더미 데이터 생성 (ID 기반)
-  FeedItem _getDummyData(String id) {
-    // feed_page.dart의 더미 데이터와 매칭
-    final dummyMap = {
-      '1': FeedItem.dummy(
-        id: '1',
-        title: '2024 캡스톤 디자인 경진대회',
-        description: '우수작 선정 시 상금 300만원 + 창업 지원',
-        category: '공모전',
-        dDay: 7,
-        priority: 'high',
-      ),
-      '2': FeedItem.dummy(
-        id: '2',
-        title: '네이버 클라우드 신입 채용',
-        description: '백엔드 개발자 채용 (~25.12.31)',
-        category: '취업',
-        dDay: 23,
-        priority: 'mid',
-      ),
-      '3': FeedItem.dummy(
-        id: '3',
-        title: '한국정보과학회 논문 공모',
-        description: 'AI/빅데이터 분야 우수 논문 모집',
-        category: '논문',
-        dDay: 15,
-        priority: 'mid',
-      ),
-      '4': FeedItem.dummy(
-        id: '4',
-        title: '[학교공지] 2025-1학기 수강신청 안내',
-        description: '수강신청 기간: 2025.02.10 ~ 02.14',
-        category: '학교공지',
-        dDay: 45,
-        priority: 'high',
-      ),
-      '5': FeedItem.dummy(
-        id: '5',
-        title: '세종대 대동제 부스 모집',
-        description: '대동제 축제 부스 운영 팀 모집 중!',
-        category: '축제',
-        dDay: 30,
-        priority: 'low',
-      ),
-    };
-
-    return dummyMap[id] ??
-        FeedItem.dummy(
-          id: id,
-          title: '알 수 없는 피드',
-          description: '상세 정보를 찾을 수 없습니다.',
-          category: '기타',
-          dDay: 0,
-        );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isUrgent = _feedItem.dDay <= 7;
-
     return Scaffold(
       backgroundColor: AppColors.surface,
-      body: CustomScrollView(
-        slivers: [
-          // 🔝 앱바 (뒤로가기, 공유, 북마크)
-          _buildAppBar(context),
+      body: FutureBuilder<FeedItem>(
+        future: ref.read(feedRepositoryProvider.notifier).getFeedDetail(widget.id),
+        builder: (context, snapshot) {
+          // 로딩 중
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingWidget(message: '피드를 불러오는 중...');
+          }
 
-          // 📰 본문 컨텐츠
-          SliverPadding(
-            padding: AppSpacing.screenPadding,
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 📷 썸네일 이미지 (선택사항)
-                    if (_feedItem.thumbnailUrl != null) ...[
-                      _buildThumbnail(),
-                      AppSpacing.verticalSpaceLG,
-                    ],
-
-                    // 🏷️ 카테고리 배지
-                    AppBadge.category(category: _feedItem.category),
-
-                    AppSpacing.verticalSpaceMD,
-
-                    // 📝 제목
-                    Text(_feedItem.title, style: AppTextStyles.headingBold24),
-
-                    AppSpacing.verticalSpaceSM,
-
-                    // 📅 정보 칩 (D-Day, 조회수)
-                    Row(
-                      children: [
-                        AppChip.dDay(
-                          daysLeft: _feedItem.dDay,
-                          isUrgent: isUrgent,
-                        ),
-                        AppSpacing.horizontalSpaceSM,
-                        AppChip.viewCount(count: _feedItem.viewCount),
-                        AppSpacing.horizontalSpaceSM,
-                        if (_feedItem.priority != 'low')
-                          AppBadge.priority(priority: _feedItem.priority),
-                      ],
+          // 에러 발생
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64.sp, color: AppColors.error),
+                  AppSpacing.verticalSpaceLG,
+                  Text('데이터를 불러올 수 없어요', style: AppTextStyles.headingSemiBold20),
+                  AppSpacing.verticalSpaceSM,
+                  Text(
+                    snapshot.error.toString(),
+                    style: AppTextStyles.bodyRegular14.copyWith(
+                      color: AppColors.textSecondary,
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                  AppSpacing.verticalSpaceLG,
+                  ElevatedButton(
+                    onPressed: () => setState(() {}),
+                    child: const Text('다시 시도'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-                    AppSpacing.verticalSpace(56),
+          // 데이터 없음
+          final feedItem = snapshot.data;
+          if (feedItem == null) {
+            return Center(
+              child: Text('피드를 찾을 수 없어요', style: AppTextStyles.headingSemiBold20),
+            );
+          }
 
-                    // 구분선
-                    AppDivider.medium(),
+          // 상태 초기화
+          _isBookmarked = feedItem.isBookmarked;
 
-                    AppSpacing.verticalSpace(40),
-
-                    // 📋 기본 정보
-                    _buildInfoSection(),
-
-                    AppSpacing.verticalSpace(40),
-
-                    // 📄 본문 내용
-                    _buildContentSection(),
-
-                    AppSpacing.verticalSpace(72),
-
-                    // 🔗 액션 버튼
-                    _buildActionButtons(context),
-
-                    AppSpacing.verticalSpaceXXL,
-                  ],
-                ),
-              ]),
-            ),
-          ),
-        ],
+          return _buildContent(context, feedItem);
+        },
       ),
     );
   }
 
+  /// 📰 본문 컨텐츠
+  Widget _buildContent(BuildContext context, FeedItem feedItem) {
+    final isUrgent = feedItem.dDay <= 7; // 7일 이내 게시글은 최신으로 강조
+
+    return CustomScrollView(
+      slivers: [
+        // 🔝 앱바 (뒤로가기, 공유, 북마크)
+        _buildAppBar(context, feedItem),
+
+        // 📰 본문 컨텐츠
+        SliverPadding(
+          padding: AppSpacing.screenPadding,
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 📷 썸네일 이미지 (선택사항)
+                  if (feedItem.thumbnailUrl != null) ...[
+                    _buildThumbnail(),
+                    AppSpacing.verticalSpaceLG,
+                  ],
+
+                  // 🏷️ 카테고리 배지
+                  AppBadge.category(category: feedItem.category),
+
+                  AppSpacing.verticalSpaceMD,
+
+                  // 📝 제목
+                  Text(feedItem.title, style: AppTextStyles.headingBold24),
+
+                  AppSpacing.verticalSpaceSM,
+
+                  // 📅 정보 칩 (D-Day, 조회수)
+                  Row(
+                    children: [
+                      AppChip.dDay(
+                        daysLeft: feedItem.dDay,
+                        isUrgent: isUrgent,
+                      ),
+                      AppSpacing.horizontalSpaceSM,
+                      AppChip.viewCount(count: feedItem.viewCount),
+                      AppSpacing.horizontalSpaceSM,
+                      if (feedItem.priority != 'low')
+                        AppBadge.priority(priority: feedItem.priority),
+                    ],
+                  ),
+
+                  AppSpacing.verticalSpace(56),
+
+                  // 구분선
+                  AppDivider.medium(),
+
+                  AppSpacing.verticalSpace(40),
+
+                  // 📋 기본 정보
+                  _buildInfoSection(feedItem),
+
+                  AppSpacing.verticalSpace(40),
+
+                  // 📄 본문 내용 (크롤러 모드에서는 표시 안 함)
+                  if (feedItem.content != null && feedItem.content!.isNotEmpty) ...[
+                    _buildContentSection(feedItem),
+                    AppSpacing.verticalSpace(40),
+                  ],
+
+                  AppSpacing.verticalSpace(32),
+
+                  // 🔗 액션 버튼
+                  _buildActionButtons(context, feedItem),
+
+                  AppSpacing.verticalSpaceXXL,
+                ],
+              ),
+            ]),
+          ),
+        ),
+      ],
+    );
+  }
+
   /// 🔝 앱바
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context, FeedItem feedItem) {
     return SliverAppBar(
       backgroundColor: AppColors.white,
       elevation: 0,
@@ -244,30 +237,24 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
   }
 
   /// 📋 기본 정보 섹션
-  Widget _buildInfoSection() {
+  Widget _buildInfoSection(FeedItem feedItem) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('기본 정보', style: AppTextStyles.headingSemiBold20),
         AppSpacing.verticalSpaceMD,
         _buildInfoRow(
-          icon: Icons.business_outlined,
-          label: '주최',
-          value: _feedItem.organizerName ?? '세종대학교',
-        ),
-        AppSpacing.verticalSpaceSM,
-        _buildInfoRow(
           icon: Icons.calendar_today_outlined,
-          label: '마감일',
-          value: _feedItem.deadline != null
-              ? '${_feedItem.deadline!.year}.${_feedItem.deadline!.month.toString().padLeft(2, '0')}.${_feedItem.deadline!.day.toString().padLeft(2, '0')}'
-              : 'D-${_feedItem.dDay}',
+          label: '게시일',
+          value: feedItem.createdAt != null
+              ? '${feedItem.createdAt!.year}.${feedItem.createdAt!.month.toString().padLeft(2, '0')}.${feedItem.createdAt!.day.toString().padLeft(2, '0')}'
+              : '알 수 없음',
         ),
         AppSpacing.verticalSpaceSM,
         _buildInfoRow(
-          icon: Icons.email_outlined,
-          label: '문의',
-          value: _feedItem.contactEmail ?? 'sejong@example.com',
+          icon: Icons.remove_red_eye_outlined,
+          label: '조회수',
+          value: '${feedItem.viewCount}회',
         ),
       ],
     );
@@ -303,14 +290,14 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
   }
 
   /// 📄 본문 내용 섹션
-  Widget _buildContentSection() {
+  Widget _buildContentSection(FeedItem feedItem) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('상세 내용', style: AppTextStyles.headingSemiBold20),
         AppSpacing.verticalSpaceMD,
         Text(
-          _feedItem.content ?? _feedItem.description,
+          feedItem.content ?? feedItem.description,
           style: AppTextStyles.bodySemiBold16.copyWith(
             fontWeight: FontWeight.w400,
             height: 1.6,
@@ -321,34 +308,36 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
   }
 
   /// 🔗 액션 버튼
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, FeedItem feedItem) {
     return Column(
       children: [
-        // 외부 링크 버튼
-        if (_feedItem.externalUrl != null)
+        // 외부 링크 버튼 (크롤러 데이터의 url 사용)
+        if (feedItem.externalUrl != null && feedItem.externalUrl!.isNotEmpty)
           _buildActionButton(
             icon: Icons.open_in_new,
-            label: '공식 사이트 방문',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('외부 링크: ${_feedItem.externalUrl}')),
-              );
+            label: '세종대 공지 원문 보기',
+            color: AppColors.brandCrimson,
+            onPressed: () async {
+              final url = Uri.parse(feedItem.externalUrl!);
+
+              // URL을 열 수 있는지 확인
+              if (await canLaunchUrl(url)) {
+                await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication, // 외부 브라우저로 열기
+                );
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('링크를 열 수 없어요\n${feedItem.externalUrl}'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              }
             },
           ),
-
-        AppSpacing.verticalSpaceMD,
-
-        // 문의하기 버튼
-        _buildActionButton(
-          icon: Icons.email_outlined,
-          label: '문의하기',
-          color: AppColors.brandCrimson,
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('문의: ${_feedItem.contactEmail}')),
-            );
-          },
-        ),
       ],
     );
   }
