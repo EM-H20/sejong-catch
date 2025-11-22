@@ -6,7 +6,7 @@ part of 'search_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchControllerHash() => r'601833cf78d499e33a55b42dc6cba00fbd818811';
+String _$searchControllerHash() => r'64502f53344b3f4f1f4d6dab6b8fdccee0283873';
 
 /// 🔍 검색 컨트롤러
 ///
@@ -14,6 +14,7 @@ String _$searchControllerHash() => r'601833cf78d499e33a55b42dc6cba00fbd818811';
 /// ✅ @riverpod로 상태 관리
 /// ✅ state.copyWith()로 불변 업데이트
 /// ✅ 검색, 필터 로직 중앙화
+/// ✅ async 검색 + 히스토리 연동
 ///
 /// Copied from [SearchController].
 @ProviderFor(SearchController)

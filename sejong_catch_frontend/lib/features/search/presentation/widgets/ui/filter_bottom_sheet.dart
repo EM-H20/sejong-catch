@@ -210,7 +210,6 @@ class FilterBottomSheet extends ConsumerWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                controller.applyFilter();
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('필터가 적용되었어요! 🎯')),

@@ -23,11 +23,14 @@ mixin _$SearchState {
   /// 검색 중 여부
   bool get isSearching => throw _privateConstructorUsedError;
 
-  /// 검색 결과 목록
-  List<String> get searchResults => throw _privateConstructorUsedError;
+  /// 검색 결과 목록 (FeedItem)
+  List<FeedItem> get searchResults => throw _privateConstructorUsedError;
 
-  /// 인기 키워드
-  List<String> get popularKeywords => throw _privateConstructorUsedError;
+  /// 최근 검색어
+  List<String> get recentSearches => throw _privateConstructorUsedError;
+
+  /// 에러 메시지
+  String? get error => throw _privateConstructorUsedError;
 
   /// 선택된 카테고리 필터
   String get selectedCategory => throw _privateConstructorUsedError;
@@ -55,8 +58,9 @@ abstract class $SearchStateCopyWith<$Res> {
   $Res call({
     String query,
     bool isSearching,
-    List<String> searchResults,
-    List<String> popularKeywords,
+    List<FeedItem> searchResults,
+    List<String> recentSearches,
+    String? error,
     String selectedCategory,
     String selectedTrust,
     RangeValues deadlineRange,
@@ -81,7 +85,8 @@ class _$SearchStateCopyWithImpl<$Res, $Val extends SearchState>
     Object? query = null,
     Object? isSearching = null,
     Object? searchResults = null,
-    Object? popularKeywords = null,
+    Object? recentSearches = null,
+    Object? error = freezed,
     Object? selectedCategory = null,
     Object? selectedTrust = null,
     Object? deadlineRange = null,
@@ -99,11 +104,15 @@ class _$SearchStateCopyWithImpl<$Res, $Val extends SearchState>
             searchResults: null == searchResults
                 ? _value.searchResults
                 : searchResults // ignore: cast_nullable_to_non_nullable
+                      as List<FeedItem>,
+            recentSearches: null == recentSearches
+                ? _value.recentSearches
+                : recentSearches // ignore: cast_nullable_to_non_nullable
                       as List<String>,
-            popularKeywords: null == popularKeywords
-                ? _value.popularKeywords
-                : popularKeywords // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
+            error: freezed == error
+                ? _value.error
+                : error // ignore: cast_nullable_to_non_nullable
+                      as String?,
             selectedCategory: null == selectedCategory
                 ? _value.selectedCategory
                 : selectedCategory // ignore: cast_nullable_to_non_nullable
@@ -134,8 +143,9 @@ abstract class _$$SearchStateImplCopyWith<$Res>
   $Res call({
     String query,
     bool isSearching,
-    List<String> searchResults,
-    List<String> popularKeywords,
+    List<FeedItem> searchResults,
+    List<String> recentSearches,
+    String? error,
     String selectedCategory,
     String selectedTrust,
     RangeValues deadlineRange,
@@ -159,7 +169,8 @@ class __$$SearchStateImplCopyWithImpl<$Res>
     Object? query = null,
     Object? isSearching = null,
     Object? searchResults = null,
-    Object? popularKeywords = null,
+    Object? recentSearches = null,
+    Object? error = freezed,
     Object? selectedCategory = null,
     Object? selectedTrust = null,
     Object? deadlineRange = null,
@@ -177,11 +188,15 @@ class __$$SearchStateImplCopyWithImpl<$Res>
         searchResults: null == searchResults
             ? _value._searchResults
             : searchResults // ignore: cast_nullable_to_non_nullable
+                  as List<FeedItem>,
+        recentSearches: null == recentSearches
+            ? _value._recentSearches
+            : recentSearches // ignore: cast_nullable_to_non_nullable
                   as List<String>,
-        popularKeywords: null == popularKeywords
-            ? _value._popularKeywords
-            : popularKeywords // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
+        error: freezed == error
+            ? _value.error
+            : error // ignore: cast_nullable_to_non_nullable
+                  as String?,
         selectedCategory: null == selectedCategory
             ? _value.selectedCategory
             : selectedCategory // ignore: cast_nullable_to_non_nullable
@@ -205,20 +220,14 @@ class _$SearchStateImpl implements _SearchState {
   const _$SearchStateImpl({
     this.query = '',
     this.isSearching = false,
-    final List<String> searchResults = const [],
-    final List<String> popularKeywords = const [
-      '공모전',
-      'AI 해커톤',
-      '취업박람회',
-      '장학금',
-      '세종대',
-      '논문 공모',
-    ],
+    final List<FeedItem> searchResults = const [],
+    final List<String> recentSearches = const [],
+    this.error,
     this.selectedCategory = '전체',
     this.selectedTrust = '전체',
     this.deadlineRange = const RangeValues(0, 30),
   }) : _searchResults = searchResults,
-       _popularKeywords = popularKeywords;
+       _recentSearches = recentSearches;
 
   /// 검색어
   @override
@@ -230,29 +239,33 @@ class _$SearchStateImpl implements _SearchState {
   @JsonKey()
   final bool isSearching;
 
-  /// 검색 결과 목록
-  final List<String> _searchResults;
+  /// 검색 결과 목록 (FeedItem)
+  final List<FeedItem> _searchResults;
 
-  /// 검색 결과 목록
+  /// 검색 결과 목록 (FeedItem)
   @override
   @JsonKey()
-  List<String> get searchResults {
+  List<FeedItem> get searchResults {
     if (_searchResults is EqualUnmodifiableListView) return _searchResults;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_searchResults);
   }
 
-  /// 인기 키워드
-  final List<String> _popularKeywords;
+  /// 최근 검색어
+  final List<String> _recentSearches;
 
-  /// 인기 키워드
+  /// 최근 검색어
   @override
   @JsonKey()
-  List<String> get popularKeywords {
-    if (_popularKeywords is EqualUnmodifiableListView) return _popularKeywords;
+  List<String> get recentSearches {
+    if (_recentSearches is EqualUnmodifiableListView) return _recentSearches;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_popularKeywords);
+    return EqualUnmodifiableListView(_recentSearches);
   }
+
+  /// 에러 메시지
+  @override
+  final String? error;
 
   /// 선택된 카테고리 필터
   @override
@@ -271,7 +284,7 @@ class _$SearchStateImpl implements _SearchState {
 
   @override
   String toString() {
-    return 'SearchState(query: $query, isSearching: $isSearching, searchResults: $searchResults, popularKeywords: $popularKeywords, selectedCategory: $selectedCategory, selectedTrust: $selectedTrust, deadlineRange: $deadlineRange)';
+    return 'SearchState(query: $query, isSearching: $isSearching, searchResults: $searchResults, recentSearches: $recentSearches, error: $error, selectedCategory: $selectedCategory, selectedTrust: $selectedTrust, deadlineRange: $deadlineRange)';
   }
 
   @override
@@ -287,9 +300,10 @@ class _$SearchStateImpl implements _SearchState {
               _searchResults,
             ) &&
             const DeepCollectionEquality().equals(
-              other._popularKeywords,
-              _popularKeywords,
+              other._recentSearches,
+              _recentSearches,
             ) &&
+            (identical(other.error, error) || other.error == error) &&
             (identical(other.selectedCategory, selectedCategory) ||
                 other.selectedCategory == selectedCategory) &&
             (identical(other.selectedTrust, selectedTrust) ||
@@ -304,7 +318,8 @@ class _$SearchStateImpl implements _SearchState {
     query,
     isSearching,
     const DeepCollectionEquality().hash(_searchResults),
-    const DeepCollectionEquality().hash(_popularKeywords),
+    const DeepCollectionEquality().hash(_recentSearches),
+    error,
     selectedCategory,
     selectedTrust,
     deadlineRange,
@@ -323,8 +338,9 @@ abstract class _SearchState implements SearchState {
   const factory _SearchState({
     final String query,
     final bool isSearching,
-    final List<String> searchResults,
-    final List<String> popularKeywords,
+    final List<FeedItem> searchResults,
+    final List<String> recentSearches,
+    final String? error,
     final String selectedCategory,
     final String selectedTrust,
     final RangeValues deadlineRange,
@@ -338,13 +354,17 @@ abstract class _SearchState implements SearchState {
   @override
   bool get isSearching;
 
-  /// 검색 결과 목록
+  /// 검색 결과 목록 (FeedItem)
   @override
-  List<String> get searchResults;
+  List<FeedItem> get searchResults;
 
-  /// 인기 키워드
+  /// 최근 검색어
   @override
-  List<String> get popularKeywords;
+  List<String> get recentSearches;
+
+  /// 에러 메시지
+  @override
+  String? get error;
 
   /// 선택된 카테고리 필터
   @override

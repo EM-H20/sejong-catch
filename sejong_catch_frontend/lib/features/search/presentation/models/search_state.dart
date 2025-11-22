@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../feed/data/models/response/feed_item.dart';
+
 part 'search_state.freezed.dart';
 
 /// 🔍 검색 페이지 상태 모델
@@ -18,19 +20,14 @@ class SearchState with _$SearchState {
     /// 검색 중 여부
     @Default(false) bool isSearching,
 
-    /// 검색 결과 목록
-    @Default([]) List<String> searchResults,
+    /// 검색 결과 목록 (FeedItem)
+    @Default([]) List<FeedItem> searchResults,
 
-    /// 인기 키워드
-    @Default([
-      '공모전',
-      'AI 해커톤',
-      '취업박람회',
-      '장학금',
-      '세종대',
-      '논문 공모',
-    ])
-    List<String> popularKeywords,
+    /// 최근 검색어
+    @Default([]) List<String> recentSearches,
+
+    /// 에러 메시지
+    String? error,
 
     /// 선택된 카테고리 필터
     @Default('전체') String selectedCategory,
