@@ -35,6 +35,46 @@ class SearchController extends _$SearchController {
     state = state.copyWith(query: query);
   }
 
+  /// 실시간 검색 (히스토리 추가 안함!)
+  Future<void> performRealtimeSearch(String query) async {
+    // 최소 2글자 체크
+    if (query.trim().length < 2) {
+      clearSearch();
+      return;
+    }
+
+    // 로딩 시작
+    state = state.copyWith(
+      query: query,
+      isSearching: true,
+      error: null,
+    );
+
+    try {
+      // 1. Repository를 통한 검색
+      final repository = ref.read(searchRepositoryProvider.notifier);
+      final results = await repository.search(
+        query: query,
+        category: state.selectedCategory != '전체' ? state.selectedCategory : null,
+        timeRange: state.selectedTimeRange,
+        viewsRange: state.viewsRange,
+      );
+
+      // 2. 상태 업데이트 (히스토리 추가 안함!)
+      state = state.copyWith(
+        searchResults: results,
+        isSearching: false,
+        error: null,
+      );
+    } catch (e) {
+      // 에러 처리
+      state = state.copyWith(
+        isSearching: false,
+        error: '검색 중 오류가 발생했습니다: ${e.toString()}',
+      );
+    }
+  }
+
   /// 검색 실행 (async)
   Future<void> performSearch(String query) async {
     if (query.trim().isEmpty) return;
@@ -52,6 +92,8 @@ class SearchController extends _$SearchController {
       final results = await repository.search(
         query: query,
         category: state.selectedCategory != '전체' ? state.selectedCategory : null,
+        timeRange: state.selectedTimeRange,
+        viewsRange: state.viewsRange,
       );
 
       // 2. 검색어 히스토리에 추가
@@ -117,22 +159,32 @@ class SearchController extends _$SearchController {
     }
   }
 
-  /// 신뢰도 필터 변경
-  void updateTrust(String trust) {
-    state = state.copyWith(selectedTrust: trust);
+  /// 시간 범위 필터 변경
+  void updateTimeRange(String timeRange) {
+    state = state.copyWith(selectedTimeRange: timeRange);
+
+    // 검색어가 있으면 실시간 재검색
+    if (state.query.length >= 2) {
+      performRealtimeSearch(state.query);
+    }
   }
 
-  /// 마감일 범위 필터 변경
-  void updateDeadlineRange(RangeValues range) {
-    state = state.copyWith(deadlineRange: range);
+  /// 조회수 범위 필터 변경
+  void updateViewsRange(RangeValues range) {
+    state = state.copyWith(viewsRange: range);
+
+    // 검색어가 있으면 실시간 재검색
+    if (state.query.length >= 2) {
+      performRealtimeSearch(state.query);
+    }
   }
 
   /// 필터 초기화
   void resetFilter() {
     state = state.copyWith(
       selectedCategory: '전체',
-      selectedTrust: '전체',
-      deadlineRange: const RangeValues(0, 30),
+      selectedTimeRange: '전체',
+      viewsRange: const RangeValues(0, 10000),
     );
   }
 }

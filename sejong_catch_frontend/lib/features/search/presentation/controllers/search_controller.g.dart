@@ -6,7 +6,7 @@ part of 'search_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchControllerHash() => r'64502f53344b3f4f1f4d6dab6b8fdccee0283873';
+String _$searchControllerHash() => r'9c8db047c5caf1a9a09f40614f81bbaaa904b4b5';
 
 /// 🔍 검색 컨트롤러
 ///
