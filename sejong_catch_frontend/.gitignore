@@ -27,11 +27,20 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 /build/
 /coverage/
+
+# Flutter 플랫폼별 자동 생성 파일
+**/GeneratedPluginRegistrant.java
+**/GeneratedPluginRegistrant.m
+**/GeneratedPluginRegistrant.swift
+**/generated_plugin_registrant.cc
+**/generated_plugins.cmake
+**/web_plugin_registrant.dart
 
 # iOS Flutter 자동 생성 파일 (빌드 시마다 재생성됨)
 ios/Flutter/flutter_export_environment.sh
