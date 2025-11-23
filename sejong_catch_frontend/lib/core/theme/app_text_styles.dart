@@ -145,8 +145,22 @@ class AppTextStyles {
         color: AppColors.textTertiary,
       );
 
+  /// Caption Medium 11sp - 약간 강조 캡션 (큐 통계 라벨용)
+  static TextStyle get captionMedium11 => TextStyle(
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 11.sp,
+        color: AppColors.textSecondary,
+      );
+
+  /// Caption Bold 12sp - 강조 캡션 (상태 배지용)
+  static TextStyle get captionBold12 => TextStyle(
+        fontFamily: 'Pretendard-Bold',
+        fontSize: 12.sp,
+        color: AppColors.textPrimary,
+      );
+
   // ============================================================================
-  // Button Styles (버튼) - SemiBold
+  // Button Styles (버튼) - SemiBold & Medium
   // ============================================================================
 
   /// Button SemiBold 16sp - 기본 버튼
@@ -160,6 +174,53 @@ class AppTextStyles {
   static TextStyle get buttonSemiBold14 => TextStyle(
         fontFamily: 'Pretendard-SemiBold',
         fontSize: 14.sp,
+        color: AppColors.pureWhite,
+      );
+
+  /// Button SemiBold 15sp - 중간 버튼 (TabBar용)
+  static TextStyle get buttonSemiBold15 => TextStyle(
+        fontFamily: 'Pretendard-SemiBold',
+        fontSize: 15.sp,
+        color: AppColors.pureWhite,
+      );
+
+  /// Button Medium 15sp - 비활성 탭 버튼
+  static TextStyle get buttonMedium15 => TextStyle(
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 15.sp,
+        color: AppColors.textSecondary,
+      );
+
+  // ============================================================================
+  // Additional Styles (추가 스타일)
+  // ============================================================================
+
+  /// Title SemiBold 18sp - 큐 카드 제목
+  static TextStyle get titleSemiBold18 => TextStyle(
+        fontFamily: 'Pretendard-SemiBold',
+        fontSize: 18.sp,
+        color: AppColors.textPrimary,
+      );
+
+  /// Body Bold 14sp - 강조 본문 (통계 값용)
+  static TextStyle get bodyBold14 => TextStyle(
+        fontFamily: 'Pretendard-Bold',
+        fontSize: 14.sp,
+        color: AppColors.textPrimary,
+      );
+
+  /// Heading Bold 22sp - 내 큐 카드 이름
+  static TextStyle get headingBold22 => TextStyle(
+        fontFamily: 'Pretendard-Bold',
+        fontSize: 22.sp,
+        color: AppColors.pureWhite,
+      );
+
+  /// Display Bold 56sp - 내 순번 표시
+  static TextStyle get displayBold56 => TextStyle(
+        fontFamily: 'Pretendard-Bold',
+        fontSize: 56.sp,
+        height: 1.0,
         color: AppColors.pureWhite,
       );
 }
