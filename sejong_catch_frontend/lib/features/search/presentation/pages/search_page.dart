@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -113,9 +114,10 @@ class SearchPage extends ConsumerWidget {
         return FeedCard(
           item: itemMap,
           onTap: () {
-            // TODO: 상세 페이지로 이동
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${feedItem.title} 상세보기 (준비 중)')),
+            // 피드 상세 페이지로 이동
+            context.pushNamed(
+              'feed_detail',
+              pathParameters: {'id': feedItem.id},
             );
           },
         );
