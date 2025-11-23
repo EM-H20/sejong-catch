@@ -38,8 +38,8 @@ mixin _$SearchState {
   /// 선택된 시간 범위 필터
   String get selectedTimeRange => throw _privateConstructorUsedError;
 
-  /// 조회수 범위 필터
-  RangeValues get viewsRange => throw _privateConstructorUsedError;
+  /// 조회수 범위 필터 (프리셋 방식)
+  String get selectedViewsRange => throw _privateConstructorUsedError;
 
   /// Create a copy of SearchState
   /// with the given fields replaced by the non-null parameter values.
@@ -63,7 +63,7 @@ abstract class $SearchStateCopyWith<$Res> {
     String? error,
     String selectedCategory,
     String selectedTimeRange,
-    RangeValues viewsRange,
+    String selectedViewsRange,
   });
 }
 
@@ -89,7 +89,7 @@ class _$SearchStateCopyWithImpl<$Res, $Val extends SearchState>
     Object? error = freezed,
     Object? selectedCategory = null,
     Object? selectedTimeRange = null,
-    Object? viewsRange = null,
+    Object? selectedViewsRange = null,
   }) {
     return _then(
       _value.copyWith(
@@ -121,10 +121,10 @@ class _$SearchStateCopyWithImpl<$Res, $Val extends SearchState>
                 ? _value.selectedTimeRange
                 : selectedTimeRange // ignore: cast_nullable_to_non_nullable
                       as String,
-            viewsRange: null == viewsRange
-                ? _value.viewsRange
-                : viewsRange // ignore: cast_nullable_to_non_nullable
-                      as RangeValues,
+            selectedViewsRange: null == selectedViewsRange
+                ? _value.selectedViewsRange
+                : selectedViewsRange // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -148,7 +148,7 @@ abstract class _$$SearchStateImplCopyWith<$Res>
     String? error,
     String selectedCategory,
     String selectedTimeRange,
-    RangeValues viewsRange,
+    String selectedViewsRange,
   });
 }
 
@@ -173,7 +173,7 @@ class __$$SearchStateImplCopyWithImpl<$Res>
     Object? error = freezed,
     Object? selectedCategory = null,
     Object? selectedTimeRange = null,
-    Object? viewsRange = null,
+    Object? selectedViewsRange = null,
   }) {
     return _then(
       _$SearchStateImpl(
@@ -205,10 +205,10 @@ class __$$SearchStateImplCopyWithImpl<$Res>
             ? _value.selectedTimeRange
             : selectedTimeRange // ignore: cast_nullable_to_non_nullable
                   as String,
-        viewsRange: null == viewsRange
-            ? _value.viewsRange
-            : viewsRange // ignore: cast_nullable_to_non_nullable
-                  as RangeValues,
+        selectedViewsRange: null == selectedViewsRange
+            ? _value.selectedViewsRange
+            : selectedViewsRange // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -225,7 +225,7 @@ class _$SearchStateImpl implements _SearchState {
     this.error,
     this.selectedCategory = '전체',
     this.selectedTimeRange = '전체',
-    this.viewsRange = const RangeValues(0, 10000),
+    this.selectedViewsRange = '전체',
   }) : _searchResults = searchResults,
        _recentSearches = recentSearches;
 
@@ -277,14 +277,14 @@ class _$SearchStateImpl implements _SearchState {
   @JsonKey()
   final String selectedTimeRange;
 
-  /// 조회수 범위 필터
+  /// 조회수 범위 필터 (프리셋 방식)
   @override
   @JsonKey()
-  final RangeValues viewsRange;
+  final String selectedViewsRange;
 
   @override
   String toString() {
-    return 'SearchState(query: $query, isSearching: $isSearching, searchResults: $searchResults, recentSearches: $recentSearches, error: $error, selectedCategory: $selectedCategory, selectedTimeRange: $selectedTimeRange, viewsRange: $viewsRange)';
+    return 'SearchState(query: $query, isSearching: $isSearching, searchResults: $searchResults, recentSearches: $recentSearches, error: $error, selectedCategory: $selectedCategory, selectedTimeRange: $selectedTimeRange, selectedViewsRange: $selectedViewsRange)';
   }
 
   @override
@@ -308,8 +308,8 @@ class _$SearchStateImpl implements _SearchState {
                 other.selectedCategory == selectedCategory) &&
             (identical(other.selectedTimeRange, selectedTimeRange) ||
                 other.selectedTimeRange == selectedTimeRange) &&
-            (identical(other.viewsRange, viewsRange) ||
-                other.viewsRange == viewsRange));
+            (identical(other.selectedViewsRange, selectedViewsRange) ||
+                other.selectedViewsRange == selectedViewsRange));
   }
 
   @override
@@ -322,7 +322,7 @@ class _$SearchStateImpl implements _SearchState {
     error,
     selectedCategory,
     selectedTimeRange,
-    viewsRange,
+    selectedViewsRange,
   );
 
   /// Create a copy of SearchState
@@ -343,7 +343,7 @@ abstract class _SearchState implements SearchState {
     final String? error,
     final String selectedCategory,
     final String selectedTimeRange,
-    final RangeValues viewsRange,
+    final String selectedViewsRange,
   }) = _$SearchStateImpl;
 
   /// 검색어
@@ -374,9 +374,9 @@ abstract class _SearchState implements SearchState {
   @override
   String get selectedTimeRange;
 
-  /// 조회수 범위 필터
+  /// 조회수 범위 필터 (프리셋 방식)
   @override
-  RangeValues get viewsRange;
+  String get selectedViewsRange;
 
   /// Create a copy of SearchState
   /// with the given fields replaced by the non-null parameter values.

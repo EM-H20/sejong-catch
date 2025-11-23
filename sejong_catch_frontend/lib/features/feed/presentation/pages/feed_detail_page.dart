@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sejong_catch_frontend/core/theme/app_colors.dart';
 import 'package:sejong_catch_frontend/core/theme/app_spacing.dart';
@@ -32,8 +33,6 @@ class FeedDetailPage extends ConsumerStatefulWidget {
 }
 
 class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
-  bool _isBookmarked = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,9 +79,6 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
               child: Text('피드를 찾을 수 없어요', style: AppTextStyles.headingSemiBold20),
             );
           }
-
-          // 상태 초기화
-          _isBookmarked = feedItem.isBookmarked;
 
           return _buildContent(context, feedItem);
         },
@@ -178,7 +174,7 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, size: 24.sp),
+        icon: Icon(Icons.arrow_back_ios, size: 20.sp),
         color: AppColors.textPrimary,
         onPressed: () => context.pop(),
       ),
@@ -187,29 +183,30 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
         IconButton(
           icon: Icon(Icons.share_outlined, size: 24.sp),
           color: AppColors.textSecondary,
-          onPressed: () {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('공유 기능 준비 중! 📤')));
-          },
-        ),
-        // 북마크 버튼
-        IconButton(
-          icon: Icon(
-            _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-            size: 24.sp,
-          ),
-          color: AppColors.brandCrimson,
-          onPressed: () {
-            setState(() {
-              _isBookmarked = !_isBookmarked;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(_isBookmarked ? '북마크 추가됨! 🔖' : '북마크 제거됨'),
-                duration: const Duration(seconds: 1),
-              ),
-            );
+          onPressed: () async {
+            final shareText = '''
+${feedItem.title}
+
+${feedItem.description}
+
+🔗 ${feedItem.externalUrl ?? '세종대학교 공지사항'}
+''';
+
+            try {
+              await Share.share(
+                shareText,
+                subject: feedItem.title,
+              );
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('공유하기에 실패했어요: ${e.toString()}'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+              }
+            }
           },
         ),
         AppSpacing.horizontalSpaceSM,

@@ -53,8 +53,10 @@ dependencies:
   pull_to_refresh: ^2.0.0            # 당겨서 새로고침 UI 패턴
 
   # 외부 링크 & 유틸리티
-  url_launcher: ^6.3.1               # 외부 URL 열기 (브라우저, 전화, 이메일)
+  url_launcher: ^6.3.2               # 외부 URL 열기 (브라우저, 전화, 이메일)
   easy_debounce: ^2.0.3              # 디바운싱 유틸리티 (실시간 검색)
+  permission_handler: ^12.0.1    # 카메라/사진/알림 등 런타임 권한 요청
+  share_plus: ^12.0.0            # 텍스트/이미지/파일 내보내기 공유
 
   # 애니메이션 & 모션 (Toss-Style 온보딩)
   lottie: ^3.1.2                     # Lottie 애니메이션 지원
