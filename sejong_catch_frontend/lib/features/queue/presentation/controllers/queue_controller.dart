@@ -13,16 +13,9 @@ part 'queue_controller.g.dart';
 class QueueController extends _$QueueController {
   @override
   QueueState build() {
-    // 초기 상태: 더미 데이터 로드
-    _loadDummyData();
-    return const QueueState();
-  }
-
-  /// 더미 데이터 로드 (API 구현 전 임시!)
-  ///
-  /// TODO: API 구현 시 제거하고 실제 API 호출로 교체
-  void _loadDummyData() {
-    state = state.copyWith(
+    // 초기 상태: 더미 데이터와 함께 반환 (API 구현 전 임시!)
+    // TODO: API 구현 시 실제 API 호출로 교체
+    return QueueState(
       allQueues: [
         const QueueItem(
           id: 'q1',
@@ -163,9 +156,61 @@ class QueueController extends _$QueueController {
       // TODO: API 호출
       // final queues = await ref.read(queueRepositoryProvider).getQueues();
 
+      // 임시: 1초 대기 (네트워크 시뮬레이션)
+      await Future.delayed(const Duration(seconds: 1));
+
       // 임시: 더미 데이터 다시 로드
-      _loadDummyData();
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(
+        isLoading: false,
+        allQueues: [
+          const QueueItem(
+            id: 'q1',
+            name: '🍗 치킨부스',
+            type: 'food',
+            status: 'active',
+            waiting: 12,
+            currentNumber: 5,
+            avgWaitTime: 15,
+          ),
+          const QueueItem(
+            id: 'q2',
+            name: '🍺 주점',
+            type: 'drink',
+            status: 'active',
+            waiting: 8,
+            currentNumber: 3,
+            avgWaitTime: 10,
+          ),
+          const QueueItem(
+            id: 'q3',
+            name: '🎮 게임존',
+            type: 'game',
+            status: 'paused',
+            waiting: 5,
+            currentNumber: 2,
+            avgWaitTime: 20,
+          ),
+          const QueueItem(
+            id: 'q4',
+            name: '📸 포토존',
+            type: 'photo',
+            status: 'full',
+            waiting: 30,
+            currentNumber: 15,
+            avgWaitTime: 5,
+          ),
+        ],
+        myQueues: [
+          const MyQueueItem(
+            id: 'mq1',
+            name: '🍗 치킨부스',
+            myNumber: 8,
+            currentNumber: 5,
+            peopleAhead: 3,
+            estimatedWait: 15,
+          ),
+        ],
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }

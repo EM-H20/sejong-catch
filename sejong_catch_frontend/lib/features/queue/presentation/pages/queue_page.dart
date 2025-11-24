@@ -57,8 +57,8 @@ class _QueuePageState extends ConsumerState<QueuePage>
       body: state.isLoading
           ? const LoadingWidget()
           : state.error != null
-              ? AppErrorWidget(message: state.error!)
-              : _buildBody(),
+          ? AppErrorWidget(message: state.error!)
+          : _buildBody(),
       floatingActionButton: _buildFAB(),
     );
   }
@@ -68,9 +68,12 @@ class _QueuePageState extends ConsumerState<QueuePage>
     return AppBar(
       title: Row(
         children: [
-          Text('세종 캐치', style: AppTextStyles.headingBold20.copyWith(
-            color: AppColors.brandCrimson,
-          )),
+          Text(
+            '세종 캐치',
+            style: AppTextStyles.headingBold20.copyWith(
+              color: AppColors.brandCrimson,
+            ),
+          ),
           SizedBox(width: 6.w),
           Text('줄서기', style: AppTextStyles.headingBold20),
         ],
@@ -101,10 +104,7 @@ class _QueuePageState extends ConsumerState<QueuePage>
   Widget _buildBody() {
     return TabBarView(
       controller: _tabController,
-      children: [
-        _buildAllQueuesTab(),
-        _buildMyQueuesTab(),
-      ],
+      children: [_buildAllQueuesTab(), _buildMyQueuesTab()],
     );
   }
 
@@ -132,10 +132,7 @@ class _QueuePageState extends ConsumerState<QueuePage>
         separatorBuilder: (context, index) => AppSpacing.verticalSpaceMD,
         itemBuilder: (context, index) {
           final queue = queues[index];
-          return QueueCard(
-            queue: queue,
-            onTap: () => _handleQueueTap(queue),
-          );
+          return QueueCard(queue: queue, onTap: () => _handleQueueTap(queue));
         },
       ),
     );
@@ -216,7 +213,9 @@ class _QueuePageState extends ConsumerState<QueuePage>
       context,
       myQueue: myQueue,
       onConfirm: () async {
-        await ref.read(queueControllerProvider.notifier).cancelQueue(myQueue.id);
+        await ref
+            .read(queueControllerProvider.notifier)
+            .cancelQueue(myQueue.id);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -232,16 +231,10 @@ class _QueuePageState extends ConsumerState<QueuePage>
 
   /// 🎈 플로팅 액션 버튼 (운영자용 큐 생성)
   Widget _buildFAB() {
-    return FloatingActionButton.extended(
+    return FloatingActionButton(
       onPressed: _showCreateQueueBottomSheet,
       backgroundColor: AppColors.brandCrimson,
-      icon: Icon(Icons.add_rounded, size: 24.sp, color: AppColors.pureWhite),
-      label: Text(
-        '큐 생성',
-        style: AppTextStyles.buttonSemiBold15.copyWith(
-          color: AppColors.pureWhite,
-        ),
-      ),
+      child: Icon(Icons.add_rounded, size: 32.sp, color: AppColors.pureWhite),
     );
   }
 
@@ -250,11 +243,9 @@ class _QueuePageState extends ConsumerState<QueuePage>
     CreateQueueBottomSheet.show(
       context,
       onCreate: (name, type, avgWaitTime) async {
-        await ref.read(queueControllerProvider.notifier).createQueue(
-              name: name,
-              type: type,
-              avgWaitTime: avgWaitTime,
-            );
+        await ref
+            .read(queueControllerProvider.notifier)
+            .createQueue(name: name, type: type, avgWaitTime: avgWaitTime);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
