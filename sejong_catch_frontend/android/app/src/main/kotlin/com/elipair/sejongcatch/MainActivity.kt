@@ -1,4 +1,4 @@
-package com.example.sejong_catch_frontend
+package com.elipair.sejongcatch
 
 import io.flutter.embedding.android.FlutterActivity
 
