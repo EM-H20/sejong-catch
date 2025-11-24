@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../../../core/services/token_storage_service.dart';
+import '../../../../core/exceptions/auth_exceptions.dart';
 import '../models/login_state.dart';
 import 'auth_state_controller.dart';
 
@@ -67,6 +68,12 @@ class LoginController extends _$LoginController {
 
       // ✅ 로그인 성공!
       // TODO: 홈 화면으로 네비게이션 (context.go('/feed'))
+    } on AuthException catch (e) {
+      // 🔥 커스텀 인증 예외 처리 (auth_exceptions.dart에서 정의한 메시지 그대로 표시)
+      state = state.copyWith(
+        isLoading: false,
+        error: e.message,
+      );
     } on DioException catch (e) {
       // 네트워크 에러 처리
       String errorMessage = '로그인에 실패했어요. 학번과 비밀번호를 확인해주세요.';

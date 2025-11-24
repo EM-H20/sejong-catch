@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/services/token_storage_service.dart';
 import '../../../../core/services/onboarding_service.dart';
@@ -25,11 +26,11 @@ class AuthRepository extends _$AuthRepository {
   /// 로그인
   ///
   /// 🔧 **개발/프로덕션 자동 전환**
-  /// - Mock 모드: `flutter run --dart-define=USE_MOCK_AUTH=true`
-  /// - Real 모드: `flutter run` (기본값)
+  /// - Mock 모드: .env의 USE_MOCK_AUTH=true
+  /// - Real 모드: .env의 USE_MOCK_AUTH=false
   Future<LoginResponse> login(String studentId, String password) async {
-    // 환경 변수로 Mock/Real 자동 전환
-    const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
+    // 🔥 .env 파일에서 환경변수 읽기
+    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
 
     if (useMock) {
       return _mockLogin(studentId, password);
@@ -98,7 +99,7 @@ class AuthRepository extends _$AuthRepository {
     await onboardingService.clearAllLocalData();
 
     // 3. API 로그아웃 호출 (Real 모드일 때만)
-    const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
+    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
     if (!useMock) {
       try {
         final api = ref.read(authApiProvider);

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../data/models/response/crawler_result.dart';
 
 part 'selected_category_controller.g.dart';
@@ -31,7 +32,7 @@ class SelectedCategory extends _$SelectedCategory {
 /// - Real 모드: ['전체', '일반공지', '입학공지', '학사공지', ...]
 @riverpod
 List<String> categoryList(Ref ref) {
-  const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
+  final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
 
   if (useMock) {
     // Mock 모드 (개발): 기존 카테고리
