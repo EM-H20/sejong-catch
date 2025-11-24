@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/models/response/crawler_result.dart';
 
@@ -29,7 +30,7 @@ class SelectedCategory extends _$SelectedCategory {
 /// - Mock 모드: ['전체', '공모전', '취업', '논문', '학교공지', '축제']
 /// - Real 모드: ['전체', '일반공지', '입학공지', '학사공지', ...]
 @riverpod
-List<String> categoryList(CategoryListRef ref) {
+List<String> categoryList(Ref ref) {
   const useMock = bool.fromEnvironment('USE_MOCK_AUTH', defaultValue: true);
 
   if (useMock) {

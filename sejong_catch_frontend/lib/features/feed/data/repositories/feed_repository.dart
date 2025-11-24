@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/services/cache_service.dart';
 import '../datasources/feed_api.dart';
@@ -10,7 +11,7 @@ part 'feed_repository.g.dart';
 
 /// FeedApi Provider
 @riverpod
-FeedApi feedApi(FeedApiRef ref) {
+FeedApi feedApi(Ref ref) {
   final dio = ref.watch(dioProvider);
   return FeedApi(dio);
 }

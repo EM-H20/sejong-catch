@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/services/token_storage_service.dart';
 import '../../../../core/services/onboarding_service.dart';
@@ -10,7 +11,7 @@ part 'auth_repository.g.dart';
 
 /// AuthApi Provider
 @riverpod
-AuthApi authApi(AuthApiRef ref) {
+AuthApi authApi(Ref ref) {
   final dio = ref.watch(dioProvider);
   return AuthApi(dio);
 }

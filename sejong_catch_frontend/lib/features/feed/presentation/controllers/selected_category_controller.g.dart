@@ -6,7 +6,7 @@ part of 'selected_category_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$categoryListHash() => r'f2ebdb54385873a150da985915b1dfb9ef56e172';
+String _$categoryListHash() => r'47ddaf94cc0179916c9a37a33104f7d9fdab6e1e';
 
 /// 카테고리 목록 Provider
 ///

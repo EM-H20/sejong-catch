@@ -128,17 +128,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       ),
       backgroundColor: AppColors.white,
       elevation: 0,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.settings_outlined, size: 24.sp),
-          color: AppColors.textSecondary,
-          onPressed: () {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('설정 페이지 준비 중! ⚙️')));
-          },
-        ),
-      ],
     );
   }
 
@@ -270,20 +259,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
           AppDivider.thin(),
 
-          // 이메일
-          _buildInfoTile(
-            icon: Icons.email_outlined,
-            label: '이메일',
-            value: user.email,
-          ),
-
-          AppDivider.thin(),
-
           // 이름
           _buildInfoTile(
             icon: Icons.person_outline,
             label: '이름',
             value: user.name,
+          ),
+
+          AppDivider.thin(),
+
+          // 학번 (이메일에서 추출)
+          _buildInfoTile(
+            icon: Icons.badge_outlined,
+            label: '학번',
+            value: user.email.contains('@')
+                ? user.email.split('@').first
+                : user.email,
           ),
 
           AppDivider.thin(),
@@ -646,8 +637,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ),
           TextButton(
             onPressed: () async {
+              // BuildContext 안전성: async 전에 저장
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+
               // 다이얼로그 닫기
-              Navigator.pop(context);
+              navigator.pop();
 
               // 로그아웃 처리
               final loginController = ref.read(
@@ -655,25 +650,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               );
               final success = await loginController.logout();
 
-              if (mounted) {
-                if (success) {
-                  // 로그아웃 성공 → 로그인 페이지로 이동
+              if (!mounted) return;
+
+              if (success) {
+                // 로그아웃 성공 → 로그인 페이지로 이동
+                if (context.mounted) {
                   context.go('/auth');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('로그아웃되었습니다. 다시 만나요! 👋'),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
-                } else {
-                  // 로그아웃 실패 (드물지만 방어 코드)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('로그아웃 중 문제가 발생했어요'),
-                      backgroundColor: AppColors.error,
-                    ),
-                  );
                 }
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('로그아웃되었습니다. 다시 만나요! 👋'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              } else {
+                // 로그아웃 실패 (드물지만 방어 코드)
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('로그아웃 중 문제가 발생했어요'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
               }
             },
             child: Text(

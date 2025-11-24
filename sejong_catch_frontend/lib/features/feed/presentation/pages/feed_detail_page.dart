@@ -193,9 +193,12 @@ ${feedItem.description}
 ''';
 
             try {
-              await Share.share(
-                shareText,
-                subject: feedItem.title,
+              // share_plus 패키지 사용 (SharePlus.instance.share 권장)
+              await SharePlus.instance.share(
+                ShareParams(
+                  text: shareText,
+                  subject: feedItem.title,
+                ),
               );
             } catch (e) {
               if (context.mounted) {

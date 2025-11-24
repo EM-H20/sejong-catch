@@ -45,14 +45,12 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         final onboardingService = ref.read(onboardingServiceProvider);
         final hasSeenOnboarding = await onboardingService.hasSeenOnboarding();
 
-        if (mounted) {
-          if (!hasSeenOnboarding) {
-            // 온보딩 안 봤으면 → 온보딩 페이지
-            context.go('/onboarding');
-          } else {
-            // 온보딩 봤으면 → 피드 페이지
-            context.go('/feed');
-          }
+        if (!mounted) return;
+
+        // BuildContext.mounted 체크 (Flutter 3.7+)
+        final route = hasSeenOnboarding ? '/feed' : '/onboarding';
+        if (context.mounted) {
+          context.go(route);
         }
       }
     });
