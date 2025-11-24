@@ -7,6 +7,7 @@
 /// ✅ Freezed 미사용 - 일반 Dart 클래스로 구현
 /// ✅ JSON 수동 파싱 (fromJson, toJson)
 /// ✅ 불변 객체 (final 필드)
+library;
 
 class ErrorResponse {
   final String error;

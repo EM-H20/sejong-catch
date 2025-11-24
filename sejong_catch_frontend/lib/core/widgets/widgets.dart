@@ -3,6 +3,7 @@
 /// 모든 공용 위젯을 한 번에 export하는 barrel 파일
 /// 사용법: import '../../../../core/widgets/widgets.dart';
 
+library;
 // 상태 위젯들
 export 'loading_widget.dart';
 export 'empty_widget.dart';

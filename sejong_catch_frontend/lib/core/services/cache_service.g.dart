@@ -6,7 +6,7 @@ part of 'cache_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sharedPreferencesHash() => r'7cd30c9640ca952d1bcf1772c709fc45dc47c8b3';
+String _$sharedPreferencesHash() => r'dc403fbb1d968c7d5ab4ae1721a29ffe173701c7';
 
 /// SharedPreferences Provider
 ///

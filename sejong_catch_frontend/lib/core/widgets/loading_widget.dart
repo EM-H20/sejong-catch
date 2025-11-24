@@ -7,6 +7,7 @@
 /// ✅ 크림슨 브랜드 컬러 적용
 /// ✅ ScreenUtil 반응형 적용
 
+library;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

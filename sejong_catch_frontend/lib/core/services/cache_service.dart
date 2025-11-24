@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/feed/data/models/response/crawler_result.dart';
@@ -7,7 +8,7 @@ part 'cache_service.g.dart';
 
 /// SharedPreferences Provider
 @riverpod
-Future<SharedPreferences> sharedPreferences(SharedPreferencesRef ref) async {
+Future<SharedPreferences> sharedPreferences(Ref ref) async {
   return await SharedPreferences.getInstance();
 }
 

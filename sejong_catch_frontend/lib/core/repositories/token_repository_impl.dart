@@ -9,6 +9,7 @@
 /// ✅ 토큰 로깅 금지 (보안)
 /// ✅ PlatformException 안전 처리 (iOS Keychain, Android KeyStore 에러)
 
+library;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,7 +8,7 @@ part 'token_storage_service.g.dart';
 
 /// FlutterSecureStorage Provider
 @riverpod
-FlutterSecureStorage secureStorage(SecureStorageRef ref) {
+FlutterSecureStorage secureStorage(Ref ref) {
   return const FlutterSecureStorage();
 }
 

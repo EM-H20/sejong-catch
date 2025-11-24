@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../config/api_config.dart';
 
@@ -6,7 +8,7 @@ part 'dio_provider.g.dart';
 
 /// Dio 인스턴스 Provider
 @riverpod
-Dio dio(DioRef ref) {
+Dio dio(Ref ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiConfig.baseUrl,
@@ -25,7 +27,7 @@ Dio dio(DioRef ref) {
       requestBody: true,
       responseBody: true,
       error: true,
-      logPrint: (obj) => print('[DIO] $obj'),
+      logPrint: (obj) => debugPrint('[DIO] $obj'),
     ),
   );
 

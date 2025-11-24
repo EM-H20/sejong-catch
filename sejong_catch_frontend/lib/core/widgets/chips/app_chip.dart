@@ -70,10 +70,10 @@ class AppChip extends StatelessWidget {
       label = '1일 전';
     } else if (daysLeft >= 7 && daysLeft < 30) {
       final weeks = (daysLeft / 7).floor();
-      label = '${weeks}주 전';
+      label = '$weeks주 전';
     } else if (daysLeft >= 30) {
       final months = (daysLeft / 30).floor();
-      label = '${months}개월 전';
+      label = '$months개월 전';
     } else {
       label = '$daysLeft일 전';
     }

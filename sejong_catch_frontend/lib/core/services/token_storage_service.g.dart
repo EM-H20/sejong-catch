@@ -6,7 +6,7 @@ part of 'token_storage_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$secureStorageHash() => r'77df30c7098a9f252222741225993ef719fafe36';
+String _$secureStorageHash() => r'273dc403a965c1f24962aaf4d40776611a26f8b8';
 
 /// FlutterSecureStorage Provider
 ///
