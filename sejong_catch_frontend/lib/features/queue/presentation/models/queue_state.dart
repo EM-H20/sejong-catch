@@ -16,5 +16,6 @@ class QueueState with _$QueueState {
     @Default(false) bool isLoading,
     @Default(null) String? error,
     @Default(0) int currentTabIndex, // 현재 탭 (0: 전체, 1: 내 대기열)
+    @Default(false) bool isUnderDevelopment, // 🚧 API 미구현 (Real 모드 시 true)
   }) = _QueueState;
 }

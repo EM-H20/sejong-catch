@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../models/queue_state.dart';
 import '../../data/models/response/queue_item.dart';
 import '../../data/models/response/my_queue_item.dart';
@@ -13,8 +14,16 @@ part 'queue_controller.g.dart';
 class QueueController extends _$QueueController {
   @override
   QueueState build() {
-    // 초기 상태: 더미 데이터와 함께 반환 (API 구현 전 임시!)
-    // TODO: API 구현 시 실제 API 호출로 교체
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 🔀 Mock/Real 모드 분기
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // 🚧 Real 모드: API 미구현 상태 → 개발 중 표시
+    if (!EnvConfig.useMockAuth) {
+      return const QueueState(isUnderDevelopment: true);
+    }
+
+    // 🧪 Mock 모드: 더미 데이터로 UI 테스트
     return QueueState(
       allQueues: [
         const QueueItem(
@@ -146,6 +155,127 @@ class QueueController extends _$QueueController {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎛️ 운영자 전용 큐 관리 기능
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 📣 다음 대기자 호출 (운영자 전용)
+  ///
+  /// **동작**:
+  /// - currentNumber +1 (다음 번호 호출)
+  /// - waiting -1 (대기 인원 감소)
+  ///
+  /// **제약조건**:
+  /// - 대기 인원이 0명이면 호출 불가
+  /// - 큐가 active 상태일 때만 호출 가능
+  ///
+  /// TODO: API 구현 시 실제 API 호출로 교체
+  Future<bool> callNextInQueue(String queueId) async {
+    try {
+      // 해당 큐 찾기
+      final queueIndex = state.allQueues.indexWhere((q) => q.id == queueId);
+      if (queueIndex == -1) return false;
+
+      final queue = state.allQueues[queueIndex];
+
+      // 대기 인원 체크
+      if (queue.waiting <= 0) return false;
+
+      // 네트워크 시뮬레이션 (짧게)
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // 상태 업데이트: currentNumber +1, waiting -1
+      final updatedQueue = queue.copyWith(
+        currentNumber: queue.currentNumber + 1,
+        waiting: queue.waiting - 1,
+      );
+
+      final updatedQueues = List<QueueItem>.from(state.allQueues);
+      updatedQueues[queueIndex] = updatedQueue;
+
+      state = state.copyWith(allQueues: updatedQueues);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  /// ⏸️ 큐 일시정지 (운영자 전용)
+  ///
+  /// **동작**: status를 'paused'로 변경
+  ///
+  /// TODO: API 구현 시 실제 API 호출로 교체
+  Future<bool> pauseQueue(String queueId) async {
+    return _updateQueueStatus(queueId, 'paused');
+  }
+
+  /// ▶️ 큐 재개 (운영자 전용)
+  ///
+  /// **동작**: status를 'active'로 변경
+  ///
+  /// TODO: API 구현 시 실제 API 호출로 교체
+  Future<bool> resumeQueue(String queueId) async {
+    return _updateQueueStatus(queueId, 'active');
+  }
+
+  /// 🛑 큐 마감 (운영자 전용)
+  ///
+  /// **동작**: status를 'full'로 변경
+  ///
+  /// TODO: API 구현 시 실제 API 호출로 교체
+  Future<bool> closeQueue(String queueId) async {
+    return _updateQueueStatus(queueId, 'full');
+  }
+
+  /// 🔄 큐 상태 변경 헬퍼 메서드
+  Future<bool> _updateQueueStatus(String queueId, String newStatus) async {
+    try {
+      final queueIndex = state.allQueues.indexWhere((q) => q.id == queueId);
+      if (queueIndex == -1) return false;
+
+      // 네트워크 시뮬레이션
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      final queue = state.allQueues[queueIndex];
+      final updatedQueue = queue.copyWith(status: newStatus);
+
+      final updatedQueues = List<QueueItem>.from(state.allQueues);
+      updatedQueues[queueIndex] = updatedQueue;
+
+      state = state.copyWith(allQueues: updatedQueues);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  /// 🗑️ 큐 삭제 (운영자 전용)
+  ///
+  /// **동작**: allQueues에서 해당 큐 제거
+  ///
+  /// TODO: API 구현 시 실제 API 호출로 교체
+  Future<bool> deleteQueue(String queueId) async {
+    try {
+      // 네트워크 시뮬레이션
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final updatedQueues =
+          state.allQueues.where((q) => q.id != queueId).toList();
+
+      state = state.copyWith(allQueues: updatedQueues);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 📋 공통 기능
+  // ═══════════════════════════════════════════════════════════════════════════
 
   /// 큐 목록 새로고침
   ///

@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/services/cache_service.dart';
 import '../../../feed/data/models/response/crawler_result.dart';
 import '../../../feed/data/models/response/feed_item.dart';
@@ -28,9 +28,7 @@ class SearchRepository extends _$SearchRepository {
     String? timeRange,
     String? viewsRangePreset,
   }) async {
-    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
-
-    if (useMock) {
+    if (EnvConfig.useMockAuth) {
       // Mock 모드 (개발)
       return _mockSearch(
         query: query,

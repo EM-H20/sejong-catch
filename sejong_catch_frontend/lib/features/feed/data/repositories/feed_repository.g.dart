@@ -25,7 +25,7 @@ final feedApiProvider = AutoDisposeProvider<FeedApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FeedApiRef = AutoDisposeProviderRef<FeedApi>;
-String _$feedRepositoryHash() => r'8dcea7185c0afdf57051887c69183f225fedc856';
+String _$feedRepositoryHash() => r'9fb45e5dbba5206883b621447ac90ee02fd390c6';
 
 /// 피드 Repository
 ///

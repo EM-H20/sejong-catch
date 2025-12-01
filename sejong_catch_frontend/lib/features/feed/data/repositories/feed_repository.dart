@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../../../core/config/env_config.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/services/cache_service.dart';
 import '../datasources/feed_api.dart';
@@ -38,9 +38,7 @@ class FeedRepository extends _$FeedRepository {
     int page = 1,
     int limit = 20,
   }) async {
-    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
-
-    if (useMock) {
+    if (EnvConfig.useMockAuth) {
       // Mock 모드 (개발)
       return _mockFeedList(
         category: category,
@@ -273,9 +271,7 @@ class FeedRepository extends _$FeedRepository {
 
   /// 피드 상세 조회
   Future<FeedItem> getFeedDetail(String id) async {
-    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
-
-    if (useMock) {
+    if (EnvConfig.useMockAuth) {
       return _mockFeedDetail(id);
     } else {
       return _realFeedDetail(id);
@@ -349,9 +345,7 @@ class FeedRepository extends _$FeedRepository {
 
   /// 북마크 토글
   Future<void> toggleBookmark(String id) async {
-    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
-
-    if (useMock) {
+    if (EnvConfig.useMockAuth) {
       await _mockToggleBookmark(id);
     } else {
       await _realToggleBookmark(id);

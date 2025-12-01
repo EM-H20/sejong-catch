@@ -6,7 +6,7 @@ part of 'search_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchRepositoryHash() => r'050f6da31f2ecb32fd0209179d0f170cf690e726';
+String _$searchRepositoryHash() => r'61880c3228d9a277e6a939d0924f49f780f53564';
 
 /// 검색 Repository
 ///

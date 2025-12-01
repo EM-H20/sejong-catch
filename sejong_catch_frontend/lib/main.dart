@@ -1,16 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/config/app_router.dart';
+import 'core/config/env_config.dart';
 import 'core/theme/app_theme.dart';
 
 /// 🚀 세종 캐치 앱 메인 엔트리 포인트
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔥 환경변수 로드 (.env 파일)
-  await dotenv.load(fileName: '.env');
+  // 🔥 환경 설정 출력 (디버그 모드에서만)
+  if (kDebugMode) {
+    EnvConfig.printConfig();
+  }
 
   runApp(ProviderScope(child: const SejongCatchApp()));
 }

@@ -22,7 +22,9 @@ mixin _$QueueState {
   List<MyQueueItem> get myQueues => throw _privateConstructorUsedError; // 내 대기열
   bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
-  int get currentTabIndex => throw _privateConstructorUsedError;
+  int get currentTabIndex =>
+      throw _privateConstructorUsedError; // 현재 탭 (0: 전체, 1: 내 대기열)
+  bool get isUnderDevelopment => throw _privateConstructorUsedError;
 
   /// Create a copy of QueueState
   /// with the given fields replaced by the non-null parameter values.
@@ -44,6 +46,7 @@ abstract class $QueueStateCopyWith<$Res> {
     bool isLoading,
     String? error,
     int currentTabIndex,
+    bool isUnderDevelopment,
   });
 }
 
@@ -67,6 +70,7 @@ class _$QueueStateCopyWithImpl<$Res, $Val extends QueueState>
     Object? isLoading = null,
     Object? error = freezed,
     Object? currentTabIndex = null,
+    Object? isUnderDevelopment = null,
   }) {
     return _then(
       _value.copyWith(
@@ -90,6 +94,10 @@ class _$QueueStateCopyWithImpl<$Res, $Val extends QueueState>
                 ? _value.currentTabIndex
                 : currentTabIndex // ignore: cast_nullable_to_non_nullable
                       as int,
+            isUnderDevelopment: null == isUnderDevelopment
+                ? _value.isUnderDevelopment
+                : isUnderDevelopment // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -111,6 +119,7 @@ abstract class _$$QueueStateImplCopyWith<$Res>
     bool isLoading,
     String? error,
     int currentTabIndex,
+    bool isUnderDevelopment,
   });
 }
 
@@ -133,6 +142,7 @@ class __$$QueueStateImplCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? error = freezed,
     Object? currentTabIndex = null,
+    Object? isUnderDevelopment = null,
   }) {
     return _then(
       _$QueueStateImpl(
@@ -156,6 +166,10 @@ class __$$QueueStateImplCopyWithImpl<$Res>
             ? _value.currentTabIndex
             : currentTabIndex // ignore: cast_nullable_to_non_nullable
                   as int,
+        isUnderDevelopment: null == isUnderDevelopment
+            ? _value.isUnderDevelopment
+            : isUnderDevelopment // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -170,6 +184,7 @@ class _$QueueStateImpl implements _QueueState {
     this.isLoading = false,
     this.error = null,
     this.currentTabIndex = 0,
+    this.isUnderDevelopment = false,
   }) : _allQueues = allQueues,
        _myQueues = myQueues;
 
@@ -203,10 +218,14 @@ class _$QueueStateImpl implements _QueueState {
   @override
   @JsonKey()
   final int currentTabIndex;
+  // 현재 탭 (0: 전체, 1: 내 대기열)
+  @override
+  @JsonKey()
+  final bool isUnderDevelopment;
 
   @override
   String toString() {
-    return 'QueueState(allQueues: $allQueues, myQueues: $myQueues, isLoading: $isLoading, error: $error, currentTabIndex: $currentTabIndex)';
+    return 'QueueState(allQueues: $allQueues, myQueues: $myQueues, isLoading: $isLoading, error: $error, currentTabIndex: $currentTabIndex, isUnderDevelopment: $isUnderDevelopment)';
   }
 
   @override
@@ -223,7 +242,9 @@ class _$QueueStateImpl implements _QueueState {
                 other.isLoading == isLoading) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.currentTabIndex, currentTabIndex) ||
-                other.currentTabIndex == currentTabIndex));
+                other.currentTabIndex == currentTabIndex) &&
+            (identical(other.isUnderDevelopment, isUnderDevelopment) ||
+                other.isUnderDevelopment == isUnderDevelopment));
   }
 
   @override
@@ -234,6 +255,7 @@ class _$QueueStateImpl implements _QueueState {
     isLoading,
     error,
     currentTabIndex,
+    isUnderDevelopment,
   );
 
   /// Create a copy of QueueState
@@ -252,6 +274,7 @@ abstract class _QueueState implements QueueState {
     final bool isLoading,
     final String? error,
     final int currentTabIndex,
+    final bool isUnderDevelopment,
   }) = _$QueueStateImpl;
 
   @override
@@ -263,7 +286,9 @@ abstract class _QueueState implements QueueState {
   @override
   String? get error;
   @override
-  int get currentTabIndex;
+  int get currentTabIndex; // 현재 탭 (0: 전체, 1: 내 대기열)
+  @override
+  bool get isUnderDevelopment;
 
   /// Create a copy of QueueState
   /// with the given fields replaced by the non-null parameter values.

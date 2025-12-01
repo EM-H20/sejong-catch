@@ -6,7 +6,7 @@ part of 'queue_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$queueControllerHash() => r'cab1f648045db2fdbb4bb53cff8b982e26f14d70';
+String _$queueControllerHash() => r'f77af1d233034e271bbf2c003d078a3705e1fb4d';
 
 /// 큐 페이지 컨트롤러
 ///

@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Mock 모드 (개발용)",
+      "name": "🧪 Mock 모드 (개발용 - API 없이)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
@@ -11,12 +11,13 @@
       ]
     },
     {
-      "name": "Real 모드 (프로덕션)",
+      "name": "🚀 Real 모드 (실제 API 연동)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
       "args": [
-        "--dart-define=USE_MOCK_AUTH=false"
+        "--dart-define=USE_MOCK_AUTH=false",
+        "--dart-define=BACKEND_URL=http://152.67.219.91:8888"
       ]
     },
     {

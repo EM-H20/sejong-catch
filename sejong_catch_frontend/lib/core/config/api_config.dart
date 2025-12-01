@@ -1,28 +1,17 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'env_config.dart';
 
 /// API 설정
 class ApiConfig {
-  /// 백엔드 Base URL (환경변수 기반 자동 전환)
+  /// 백엔드 Base URL (컴파일 타임 상수 기반 자동 전환)
   ///
   /// **USE_MOCK_AUTH=true (기본값)**:
-  /// - Mock 모드 → http://127.0.0.1:8081 (로컬, 사용 안 함)
+  /// - Mock 모드 → 로컬 URL (실제로는 API 호출 안 함)
   ///
   /// **USE_MOCK_AUTH=false**:
-  /// - Real 모드 → http://152.67.219.91:8888 (실제 백엔드)
+  /// - Real 모드 → BACKEND_URL (dart-define으로 전달)
   static String get baseUrl {
-    // 🔥 .env 파일에서 환경변수 읽기
-    final useMock = dotenv.get('USE_MOCK_AUTH', fallback: 'true') == 'true';
-
-    if (useMock) {
-      // Mock 모드: 로컬 URL (실제로는 API 호출 안 함)
-      return dotenv.get('LOCAL_BACKEND_URL', fallback: 'http://127.0.0.1:8081');
-    } else {
-      // Real 모드: 실제 백엔드 서버
-      return dotenv.get(
-        'NODE_BACKEND_URL',
-        fallback: 'http://152.67.219.91:8888',
-      );
-    }
+    // 🔥 컴파일 타임 상수 사용 (launch.json 설정 반영!)
+    return EnvConfig.backendUrl;
   }
 
   // API 엔드포인트 (백엔드 API 스펙에 맞춤)
