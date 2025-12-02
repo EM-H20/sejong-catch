@@ -6,11 +6,12 @@ part of 'queue_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$queueControllerHash() => r'f77af1d233034e271bbf2c003d078a3705e1fb4d';
+String _$queueControllerHash() => r'baa19bebb6cfc380221e2a945809065d5017fafa';
 
 /// 큐 페이지 컨트롤러
 ///
 /// 큐 목록, 내 대기열, 큐 참여/포기 등의 상태와 비즈니스 로직을 관리합니다.
+/// Repository 패턴을 사용하여 Mock/Real 모드를 분리합니다.
 ///
 /// Copied from [QueueController].
 @ProviderFor(QueueController)
