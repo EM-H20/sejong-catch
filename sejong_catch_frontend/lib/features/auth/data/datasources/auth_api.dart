@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import '../models/request/login_request.dart';
+import '../models/request/logout_request.dart';
 import '../models/response/login_response.dart';
 
 part 'auth_api.g.dart';
@@ -19,8 +20,11 @@ abstract class AuthApi {
   Future<HttpResponse<dynamic>> refresh(@Body() Map<String, String> body);
 
   /// 로그아웃 (백엔드 API 스펙: POST /auth/logout)
+  ///
+  /// **Request Body**: `{ "refreshToken": "..." }`
+  /// **Response**: 204 No Content
   @POST('/auth/logout')
-  Future<HttpResponse<dynamic>> logout();
+  Future<HttpResponse<dynamic>> logout(@Body() LogoutRequest request);
 
   /// 내 정보 조회 (백엔드 API 스펙: GET /users/me)
   @GET('/users/me')

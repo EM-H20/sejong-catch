@@ -4,36 +4,42 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../../data/models/response/my_queue_item.dart';
+import '../../../data/models/response/my_queue_status.dart';
+import '../../../data/models/response/booth.dart';
 
-/// 🚫 큐 포기 확인 다이얼로그
+/// 🚫 줄서기 포기 확인 다이얼로그
 ///
 /// 사용자가 줄서기를 포기할 때 확인을 받는 다이얼로그입니다.
-/// - 큐 정보 및 현재 순번 표시
+/// - 부스 정보 및 현재 티켓 번호 표시
 /// - 경고 메시지
 /// - 포기 확인/취소 버튼
 ///
+/// **API 모델: MyQueueStatus**
 /// **디자인 토큰 100% 사용!**
 class CancelQueueDialog extends StatelessWidget {
-  final MyQueueItem myQueue;
+  final MyQueueStatus myStatus;
+  final Booth? booth;
   final VoidCallback onConfirm;
 
   const CancelQueueDialog({
     super.key,
-    required this.myQueue,
+    required this.myStatus,
+    this.booth,
     required this.onConfirm,
   });
 
   /// 다이얼로그 표시 헬퍼 메서드
   static Future<void> show(
     BuildContext context, {
-    required MyQueueItem myQueue,
+    required MyQueueStatus myStatus,
+    Booth? booth,
     required VoidCallback onConfirm,
   }) {
     return showDialog(
       context: context,
       builder: (context) => CancelQueueDialog(
-        myQueue: myQueue,
+        myStatus: myStatus,
+        booth: booth,
         onConfirm: onConfirm,
       ),
     );
@@ -78,7 +84,7 @@ class CancelQueueDialog extends StatelessWidget {
 
             AppSpacing.verticalSpaceSM,
 
-            // 큐 이름 및 내 번호
+            // 부스 이름 및 내 번호
             Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 16.w,
@@ -91,7 +97,7 @@ class CancelQueueDialog extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    myQueue.name,
+                    booth?.title ?? '부스',
                     style: AppTextStyles.titleSemiBold16,
                     textAlign: TextAlign.center,
                   ),
@@ -107,7 +113,7 @@ class CancelQueueDialog extends StatelessWidget {
                       ),
                       SizedBox(width: 6.w),
                       Text(
-                        '#${myQueue.myNumber}',
+                        '#${myStatus.ticketNo}',
                         style: AppTextStyles.titleBold16.copyWith(
                           color: AppColors.brandCrimson,
                         ),

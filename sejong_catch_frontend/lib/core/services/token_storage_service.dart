@@ -17,6 +17,7 @@ FlutterSecureStorage secureStorage(Ref ref) {
 class TokenStorageService extends _$TokenStorageService {
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
+  static const String _studentIdKey = 'student_id';
 
   @override
   void build() {}
@@ -105,6 +106,7 @@ class TokenStorageService extends _$TokenStorageService {
       await Future.wait([
         storage.delete(key: _accessTokenKey),
         storage.delete(key: _refreshTokenKey),
+        storage.delete(key: _studentIdKey),
       ]);
     } on PlatformException catch (e) {
       // 삭제 실패는 로그만 남기고 무시 (로그아웃은 계속 진행)
@@ -113,6 +115,42 @@ class TokenStorageService extends _$TokenStorageService {
       );
     } catch (e) {
       debugPrint('[TokenStorage] Unexpected error clearing tokens: $e');
+    }
+  }
+
+  /// Student ID 저장
+  ///
+  /// 로그인 성공 시 저장하여 토큰 갱신에 사용
+  Future<void> saveStudentId(String studentId) async {
+    try {
+      final storage = ref.read(secureStorageProvider);
+      await storage.write(key: _studentIdKey, value: studentId);
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[TokenStorage] Platform error saving studentId: ${e.code} - ${e.message}',
+      );
+      rethrow;
+    } catch (e) {
+      debugPrint('[TokenStorage] Unexpected error saving studentId: $e');
+      rethrow;
+    }
+  }
+
+  /// Student ID 조회
+  ///
+  /// 토큰 갱신 시 백엔드 API가 studentId를 요구함
+  Future<String?> getStudentId() async {
+    try {
+      final storage = ref.read(secureStorageProvider);
+      return await storage.read(key: _studentIdKey);
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[TokenStorage] Platform error reading studentId: ${e.code} - ${e.message}',
+      );
+      return null;
+    } catch (e) {
+      debugPrint('[TokenStorage] Unexpected error reading studentId: $e');
+      return null;
     }
   }
 }

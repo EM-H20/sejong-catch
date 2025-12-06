@@ -17,14 +17,20 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$QueueState {
-  List<QueueItem> get allQueues =>
-      throw _privateConstructorUsedError; // 전체 큐 목록
-  List<MyQueueItem> get myQueues => throw _privateConstructorUsedError; // 내 대기열
+  // 🏷️ 부스 타입 목록 (부스 생성 시 선택)
+  List<BoothMaster> get boothMasters =>
+      throw _privateConstructorUsedError; // 📋 부스 목록
+  List<Booth> get booths =>
+      throw _privateConstructorUsedError; // 🎫 내 대기 상태 (부스별)
+  Map<String, MyQueueStatus> get myQueueStatuses =>
+      throw _privateConstructorUsedError; // 🎛️ 관리자용: 대기 목록
+  List<QueueEntry> get queueEntries =>
+      throw _privateConstructorUsedError; // 🔄 로딩/에러 상태
   bool get isLoading => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
+  String? get error => throw _privateConstructorUsedError; // 🎯 UI 상태
   int get currentTabIndex =>
-      throw _privateConstructorUsedError; // 현재 탭 (0: 전체, 1: 내 대기열)
-  bool get isUnderDevelopment => throw _privateConstructorUsedError;
+      throw _privateConstructorUsedError; // 0: 전체 부스, 1: 내 대기열
+  String? get selectedBoothId => throw _privateConstructorUsedError;
 
   /// Create a copy of QueueState
   /// with the given fields replaced by the non-null parameter values.
@@ -41,12 +47,14 @@ abstract class $QueueStateCopyWith<$Res> {
   ) = _$QueueStateCopyWithImpl<$Res, QueueState>;
   @useResult
   $Res call({
-    List<QueueItem> allQueues,
-    List<MyQueueItem> myQueues,
+    List<BoothMaster> boothMasters,
+    List<Booth> booths,
+    Map<String, MyQueueStatus> myQueueStatuses,
+    List<QueueEntry> queueEntries,
     bool isLoading,
     String? error,
     int currentTabIndex,
-    bool isUnderDevelopment,
+    String? selectedBoothId,
   });
 }
 
@@ -65,23 +73,33 @@ class _$QueueStateCopyWithImpl<$Res, $Val extends QueueState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? allQueues = null,
-    Object? myQueues = null,
+    Object? boothMasters = null,
+    Object? booths = null,
+    Object? myQueueStatuses = null,
+    Object? queueEntries = null,
     Object? isLoading = null,
     Object? error = freezed,
     Object? currentTabIndex = null,
-    Object? isUnderDevelopment = null,
+    Object? selectedBoothId = freezed,
   }) {
     return _then(
       _value.copyWith(
-            allQueues: null == allQueues
-                ? _value.allQueues
-                : allQueues // ignore: cast_nullable_to_non_nullable
-                      as List<QueueItem>,
-            myQueues: null == myQueues
-                ? _value.myQueues
-                : myQueues // ignore: cast_nullable_to_non_nullable
-                      as List<MyQueueItem>,
+            boothMasters: null == boothMasters
+                ? _value.boothMasters
+                : boothMasters // ignore: cast_nullable_to_non_nullable
+                      as List<BoothMaster>,
+            booths: null == booths
+                ? _value.booths
+                : booths // ignore: cast_nullable_to_non_nullable
+                      as List<Booth>,
+            myQueueStatuses: null == myQueueStatuses
+                ? _value.myQueueStatuses
+                : myQueueStatuses // ignore: cast_nullable_to_non_nullable
+                      as Map<String, MyQueueStatus>,
+            queueEntries: null == queueEntries
+                ? _value.queueEntries
+                : queueEntries // ignore: cast_nullable_to_non_nullable
+                      as List<QueueEntry>,
             isLoading: null == isLoading
                 ? _value.isLoading
                 : isLoading // ignore: cast_nullable_to_non_nullable
@@ -94,10 +112,10 @@ class _$QueueStateCopyWithImpl<$Res, $Val extends QueueState>
                 ? _value.currentTabIndex
                 : currentTabIndex // ignore: cast_nullable_to_non_nullable
                       as int,
-            isUnderDevelopment: null == isUnderDevelopment
-                ? _value.isUnderDevelopment
-                : isUnderDevelopment // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            selectedBoothId: freezed == selectedBoothId
+                ? _value.selectedBoothId
+                : selectedBoothId // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -114,12 +132,14 @@ abstract class _$$QueueStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    List<QueueItem> allQueues,
-    List<MyQueueItem> myQueues,
+    List<BoothMaster> boothMasters,
+    List<Booth> booths,
+    Map<String, MyQueueStatus> myQueueStatuses,
+    List<QueueEntry> queueEntries,
     bool isLoading,
     String? error,
     int currentTabIndex,
-    bool isUnderDevelopment,
+    String? selectedBoothId,
   });
 }
 
@@ -137,23 +157,33 @@ class __$$QueueStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? allQueues = null,
-    Object? myQueues = null,
+    Object? boothMasters = null,
+    Object? booths = null,
+    Object? myQueueStatuses = null,
+    Object? queueEntries = null,
     Object? isLoading = null,
     Object? error = freezed,
     Object? currentTabIndex = null,
-    Object? isUnderDevelopment = null,
+    Object? selectedBoothId = freezed,
   }) {
     return _then(
       _$QueueStateImpl(
-        allQueues: null == allQueues
-            ? _value._allQueues
-            : allQueues // ignore: cast_nullable_to_non_nullable
-                  as List<QueueItem>,
-        myQueues: null == myQueues
-            ? _value._myQueues
-            : myQueues // ignore: cast_nullable_to_non_nullable
-                  as List<MyQueueItem>,
+        boothMasters: null == boothMasters
+            ? _value._boothMasters
+            : boothMasters // ignore: cast_nullable_to_non_nullable
+                  as List<BoothMaster>,
+        booths: null == booths
+            ? _value._booths
+            : booths // ignore: cast_nullable_to_non_nullable
+                  as List<Booth>,
+        myQueueStatuses: null == myQueueStatuses
+            ? _value._myQueueStatuses
+            : myQueueStatuses // ignore: cast_nullable_to_non_nullable
+                  as Map<String, MyQueueStatus>,
+        queueEntries: null == queueEntries
+            ? _value._queueEntries
+            : queueEntries // ignore: cast_nullable_to_non_nullable
+                  as List<QueueEntry>,
         isLoading: null == isLoading
             ? _value.isLoading
             : isLoading // ignore: cast_nullable_to_non_nullable
@@ -166,10 +196,10 @@ class __$$QueueStateImplCopyWithImpl<$Res>
             ? _value.currentTabIndex
             : currentTabIndex // ignore: cast_nullable_to_non_nullable
                   as int,
-        isUnderDevelopment: null == isUnderDevelopment
-            ? _value.isUnderDevelopment
-            : isUnderDevelopment // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        selectedBoothId: freezed == selectedBoothId
+            ? _value.selectedBoothId
+            : selectedBoothId // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -177,55 +207,85 @@ class __$$QueueStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$QueueStateImpl implements _QueueState {
+class _$QueueStateImpl extends _QueueState {
   const _$QueueStateImpl({
-    final List<QueueItem> allQueues = const [],
-    final List<MyQueueItem> myQueues = const [],
+    final List<BoothMaster> boothMasters = const [],
+    final List<Booth> booths = const [],
+    final Map<String, MyQueueStatus> myQueueStatuses = const {},
+    final List<QueueEntry> queueEntries = const [],
     this.isLoading = false,
     this.error = null,
     this.currentTabIndex = 0,
-    this.isUnderDevelopment = false,
-  }) : _allQueues = allQueues,
-       _myQueues = myQueues;
+    this.selectedBoothId = null,
+  }) : _boothMasters = boothMasters,
+       _booths = booths,
+       _myQueueStatuses = myQueueStatuses,
+       _queueEntries = queueEntries,
+       super._();
 
-  final List<QueueItem> _allQueues;
+  // 🏷️ 부스 타입 목록 (부스 생성 시 선택)
+  final List<BoothMaster> _boothMasters;
+  // 🏷️ 부스 타입 목록 (부스 생성 시 선택)
   @override
   @JsonKey()
-  List<QueueItem> get allQueues {
-    if (_allQueues is EqualUnmodifiableListView) return _allQueues;
+  List<BoothMaster> get boothMasters {
+    if (_boothMasters is EqualUnmodifiableListView) return _boothMasters;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_allQueues);
+    return EqualUnmodifiableListView(_boothMasters);
   }
 
-  // 전체 큐 목록
-  final List<MyQueueItem> _myQueues;
-  // 전체 큐 목록
+  // 📋 부스 목록
+  final List<Booth> _booths;
+  // 📋 부스 목록
   @override
   @JsonKey()
-  List<MyQueueItem> get myQueues {
-    if (_myQueues is EqualUnmodifiableListView) return _myQueues;
+  List<Booth> get booths {
+    if (_booths is EqualUnmodifiableListView) return _booths;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_myQueues);
+    return EqualUnmodifiableListView(_booths);
   }
 
-  // 내 대기열
+  // 🎫 내 대기 상태 (부스별)
+  final Map<String, MyQueueStatus> _myQueueStatuses;
+  // 🎫 내 대기 상태 (부스별)
+  @override
+  @JsonKey()
+  Map<String, MyQueueStatus> get myQueueStatuses {
+    if (_myQueueStatuses is EqualUnmodifiableMapView) return _myQueueStatuses;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_myQueueStatuses);
+  }
+
+  // 🎛️ 관리자용: 대기 목록
+  final List<QueueEntry> _queueEntries;
+  // 🎛️ 관리자용: 대기 목록
+  @override
+  @JsonKey()
+  List<QueueEntry> get queueEntries {
+    if (_queueEntries is EqualUnmodifiableListView) return _queueEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_queueEntries);
+  }
+
+  // 🔄 로딩/에러 상태
   @override
   @JsonKey()
   final bool isLoading;
   @override
   @JsonKey()
   final String? error;
+  // 🎯 UI 상태
   @override
   @JsonKey()
   final int currentTabIndex;
-  // 현재 탭 (0: 전체, 1: 내 대기열)
+  // 0: 전체 부스, 1: 내 대기열
   @override
   @JsonKey()
-  final bool isUnderDevelopment;
+  final String? selectedBoothId;
 
   @override
   String toString() {
-    return 'QueueState(allQueues: $allQueues, myQueues: $myQueues, isLoading: $isLoading, error: $error, currentTabIndex: $currentTabIndex, isUnderDevelopment: $isUnderDevelopment)';
+    return 'QueueState(boothMasters: $boothMasters, booths: $booths, myQueueStatuses: $myQueueStatuses, queueEntries: $queueEntries, isLoading: $isLoading, error: $error, currentTabIndex: $currentTabIndex, selectedBoothId: $selectedBoothId)';
   }
 
   @override
@@ -234,28 +294,38 @@ class _$QueueStateImpl implements _QueueState {
         (other.runtimeType == runtimeType &&
             other is _$QueueStateImpl &&
             const DeepCollectionEquality().equals(
-              other._allQueues,
-              _allQueues,
+              other._boothMasters,
+              _boothMasters,
             ) &&
-            const DeepCollectionEquality().equals(other._myQueues, _myQueues) &&
+            const DeepCollectionEquality().equals(other._booths, _booths) &&
+            const DeepCollectionEquality().equals(
+              other._myQueueStatuses,
+              _myQueueStatuses,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._queueEntries,
+              _queueEntries,
+            ) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.currentTabIndex, currentTabIndex) ||
                 other.currentTabIndex == currentTabIndex) &&
-            (identical(other.isUnderDevelopment, isUnderDevelopment) ||
-                other.isUnderDevelopment == isUnderDevelopment));
+            (identical(other.selectedBoothId, selectedBoothId) ||
+                other.selectedBoothId == selectedBoothId));
   }
 
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    const DeepCollectionEquality().hash(_allQueues),
-    const DeepCollectionEquality().hash(_myQueues),
+    const DeepCollectionEquality().hash(_boothMasters),
+    const DeepCollectionEquality().hash(_booths),
+    const DeepCollectionEquality().hash(_myQueueStatuses),
+    const DeepCollectionEquality().hash(_queueEntries),
     isLoading,
     error,
     currentTabIndex,
-    isUnderDevelopment,
+    selectedBoothId,
   );
 
   /// Create a copy of QueueState
@@ -267,28 +337,36 @@ class _$QueueStateImpl implements _QueueState {
       __$$QueueStateImplCopyWithImpl<_$QueueStateImpl>(this, _$identity);
 }
 
-abstract class _QueueState implements QueueState {
+abstract class _QueueState extends QueueState {
   const factory _QueueState({
-    final List<QueueItem> allQueues,
-    final List<MyQueueItem> myQueues,
+    final List<BoothMaster> boothMasters,
+    final List<Booth> booths,
+    final Map<String, MyQueueStatus> myQueueStatuses,
+    final List<QueueEntry> queueEntries,
     final bool isLoading,
     final String? error,
     final int currentTabIndex,
-    final bool isUnderDevelopment,
+    final String? selectedBoothId,
   }) = _$QueueStateImpl;
+  const _QueueState._() : super._();
 
+  // 🏷️ 부스 타입 목록 (부스 생성 시 선택)
   @override
-  List<QueueItem> get allQueues; // 전체 큐 목록
+  List<BoothMaster> get boothMasters; // 📋 부스 목록
   @override
-  List<MyQueueItem> get myQueues; // 내 대기열
+  List<Booth> get booths; // 🎫 내 대기 상태 (부스별)
+  @override
+  Map<String, MyQueueStatus> get myQueueStatuses; // 🎛️ 관리자용: 대기 목록
+  @override
+  List<QueueEntry> get queueEntries; // 🔄 로딩/에러 상태
   @override
   bool get isLoading;
   @override
-  String? get error;
+  String? get error; // 🎯 UI 상태
   @override
-  int get currentTabIndex; // 현재 탭 (0: 전체, 1: 내 대기열)
+  int get currentTabIndex; // 0: 전체 부스, 1: 내 대기열
   @override
-  bool get isUnderDevelopment;
+  String? get selectedBoothId;
 
   /// Create a copy of QueueState
   /// with the given fields replaced by the non-null parameter values.

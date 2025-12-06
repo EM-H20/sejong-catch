@@ -6,12 +6,28 @@ part of 'queue_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$queueApiHash() => r'c6bc0a17a6ab6daf123d6494d6e1cc612be2a8ba';
+
+/// QueueApi Provider
+///
+/// Copied from [queueApi].
+@ProviderFor(queueApi)
+final queueApiProvider = AutoDisposeProvider<QueueApi>.internal(
+  queueApi,
+  name: r'queueApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$queueApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef QueueApiRef = AutoDisposeProviderRef<QueueApi>;
 String _$queueRepositoryHash() => r'b4014ac85565e0b2a6e6a73b30d79baaf010fceb';
 
-/// 큐 Repository
-///
-/// 큐 관련 데이터 접근을 담당합니다.
-/// Mock/Real 모드에 따라 더미 데이터 또는 실제 API를 호출합니다.
+/// 큐 Repository Provider
 ///
 /// Copied from [queueRepository].
 @ProviderFor(queueRepository)

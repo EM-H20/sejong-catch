@@ -1,6 +1,10 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/models/response/login_response.dart';
 import '../models/auth_state.dart';
+import '../../../../core/services/auth_event_service.dart';
 import '../../../../core/services/token_storage_service.dart';
 import '../../../../core/services/user_storage_service.dart';
 
@@ -24,11 +28,62 @@ part 'auth_state_controller.g.dart';
 /// - LoginController: 로그인/로그아웃 시 상태 업데이트
 @riverpod
 class AuthStateController extends _$AuthStateController {
+  StreamSubscription<AuthEvent>? _eventSubscription;
+
+  /// 순환 호출 방지 플래그
+  bool _isLoggingOut = false;
+
   @override
   AuthState build() {
+    // 인증 이벤트 구독 (세션 만료 등)
+    _subscribeToAuthEvents();
+
     // 앱 시작 시 자동으로 인증 상태 체크
     _checkAuthStatus();
     return AuthState.initial();
+  }
+
+  /// 인증 이벤트 구독
+  ///
+  /// AuthInterceptor에서 발행하는 세션 만료 이벤트를 구독
+  /// → 자동으로 로그아웃 처리
+  void _subscribeToAuthEvents() {
+    _eventSubscription = authEventService.stream.listen((event) {
+      debugPrint('[AuthStateController] Received auth event: $event');
+
+      if (event.type == AuthEventType.sessionExpired ||
+          event.type == AuthEventType.forceLogout) {
+        // 로그아웃 처리 (순환 호출 방지)
+        _handleSessionExpired(event.message);
+      }
+    });
+
+    // Provider dispose 시 구독 해제
+    ref.onDispose(() {
+      debugPrint('[AuthStateController] Disposing event subscription');
+      _eventSubscription?.cancel();
+      _eventSubscription = null;
+    });
+  }
+
+  /// 세션 만료 처리
+  ///
+  /// 순환 호출 방지를 위해 플래그로 중복 호출 차단
+  Future<void> _handleSessionExpired(String? message) async {
+    if (_isLoggingOut) {
+      debugPrint('[AuthStateController] Already logging out, skipping');
+      return;
+    }
+
+    _isLoggingOut = true;
+
+    try {
+      await setUnauthenticated();
+      // TODO: 토스트 메시지 표시 (message 활용)
+      debugPrint('[AuthStateController] Session expired: $message');
+    } finally {
+      _isLoggingOut = false;
+    }
   }
 
   /// 앱 시작 시 인증 상태 체크

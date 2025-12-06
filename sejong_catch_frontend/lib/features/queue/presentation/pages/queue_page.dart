@@ -17,16 +17,19 @@ import '../widgets/ui/join_queue_dialog.dart';
 import '../widgets/ui/cancel_queue_dialog.dart';
 import '../widgets/ui/create_queue_bottom_sheet.dart';
 import '../widgets/ui/manage_queue_bottom_sheet.dart';
-import '../../data/models/response/queue_item.dart';
-import '../../data/models/response/my_queue_item.dart';
+import '../../data/models/response/booth.dart';
+import '../../data/models/response/my_queue_status.dart';
 
-/// 📋 줄서기 페이지 - 축제/행사 큐 관리
+/// 📋 줄서기 페이지 - 축제/행사 부스 큐 관리
 ///
-/// **리팩토링 완료!**
-/// - 919줄 → 깔끔한 구조로 대폭 축소
-/// - 디자인 토큰 100% 적용
-/// - 재사용 가능한 컴포넌트로 분리
-/// - Riverpod 상태 관리 통합
+/// **API 연동 완료!**
+/// - 부스 목록 조회: GET /catch/booths
+/// - 대기열 등록: POST /catch/queues/enqueue
+/// - 대기 취소: POST /catch/queues/cancel
+/// - 내 대기 상태: POST /catch/queues/me-status
+/// - 부스 관리 (관리자): PATCH /catch/booths/{boothId}/status
+///
+/// **디자인 토큰 100% 사용!**
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
 
@@ -62,59 +65,21 @@ class _QueuePageState extends ConsumerState<QueuePage>
           ? const LoadingWidget()
           : state.error != null
               ? AppErrorWidget(message: state.error!)
-              : state.isUnderDevelopment
-                  ? _buildUnderDevelopmentMessage()
-                  : _buildBody(),
-      // 🔐 운영자/관리자만 FAB 표시 (개발 중일 때는 숨김)
-      floatingActionButton:
-          !state.isUnderDevelopment && _canCreateQueue(authState.currentUser?.role)
-              ? _buildFAB()
-              : null,
+              : _buildBody(),
+      // 🔐 운영자/관리자만 FAB 표시
+      floatingActionButton: _canCreateBooth(authState.currentUser?.role)
+          ? _buildFAB()
+          : null,
     );
   }
 
-  /// 🔐 큐 생성 권한 확인
+  /// 🔐 부스 생성 권한 확인
   ///
   /// **허용 역할**: operator, admin
   /// **차단 역할**: student, null (로그아웃)
-  bool _canCreateQueue(String? roleString) {
+  bool _canCreateBooth(String? roleString) {
     final role = UserRole.fromString(roleString);
     return role.canCreateQueue;
-  }
-
-  /// 🚧 개발 중 메시지 (Real 모드 + API 미구현)
-  Widget _buildUnderDevelopmentMessage() {
-    return Center(
-      child: Padding(
-        padding: AppSpacing.screenPadding,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction_rounded,
-              size: 80.sp,
-              color: AppColors.textTertiary,
-            ),
-            AppSpacing.verticalSpaceLG,
-            Text(
-              '🚧 아직 개발 중입니다',
-              style: AppTextStyles.headingBold20.copyWith(
-                color: AppColors.textPrimary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            AppSpacing.verticalSpaceMD,
-            Text(
-              '줄서기 기능은 현재 준비 중이에요.\n곧 만나볼 수 있어요! 🎉',
-              style: AppTextStyles.bodyRegular14.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   /// 🔝 앱바
@@ -147,7 +112,7 @@ class _QueuePageState extends ConsumerState<QueuePage>
         ),
         unselectedLabelStyle: AppTextStyles.buttonMedium15,
         tabs: const [
-          Tab(text: '전체 큐'),
+          Tab(text: '전체 부스'),
           Tab(text: '내 대기열'),
         ],
       ),
@@ -158,18 +123,18 @@ class _QueuePageState extends ConsumerState<QueuePage>
   Widget _buildBody() {
     return TabBarView(
       controller: _tabController,
-      children: [_buildAllQueuesTab(), _buildMyQueuesTab()],
+      children: [_buildAllBoothsTab(), _buildMyQueuesTab()],
     );
   }
 
-  /// 📋 전체 큐 탭
-  Widget _buildAllQueuesTab() {
+  /// 📋 전체 부스 탭
+  Widget _buildAllBoothsTab() {
     final state = ref.watch(queueControllerProvider);
-    final queues = state.allQueues;
+    final booths = state.booths;
 
-    if (queues.isEmpty) {
+    if (booths.isEmpty) {
       return const AppEmptyWidget(
-        title: '운영 중인 큐가 없어요',
+        title: '운영 중인 부스가 없어요',
         subtitle: '축제 기간에 다시 확인해보세요! 🎪',
         icon: Icons.event_busy,
       );
@@ -177,16 +142,20 @@ class _QueuePageState extends ConsumerState<QueuePage>
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(queueControllerProvider.notifier).refreshQueues();
+        await ref.read(queueControllerProvider.notifier).refreshBooths();
       },
       color: AppColors.brandCrimson,
       child: ListView.separated(
         padding: AppSpacing.screenPadding,
-        itemCount: queues.length,
+        itemCount: booths.length,
         separatorBuilder: (context, index) => AppSpacing.verticalSpaceMD,
         itemBuilder: (context, index) {
-          final queue = queues[index];
-          return QueueCard(queue: queue, onTap: () => _handleQueueTap(queue));
+          final booth = booths[index];
+          return QueueCard(
+            booth: booth,
+            onTap: () => _handleBoothTap(booth),
+            masterName: state.getMasterName(booth.masterId),
+          );
         },
       ),
     );
@@ -195,60 +164,68 @@ class _QueuePageState extends ConsumerState<QueuePage>
   /// 🎫 내 대기열 탭
   Widget _buildMyQueuesTab() {
     final state = ref.watch(queueControllerProvider);
-    final myQueues = state.myQueues;
+    final myStatuses = state.myQueueStatuses;
 
-    if (myQueues.isEmpty) {
+    if (myStatuses.isEmpty) {
       return const AppEmptyWidget(
-        title: '참여 중인 큐가 없어요',
-        subtitle: '전체 큐에서 줄서기를 시작해보세요! 🎯',
+        title: '참여 중인 부스가 없어요',
+        subtitle: '전체 부스에서 줄서기를 시작해보세요! 🎯',
         icon: Icons.queue_outlined,
       );
     }
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(queueControllerProvider.notifier).refreshQueues();
+        await ref.read(queueControllerProvider.notifier).refreshMyStatuses();
       },
       color: AppColors.brandCrimson,
       child: ListView.separated(
         padding: AppSpacing.screenPadding,
-        itemCount: myQueues.length,
+        itemCount: myStatuses.length,
         separatorBuilder: (context, index) => AppSpacing.verticalSpaceLG,
         itemBuilder: (context, index) {
-          final myQueue = myQueues[index];
+          final boothId = myStatuses.keys.elementAt(index);
+          final myStatus = myStatuses[boothId]!;
+          final booth = state.booths.cast<Booth?>().firstWhere(
+                (b) => b?.id == boothId,
+                orElse: () => null,
+              );
+
           return MyQueueCard(
-            myQueue: myQueue,
-            onCancel: () => _handleCancelQueue(myQueue),
+            myStatus: myStatus,
+            booth: booth,
+            onCancel: () => _handleCancelQueue(myStatus, booth),
+            masterName: booth != null ? state.getMasterName(booth.masterId) : null,
           );
         },
       ),
     );
   }
 
-  /// 🎯 큐 탭 핸들러 (역할별 분기!)
+  /// 🎯 부스 탭 핸들러 (역할별 분기!)
   ///
-  /// **운영자/관리자**: 큐 관리 바텀시트 (다음 호출, 일시정지, 마감 등)
+  /// **운영자/관리자**: 부스 관리 바텀시트 (다음 호출, 상태 변경 등)
   /// **학생**: 줄서기 참여 다이얼로그
-  void _handleQueueTap(QueueItem queue) {
+  void _handleBoothTap(Booth booth) {
     final authState = ref.read(authStateControllerProvider);
     final role = UserRole.fromString(authState.currentUser?.role);
 
     if (role.canCreateQueue) {
-      // 🎛️ 운영자/관리자 → 큐 관리 바텀시트
-      ManageQueueBottomSheet.show(context, queue: queue);
+      // 🎛️ 운영자/관리자 → 부스 관리 바텀시트
+      ManageQueueBottomSheet.show(context, booth: booth);
     } else {
-      // 🎫 학생 → 기존 줄서기 다이얼로그
-      if (queue.status == 'active') {
+      // 🎫 학생 → 줄서기 다이얼로그
+      if (booth.status == 'OPERATING') {
         JoinQueueDialog.show(
           context,
-          queue: queue,
-          onConfirm: () => _handleJoinQueue(queue),
+          booth: booth,
+          onConfirm: () => _handleJoinQueue(booth),
         );
       } else {
-        final statusText = queue.status == 'paused' ? '일시정지' : '마감';
+        final statusText = booth.status == 'PREPARING' ? '준비 중' : '종료';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${queue.name}은(는) 현재 $statusText 상태예요'),
+            content: Text('${booth.title}은(는) 현재 $statusText 상태예요'),
             backgroundColor: AppColors.warning,
           ),
         );
@@ -256,37 +233,48 @@ class _QueuePageState extends ConsumerState<QueuePage>
     }
   }
 
-  /// ✅ 큐 참여
-  Future<void> _handleJoinQueue(QueueItem queue) async {
-    await ref.read(queueControllerProvider.notifier).joinQueue(queue.id);
+  /// ✅ 대기열 등록 (enqueue)
+  Future<void> _handleJoinQueue(Booth booth) async {
+    final isImmediate =
+        await ref.read(queueControllerProvider.notifier).enqueue(booth.id);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${queue.name}에 줄서기 완료! 🎉'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      if (isImmediate) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${booth.title} 즉시 입장! 🎉'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${booth.title}에 줄서기 완료! 🎉'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
 
       // 내 대기열 탭으로 이동
       _tabController.animateTo(1);
     }
   }
 
-  /// ❌ 큐 포기
-  void _handleCancelQueue(MyQueueItem myQueue) {
+  /// ❌ 대기 취소
+  void _handleCancelQueue(MyQueueStatus myStatus, Booth? booth) {
     CancelQueueDialog.show(
       context,
-      myQueue: myQueue,
+      myStatus: myStatus,
+      booth: booth,
       onConfirm: () async {
         await ref
             .read(queueControllerProvider.notifier)
-            .cancelQueue(myQueue.id);
+            .cancelQueue(myStatus.boothId);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${myQueue.name} 줄서기를 포기했어요'),
+              content: Text('${booth?.title ?? '부스'} 줄서기를 포기했어요'),
               backgroundColor: AppColors.error,
             ),
           );
@@ -295,28 +283,35 @@ class _QueuePageState extends ConsumerState<QueuePage>
     );
   }
 
-  /// 🎈 플로팅 액션 버튼 (운영자용 큐 생성)
+  /// 🎈 플로팅 액션 버튼 (운영자용 부스 생성)
   Widget _buildFAB() {
     return FloatingActionButton(
-      onPressed: _showCreateQueueBottomSheet,
+      onPressed: _showCreateBoothBottomSheet,
       backgroundColor: AppColors.brandCrimson,
       child: Icon(Icons.add_rounded, size: 32.sp, color: AppColors.pureWhite),
     );
   }
 
-  /// 🏗️ 큐 생성 바텀시트
-  void _showCreateQueueBottomSheet() {
+  /// 🏗️ 부스 생성 바텀시트
+  void _showCreateBoothBottomSheet() {
+    final state = ref.read(queueControllerProvider);
+
     CreateQueueBottomSheet.show(
       context,
-      onCreate: (name, type, avgWaitTime) async {
-        await ref
-            .read(queueControllerProvider.notifier)
-            .createQueue(name: name, type: type, avgWaitTime: avgWaitTime);
+      boothMasters: state.boothMasters,
+      onCreate: (masterId, title, seatCount, avgWaitMinutes) async {
+        final success =
+            await ref.read(queueControllerProvider.notifier).createBooth(
+                  masterId: masterId,
+                  title: title,
+                  seatCount: seatCount,
+                  avgWaitMinutes: avgWaitMinutes,
+                );
 
-        if (mounted) {
+        if (mounted && success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('$name 큐가 생성되었어요! 🎉'),
+              content: Text('$title 부스가 생성되었어요! 🎉'),
               backgroundColor: AppColors.success,
             ),
           );

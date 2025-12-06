@@ -4,35 +4,36 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../../data/models/response/queue_item.dart';
+import '../../../data/models/response/booth.dart';
 
-/// 🎫 큐 참여 확인 다이얼로그
+/// 🎫 줄서기 확인 다이얼로그
 ///
-/// 사용자가 큐에 줄서기를 시도할 때 확인을 받는 다이얼로그입니다.
-/// - 큐 정보 표시 (이름, 대기 인원, 예상 시간)
+/// 사용자가 부스에 줄서기를 시도할 때 확인을 받는 다이얼로그입니다.
+/// - 부스 정보 표시 (이름, 좌석 수, 예상 시간)
 /// - 참여 확인/취소 버튼
 ///
+/// **API 모델: Booth**
 /// **디자인 토큰 100% 사용!**
 class JoinQueueDialog extends StatelessWidget {
-  final QueueItem queue;
+  final Booth booth;
   final VoidCallback onConfirm;
 
   const JoinQueueDialog({
     super.key,
-    required this.queue,
+    required this.booth,
     required this.onConfirm,
   });
 
   /// 다이얼로그 표시 헬퍼 메서드
   static Future<void> show(
     BuildContext context, {
-    required QueueItem queue,
+    required Booth booth,
     required VoidCallback onConfirm,
   }) {
     return showDialog(
       context: context,
       builder: (context) => JoinQueueDialog(
-        queue: queue,
+        booth: booth,
         onConfirm: onConfirm,
       ),
     );
@@ -77,7 +78,7 @@ class JoinQueueDialog extends StatelessWidget {
 
             AppSpacing.verticalSpaceSM,
 
-            // 큐 이름
+            // 부스 이름
             Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 16.w,
@@ -88,7 +89,7 @@ class JoinQueueDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Text(
-                queue.name,
+                booth.title,
                 style: AppTextStyles.titleSemiBold16,
                 textAlign: TextAlign.center,
               ),
@@ -96,14 +97,14 @@ class JoinQueueDialog extends StatelessWidget {
 
             AppSpacing.verticalSpaceMD,
 
-            // 대기 정보
+            // 부스 정보
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildInfoItem(
-                  icon: Icons.people_outline,
-                  label: '대기 인원',
-                  value: '${queue.waiting}명',
+                  icon: Icons.event_seat_outlined,
+                  label: '좌석 수',
+                  value: '${booth.seatCount}석',
                   color: AppColors.trustAcademic,
                 ),
                 Container(
@@ -114,7 +115,7 @@ class JoinQueueDialog extends StatelessWidget {
                 _buildInfoItem(
                   icon: Icons.timer_outlined,
                   label: '예상 시간',
-                  value: '${queue.avgWaitTime}분',
+                  value: '${booth.avgWaitMinutes}분',
                   color: AppColors.queueTimer,
                 ),
               ],

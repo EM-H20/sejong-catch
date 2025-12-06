@@ -2,128 +2,189 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/config/env_config.dart';
-import '../models/response/queue_item.dart';
-import '../models/response/my_queue_item.dart';
+import '../../../../core/network/dio_provider.dart';
+import '../datasources/queue_api.dart';
+import '../models/request/booth_request.dart';
+import '../models/request/queue_request.dart';
+import '../models/response/booth.dart';
+import '../models/response/booth_manager.dart';
+import '../models/response/booth_master.dart';
+import '../models/response/enqueue_result.dart';
+import '../models/response/my_queue_status.dart';
+import '../models/response/queue_entry.dart';
 
 part 'queue_repository.g.dart';
 
-/// 큐 Repository
-///
-/// 큐 관련 데이터 접근을 담당합니다.
-/// Mock/Real 모드에 따라 더미 데이터 또는 실제 API를 호출합니다.
+/// QueueApi Provider
+@riverpod
+QueueApi queueApi(Ref ref) {
+  final dio = ref.read(dioProvider);
+  return QueueApi(dio);
+}
+
+/// 큐 Repository Provider
 @riverpod
 QueueRepository queueRepository(Ref ref) {
   return QueueRepository(ref);
 }
 
+/// 큐 Repository
+///
+/// Mock/Real 모드에 따라 더미 데이터 또는 실제 API를 호출합니다.
 class QueueRepository {
   final Ref ref;
 
   QueueRepository(this.ref);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 📋 큐 조회
+  // 🏷️ 부스 타입 (Booth Master) 조회
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// 전체 큐 목록 조회
-  Future<List<QueueItem>> getQueues() async {
+  /// 부스 타입 목록 조회
+  Future<List<BoothMaster>> getBoothMasters() async {
     if (EnvConfig.useMockAuth) {
-      return _mockGetQueues();
+      return _mockGetBoothMasters();
     } else {
-      return _realGetQueues();
-    }
-  }
-
-  /// 내 대기열 조회
-  Future<List<MyQueueItem>> getMyQueues() async {
-    if (EnvConfig.useMockAuth) {
-      return _mockGetMyQueues();
-    } else {
-      return _realGetMyQueues();
+      return _realGetBoothMasters();
     }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎫 학생용 기능
+  // 🏪 부스 조회
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// 큐 참여
-  Future<MyQueueItem> joinQueue(String queueId) async {
+  /// 부스 목록 조회
+  Future<List<Booth>> getBooths({String? status}) async {
     if (EnvConfig.useMockAuth) {
-      return _mockJoinQueue(queueId);
+      return _mockGetBooths(status: status);
     } else {
-      return _realJoinQueue(queueId);
+      return _realGetBooths(status: status);
     }
   }
 
-  /// 큐 포기
-  Future<void> cancelQueue(String queueId) async {
+  /// 부스 상세 조회
+  Future<Booth> getBooth(String boothId) async {
     if (EnvConfig.useMockAuth) {
-      return _mockCancelQueue(queueId);
+      return _mockGetBooth(boothId);
     } else {
-      return _realCancelQueue(queueId);
+      return _realGetBooth(boothId);
     }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎛️ 운영자용 기능
+  // 🎫 대기열 (학생용)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// 큐 생성
-  Future<QueueItem> createQueue({
-    required String name,
-    required String type,
-    required int avgWaitTime,
+  /// 대기열 등록
+  Future<EnqueueResult> enqueue(String boothId) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockEnqueue(boothId);
+    } else {
+      return _realEnqueue(boothId);
+    }
+  }
+
+  /// 대기 취소
+  Future<void> cancel(String boothId) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockCancel(boothId);
+    } else {
+      return _realCancel(boothId);
+    }
+  }
+
+  /// 내 대기 순번 조회
+  Future<MyQueueStatus> getMyStatus(String boothId) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockGetMyStatus(boothId);
+    } else {
+      return _realGetMyStatus(boothId);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎛️ 부스 관리 (관리자용)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 부스 생성
+  Future<Booth> createBooth({
+    required String masterId,
+    required String title,
+    int? seatCount,
+    int? avgWaitMinutes,
   }) async {
     if (EnvConfig.useMockAuth) {
-      return _mockCreateQueue(name: name, type: type, avgWaitTime: avgWaitTime);
+      return _mockCreateBooth(
+        masterId: masterId,
+        title: title,
+        seatCount: seatCount,
+        avgWaitMinutes: avgWaitMinutes,
+      );
     } else {
-      return _realCreateQueue(name: name, type: type, avgWaitTime: avgWaitTime);
+      return _realCreateBooth(
+        masterId: masterId,
+        title: title,
+        seatCount: seatCount,
+        avgWaitMinutes: avgWaitMinutes,
+      );
     }
   }
 
-  /// 다음 대기자 호출
-  Future<QueueItem> callNext(String queueId) async {
+  /// 부스 상태 변경
+  Future<Booth> updateBoothStatus(String boothId, String status) async {
     if (EnvConfig.useMockAuth) {
-      return _mockCallNext(queueId);
+      return _mockUpdateBoothStatus(boothId, status);
     } else {
-      return _realCallNext(queueId);
+      return _realUpdateBoothStatus(boothId, status);
     }
   }
 
-  /// 큐 일시정지
-  Future<QueueItem> pauseQueue(String queueId) async {
+  /// 대기 목록 조회 (관리자)
+  Future<List<QueueEntry>> getQueueList(String boothId) async {
     if (EnvConfig.useMockAuth) {
-      return _mockUpdateStatus(queueId, 'paused');
+      return _mockGetQueueList(boothId);
     } else {
-      return _realPauseQueue(queueId);
+      return _realGetQueueList(boothId);
     }
   }
 
-  /// 큐 재개
-  Future<QueueItem> resumeQueue(String queueId) async {
+  /// 다음 팀 입장 (관리자)
+  Future<void> rotateQueue(String boothId) async {
     if (EnvConfig.useMockAuth) {
-      return _mockUpdateStatus(queueId, 'active');
+      return _mockRotateQueue(boothId);
     } else {
-      return _realResumeQueue(queueId);
+      return _realRotateQueue(boothId);
     }
   }
 
-  /// 큐 마감
-  Future<QueueItem> closeQueue(String queueId) async {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 👨‍💼 부스 관리자 관리 (Admin)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 부스 관리자 목록 조회
+  Future<List<BoothManager>> getBoothManagers(String boothId) async {
     if (EnvConfig.useMockAuth) {
-      return _mockUpdateStatus(queueId, 'full');
+      return _mockGetBoothManagers(boothId);
     } else {
-      return _realCloseQueue(queueId);
+      return _realGetBoothManagers(boothId);
     }
   }
 
-  /// 큐 삭제
-  Future<void> deleteQueue(String queueId) async {
+  /// 부스 관리자 추가
+  Future<BoothManager> addBoothManager(String boothId, String userId) async {
     if (EnvConfig.useMockAuth) {
-      return _mockDeleteQueue(queueId);
+      return _mockAddBoothManager(boothId, userId);
     } else {
-      return _realDeleteQueue(queueId);
+      return _realAddBoothManager(boothId, userId);
+    }
+  }
+
+  /// 부스 관리자 삭제
+  Future<void> removeBoothManager(String boothId, String userId) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockRemoveBoothManager(boothId, userId);
+    } else {
+      return _realRemoveBoothManager(boothId, userId);
     }
   }
 
@@ -131,200 +192,396 @@ class QueueRepository {
   // 🧪 Mock 구현 (개발용)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Mock 큐 데이터 저장소 (세션 동안 유지)
-  static final List<QueueItem> _mockQueues = [
-    const QueueItem(
-      id: 'q1',
-      name: '🍗 치킨부스',
-      type: 'food',
-      status: 'active',
-      waiting: 12,
-      currentNumber: 5,
-      avgWaitTime: 15,
+  /// Mock 부스 타입 데이터
+  static final List<BoothMaster> _mockBoothMasters = [
+    BoothMaster(
+      id: 'master-1',
+      name: '음식',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     ),
-    const QueueItem(
-      id: 'q2',
-      name: '🍺 주점',
-      type: 'drink',
-      status: 'active',
-      waiting: 8,
-      currentNumber: 3,
-      avgWaitTime: 10,
+    BoothMaster(
+      id: 'master-2',
+      name: '게임',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     ),
-    const QueueItem(
-      id: 'q3',
-      name: '🎮 게임존',
-      type: 'game',
-      status: 'paused',
-      waiting: 5,
-      currentNumber: 2,
-      avgWaitTime: 20,
-    ),
-    const QueueItem(
-      id: 'q4',
-      name: '📸 포토존',
-      type: 'photo',
-      status: 'full',
-      waiting: 30,
-      currentNumber: 15,
-      avgWaitTime: 5,
+    BoothMaster(
+      id: 'master-3',
+      name: '포토존',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     ),
   ];
 
-  static final List<MyQueueItem> _mockMyQueues = [
-    const MyQueueItem(
-      id: 'mq1',
-      name: '🍗 치킨부스',
-      myNumber: 8,
-      currentNumber: 5,
-      peopleAhead: 3,
-      estimatedWait: 15,
+  Future<List<BoothMaster>> _mockGetBoothMasters() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return List.from(_mockBoothMasters);
+  }
+
+  /// Mock 부스 데이터
+  static final List<Booth> _mockBooths = [
+    Booth(
+      id: 'booth-1',
+      masterId: 'master-1',
+      title: '🍗 치킨부스',
+      seatCount: 4,
+      avgWaitMinutes: 15,
+      status: 'OPERATING',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Booth(
+      id: 'booth-2',
+      masterId: 'master-1',
+      title: '🍺 주점',
+      seatCount: 6,
+      avgWaitMinutes: 10,
+      status: 'OPERATING',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Booth(
+      id: 'booth-3',
+      masterId: 'master-2',
+      title: '🎮 게임존',
+      seatCount: 2,
+      avgWaitMinutes: 20,
+      status: 'PREPARING',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Booth(
+      id: 'booth-4',
+      masterId: 'master-2',
+      title: '📸 포토존',
+      seatCount: 1,
+      avgWaitMinutes: 5,
+      status: 'ENDED',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     ),
   ];
 
-  Future<List<QueueItem>> _mockGetQueues() async {
+  /// Mock 대기열 데이터
+  static final List<QueueEntry> _mockQueueEntries = [];
+  static int _mockTicketCounter = 0;
+
+  Future<List<Booth>> _mockGetBooths({String? status}) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return List.from(_mockQueues);
+    if (status == null) {
+      return List.from(_mockBooths);
+    }
+    return _mockBooths.where((b) => b.status == status).toList();
   }
 
-  Future<List<MyQueueItem>> _mockGetMyQueues() async {
+  Future<Booth> _mockGetBooth(String boothId) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return List.from(_mockMyQueues);
+    return _mockBooths.firstWhere(
+      (b) => b.id == boothId,
+      orElse: () => throw Exception('부스를 찾을 수 없습니다'),
+    );
   }
 
-  Future<MyQueueItem> _mockJoinQueue(String queueId) async {
+  Future<EnqueueResult> _mockEnqueue(String boothId) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    final queueIndex = _mockQueues.indexWhere((q) => q.id == queueId);
-    if (queueIndex == -1) throw Exception('큐를 찾을 수 없습니다');
-
-    final queue = _mockQueues[queueIndex];
-    final myNumber = queue.currentNumber + queue.waiting + 1;
-
-    // 대기 인원 증가
-    _mockQueues[queueIndex] = queue.copyWith(waiting: queue.waiting + 1);
-
-    final myQueue = MyQueueItem(
-      id: 'mq_${DateTime.now().millisecondsSinceEpoch}',
-      name: queue.name,
-      myNumber: myNumber,
-      currentNumber: queue.currentNumber,
-      peopleAhead: queue.waiting,
-      estimatedWait: queue.avgWaitTime * (queue.waiting + 1),
+    final booth = _mockBooths.firstWhere(
+      (b) => b.id == boothId,
+      orElse: () => throw Exception('부스를 찾을 수 없습니다'),
     );
 
-    _mockMyQueues.add(myQueue);
-    return myQueue;
+    _mockTicketCounter++;
+    final entry = QueueEntry(
+      id: 'entry-${DateTime.now().millisecondsSinceEpoch}',
+      boothId: boothId,
+      visitorId: 'mock-user-id',
+      ticketNo: _mockTicketCounter,
+      state: 'WAITING',
+      joinedAt: DateTime.now(),
+    );
+
+    _mockQueueEntries.add(entry);
+
+    final waitingCount =
+        _mockQueueEntries.where((e) => e.boothId == boothId).length;
+    final remainingSeats = booth.seatCount - waitingCount;
+
+    return EnqueueResult(
+      mode: remainingSeats > 0 ? 'IN_SERVICE' : 'WAITING',
+      remainingSeats: remainingSeats > 0 ? remainingSeats : 0,
+      entry: entry,
+    );
   }
 
-  Future<void> _mockCancelQueue(String queueId) async {
+  Future<void> _mockCancel(String boothId) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    _mockMyQueues.removeWhere((q) => q.id == queueId);
+    _mockQueueEntries.removeWhere(
+      (e) => e.boothId == boothId && e.visitorId == 'mock-user-id',
+    );
   }
 
-  Future<QueueItem> _mockCreateQueue({
-    required String name,
-    required String type,
-    required int avgWaitTime,
+  Future<MyQueueStatus> _mockGetMyStatus(String boothId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final myEntry = _mockQueueEntries.firstWhere(
+      (e) => e.boothId == boothId && e.visitorId == 'mock-user-id',
+      orElse: () => throw Exception('대기 정보가 없습니다'),
+    );
+
+    final waitingEntries = _mockQueueEntries
+        .where((e) => e.boothId == boothId && e.state == 'WAITING')
+        .toList();
+
+    final position = waitingEntries.indexWhere((e) => e.id == myEntry.id) + 1;
+
+    return MyQueueStatus(
+      boothId: boothId,
+      visitorId: myEntry.visitorId ?? 'unknown',
+      ticketNo: myEntry.ticketNo,
+      state: myEntry.state,
+      teamsAhead: position - 1,
+      position: position,
+    );
+  }
+
+  Future<Booth> _mockCreateBooth({
+    required String masterId,
+    required String title,
+    int? seatCount,
+    int? avgWaitMinutes,
   }) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    final newQueue = QueueItem(
-      id: 'q_${DateTime.now().millisecondsSinceEpoch}',
-      name: name,
-      type: type,
-      status: 'active',
-      waiting: 0,
-      currentNumber: 0,
-      avgWaitTime: avgWaitTime,
+    final newBooth = Booth(
+      id: 'booth-${DateTime.now().millisecondsSinceEpoch}',
+      masterId: masterId,
+      title: title,
+      seatCount: seatCount ?? 4,
+      avgWaitMinutes: avgWaitMinutes ?? 10,
+      status: 'PREPARING',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
 
-    _mockQueues.add(newQueue);
-    return newQueue;
+    _mockBooths.add(newBooth);
+    return newBooth;
   }
 
-  Future<QueueItem> _mockCallNext(String queueId) async {
+  Future<Booth> _mockUpdateBoothStatus(String boothId, String status) async {
     await Future.delayed(const Duration(milliseconds: 300));
 
-    final queueIndex = _mockQueues.indexWhere((q) => q.id == queueId);
-    if (queueIndex == -1) throw Exception('큐를 찾을 수 없습니다');
+    final index = _mockBooths.indexWhere((b) => b.id == boothId);
+    if (index == -1) throw Exception('부스를 찾을 수 없습니다');
 
-    final queue = _mockQueues[queueIndex];
-    if (queue.waiting <= 0) throw Exception('대기 인원이 없습니다');
-
-    final updatedQueue = queue.copyWith(
-      currentNumber: queue.currentNumber + 1,
-      waiting: queue.waiting - 1,
+    final updated = Booth(
+      id: _mockBooths[index].id,
+      masterId: _mockBooths[index].masterId,
+      title: _mockBooths[index].title,
+      seatCount: _mockBooths[index].seatCount,
+      avgWaitMinutes: _mockBooths[index].avgWaitMinutes,
+      status: status,
+      createdAt: _mockBooths[index].createdAt,
+      updatedAt: DateTime.now(),
     );
 
-    _mockQueues[queueIndex] = updatedQueue;
-    return updatedQueue;
+    _mockBooths[index] = updated;
+    return updated;
   }
 
-  Future<QueueItem> _mockUpdateStatus(String queueId, String status) async {
+  Future<List<QueueEntry>> _mockGetQueueList(String boothId) async {
     await Future.delayed(const Duration(milliseconds: 300));
-
-    final queueIndex = _mockQueues.indexWhere((q) => q.id == queueId);
-    if (queueIndex == -1) throw Exception('큐를 찾을 수 없습니다');
-
-    final updatedQueue = _mockQueues[queueIndex].copyWith(status: status);
-    _mockQueues[queueIndex] = updatedQueue;
-    return updatedQueue;
+    return _mockQueueEntries.where((e) => e.boothId == boothId).toList();
   }
 
-  Future<void> _mockDeleteQueue(String queueId) async {
+  Future<void> _mockRotateQueue(String boothId) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    _mockQueues.removeWhere((q) => q.id == queueId);
+
+    final waitingEntries = _mockQueueEntries
+        .where((e) => e.boothId == boothId && e.state == 'WAITING')
+        .toList();
+
+    if (waitingEntries.isNotEmpty) {
+      final index = _mockQueueEntries.indexOf(waitingEntries.first);
+      _mockQueueEntries[index] = QueueEntry(
+        id: waitingEntries.first.id,
+        boothId: waitingEntries.first.boothId,
+        visitorId: waitingEntries.first.visitorId,
+        ticketNo: waitingEntries.first.ticketNo,
+        state: 'COMPLETED',
+        joinedAt: waitingEntries.first.joinedAt,
+      );
+    }
+  }
+
+  /// Mock 부스 관리자 데이터
+  static final List<BoothManager> _mockBoothManagers = [
+    BoothManager(
+      id: 'manager-1',
+      boothId: 'booth-1',
+      userId: 'user-1',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      userName: '김관리',
+      userEmail: '20211234@sju.ac.kr',
+    ),
+    BoothManager(
+      id: 'manager-2',
+      boothId: 'booth-1',
+      userId: 'user-2',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      userName: '이운영',
+      userEmail: '20215678@sju.ac.kr',
+    ),
+  ];
+
+  Future<List<BoothManager>> _mockGetBoothManagers(String boothId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _mockBoothManagers.where((m) => m.boothId == boothId).toList();
+  }
+
+  Future<BoothManager> _mockAddBoothManager(
+    String boothId,
+    String userId,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final newManager = BoothManager(
+      id: 'manager-${DateTime.now().millisecondsSinceEpoch}',
+      boothId: boothId,
+      userId: userId,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      userName: '새관리자',
+      userEmail: '$userId@sju.ac.kr',
+    );
+
+    _mockBoothManagers.add(newManager);
+    return newManager;
+  }
+
+  Future<void> _mockRemoveBoothManager(String boothId, String userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    _mockBoothManagers.removeWhere(
+      (m) => m.boothId == boothId && m.userId == userId,
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🌐 Real API 구현 (프로덕션용 - 미구현)
+  // 🌐 Real API 구현 (프로덕션용)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  Future<List<QueueItem>> _realGetQueues() async {
-    // TODO: API 구현 시 실제 API 호출
-    // final api = ref.read(queueApiProvider);
-    // return await api.getQueues();
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<List<BoothMaster>> _realGetBoothMasters() async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.getBoothMasters();
+    return response.data;
   }
 
-  Future<List<MyQueueItem>> _realGetMyQueues() async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<List<Booth>> _realGetBooths({String? status}) async {
+    final api = ref.read(queueApiProvider);
+
+    // 특정 상태 지정 시 해당 상태만 조회
+    if (status != null) {
+      final response = await api.getBooths(status: status);
+      return response.data;
+    }
+
+    // status가 null이면 모든 상태 병렬 조회 후 합침
+    // (서버 기본값이 OPERATING이라서 직접 처리 필요)
+    final results = await Future.wait([
+      api.getBooths(status: 'PREPARING'),
+      api.getBooths(status: 'OPERATING'),
+      api.getBooths(status: 'ENDED'),
+    ]);
+
+    return [
+      ...results[0].data,
+      ...results[1].data,
+      ...results[2].data,
+    ];
   }
 
-  Future<MyQueueItem> _realJoinQueue(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<Booth> _realGetBooth(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.getBooth(boothId);
+    return response.data;
   }
 
-  Future<void> _realCancelQueue(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<EnqueueResult> _realEnqueue(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.enqueue(BoothIdRequest(boothId: boothId));
+    return response.data;
   }
 
-  Future<QueueItem> _realCreateQueue({
-    required String name,
-    required String type,
-    required int avgWaitTime,
+  Future<void> _realCancel(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    await api.cancel(BoothIdRequest(boothId: boothId));
+  }
+
+  Future<MyQueueStatus> _realGetMyStatus(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.getMyStatus(BoothIdRequest(boothId: boothId));
+    return response.data;
+  }
+
+  Future<Booth> _realCreateBooth({
+    required String masterId,
+    required String title,
+    int? seatCount,
+    int? avgWaitMinutes,
   }) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+    final api = ref.read(queueApiProvider);
+    final response = await api.createBooth(
+      CreateBoothRequest(
+        masterId: masterId,
+        title: title,
+        seatCount: seatCount,
+        avgWaitMinutes: avgWaitMinutes,
+      ),
+    );
+    return response.data;
   }
 
-  Future<QueueItem> _realCallNext(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<Booth> _realUpdateBoothStatus(String boothId, String status) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.updateBoothStatus(
+      boothId,
+      UpdateBoothStatusRequest(status: status),
+    );
+    return response.data;
   }
 
-  Future<QueueItem> _realPauseQueue(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<List<QueueEntry>> _realGetQueueList(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.getQueueList(BoothIdRequest(boothId: boothId));
+    return response.data;
   }
 
-  Future<QueueItem> _realResumeQueue(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<void> _realRotateQueue(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    await api.rotateQueue(BoothIdRequest(boothId: boothId));
   }
 
-  Future<QueueItem> _realCloseQueue(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<List<BoothManager>> _realGetBoothManagers(String boothId) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.getBoothManagers(boothId);
+    return response.data;
   }
 
-  Future<void> _realDeleteQueue(String queueId) async {
-    throw UnimplementedError('Queue API가 아직 구현되지 않았습니다');
+  Future<BoothManager> _realAddBoothManager(
+    String boothId,
+    String userId,
+  ) async {
+    final api = ref.read(queueApiProvider);
+    return await api.addBoothManager(
+      boothId,
+      AddBoothManagerRequest(userId: userId),
+    );
+  }
+
+  Future<void> _realRemoveBoothManager(String boothId, String userId) async {
+    final api = ref.read(queueApiProvider);
+    await api.removeBoothManager(boothId, userId);
   }
 }

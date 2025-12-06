@@ -12,6 +12,7 @@ import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/admin/presentation/pages/admin_page.dart';
 import '../services/token_storage_service.dart';
 import '../theme/app_spacing.dart';
 
@@ -110,8 +111,13 @@ class AppRouter {
           },
         ),
 
-        // 🔧 관리자 콘솔 ShellRoute (별도 네비게이션)
-        // TODO: 향후 Operator/Admin 권한용 콘솔 구현 예정
+        // 🛡️ 관리자 페이지 (독립 페이지, BottomNav 없음)
+        // booth_manager 또는 admin 권한 필요 (페이지 내부에서 권한 체크)
+        GoRoute(
+          path: AppRoutes.admin,
+          name: 'admin',
+          builder: (context, state) => const AdminPage(),
+        ),
       ],
 
       // 🛡️ 글로벌 리디렉션 (권한 가드, 온보딩 등)

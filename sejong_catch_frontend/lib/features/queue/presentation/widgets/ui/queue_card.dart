@@ -5,30 +5,35 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_shadows.dart';
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../../data/models/response/queue_item.dart';
+import '../../../data/models/response/booth.dart';
 import 'queue_stat_item.dart';
 
-/// 📇 큐 카드 위젯
+/// 📇 부스 카드 위젯
 ///
-/// 큐 정보를 보여주는 카드 컴포넌트입니다.
-/// - 큐 이름, 상태 배지
-/// - 대기 인원, 예상 시간, 현재 순번 통계
-/// - 활성 상태일 경우 "줄서기" 버튼
+/// 부스 정보를 보여주는 카드 컴포넌트입니다.
+/// - 부스 이름, 마스터(타입) 이름, 상태 배지
+/// - 좌석 수, 예상 대기 시간 통계
+/// - 운영 중일 경우 "줄서기" 버튼
 ///
+/// **API 모델: CatchBoothObject**
 /// **디자인 토큰 100% 사용!**
 class QueueCard extends StatelessWidget {
-  final QueueItem queue;
+  final Booth booth;
   final VoidCallback onTap;
+  final int? waitingCount; // 대기 인원 (옵션)
+  final String? masterName; // 부스 타입(마스터) 이름
 
   const QueueCard({
     super.key,
-    required this.queue,
+    required this.booth,
     required this.onTap,
+    this.waitingCount,
+    this.masterName,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isActive = queue.status == 'active';
+    final isOperating = booth.status == 'OPERATING';
 
     // 상태별 색상/텍스트 결정 (비즈니스 로직 분리!)
     final (statusColor, statusText) = _getStatusInfo();
@@ -54,7 +59,7 @@ class QueueCard extends StatelessWidget {
             // 통계 정보
             _buildStats(),
 
-            if (isActive) ...[
+            if (isOperating) ...[
               AppSpacing.verticalSpaceLG,
               _buildJoinButton(),
             ],
@@ -65,22 +70,51 @@ class QueueCard extends StatelessWidget {
   }
 
   /// 상태 정보 반환 (색상, 텍스트)
+  /// API status: PREPARING | OPERATING | ENDED
   (Color, String) _getStatusInfo() {
-    switch (queue.status) {
-      case 'active':
+    switch (booth.status) {
+      case 'OPERATING':
         return (AppColors.success, '운영중');
-      case 'paused':
-        return (AppColors.warning, '일시정지');
+      case 'PREPARING':
+        return (AppColors.warning, '준비중');
+      case 'ENDED':
+        return (AppColors.error, '종료');
       default:
-        return (AppColors.error, '마감');
+        return (AppColors.textSecondary, '알 수 없음');
     }
   }
 
   Widget _buildHeader(Color statusColor, String statusText) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(queue.name, style: AppTextStyles.titleSemiBold18),
-        const Spacer(),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(booth.title, style: AppTextStyles.titleSemiBold18),
+              if (masterName != null) ...[
+                SizedBox(height: 4.h),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.category_outlined,
+                      size: 14.sp,
+                      color: AppColors.textSecondary,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      masterName!,
+                      style: AppTextStyles.captionMedium11.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
         Container(
           padding: EdgeInsets.symmetric(
             horizontal: 12.w,
@@ -106,25 +140,27 @@ class QueueCard extends StatelessWidget {
     return Row(
       children: [
         QueueStatItem(
-          icon: Icons.people_outline,
-          label: '대기',
-          value: '${queue.waiting}명',
+          icon: Icons.event_seat_outlined,
+          label: '좌석',
+          value: '${booth.seatCount}석',
           color: AppColors.trustAcademic,
         ),
         AppSpacing.horizontalSpaceLG,
         QueueStatItem(
           icon: Icons.timer_outlined,
           label: '예상',
-          value: '${queue.avgWaitTime}분',
+          value: '${booth.avgWaitMinutes}분',
           color: AppColors.queueTimer,
         ),
-        AppSpacing.horizontalSpaceLG,
-        QueueStatItem(
-          icon: Icons.confirmation_number_outlined,
-          label: '현재',
-          value: '#${queue.currentNumber}',
-          color: AppColors.brandCrimson,
-        ),
+        if (waitingCount != null) ...[
+          AppSpacing.horizontalSpaceLG,
+          QueueStatItem(
+            icon: Icons.people_outline,
+            label: '대기',
+            value: '$waitingCount명',
+            color: AppColors.brandCrimson,
+          ),
+        ],
       ],
     );
   }

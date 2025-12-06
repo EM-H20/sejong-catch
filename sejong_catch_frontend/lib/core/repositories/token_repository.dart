@@ -41,4 +41,17 @@ abstract class TokenRepository {
   /// - Refresh Token 만료 시 (SessionExpiredException)
   /// - 강제 로그아웃 처리
   Future<void> clearTokens();
+
+  /// Student ID 조회
+  ///
+  /// 참조: claudedocs/TOKEN_REFRESH_IMPROVEMENT_PLAN.md
+  /// 토큰 갱신 시 백엔드 API가 studentId를 요구함
+  /// Returns: 저장된 Student ID 또는 null
+  Future<String?> getStudentId();
+
+  /// Student ID 저장
+  ///
+  /// 로그인 성공 시 저장하여 토큰 갱신에 사용
+  /// [studentId]: 저장할 학번
+  Future<void> saveStudentId(String studentId);
 }

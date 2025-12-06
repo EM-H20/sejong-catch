@@ -9,9 +9,11 @@
 /// ✅ 에러 핸들링 및 재시도 로직
 
 library;
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../repositories/token_repository.dart';
+import '../services/auth_event_service.dart';
 
 class AuthInterceptor extends Interceptor {
   final Dio _dio;
@@ -70,16 +72,23 @@ class AuthInterceptor extends Interceptor {
           final response = await _dio.fetch(err.requestOptions);
           return handler.resolve(response);
         } else {
-          // Refresh Token 없음 또는 만료 → 로그아웃
+          // studentId 없음 → 로그아웃 + 세션 만료 이벤트 발행
           await _tokenRepository.clearTokens();
+          authEventService.emitSessionExpired(
+            message: '로그인 정보가 만료되었습니다. 다시 로그인해주세요.',
+          );
           return handler.next(err);
         }
       } on DioException catch (refreshError) {
         // Refresh API 호출 실패
         if (refreshError.response?.statusCode == 401 ||
-            refreshError.response?.statusCode == 403) {
-          // Refresh Token 만료 또는 유효하지 않음 → 로그아웃
+            refreshError.response?.statusCode == 403 ||
+            refreshError.response?.statusCode == 404) {
+          // Refresh Token 만료 또는 유효하지 않음 → 로그아웃 + 이벤트 발행
           await _tokenRepository.clearTokens();
+          authEventService.emitSessionExpired(
+            message: '세션이 만료되었습니다. 다시 로그인해주세요.',
+          );
         }
         // 원래 401 에러 전달
         return handler.next(err);
@@ -105,20 +114,28 @@ class AuthInterceptor extends Interceptor {
 
   /// ✅ 별도 Dio 인스턴스로 토큰 갱신 (무한 루프 방지!)
   ///
-  /// 참조: AUTH_API_SPEC.md - Interceptor 무한 루프 수정
+  /// 참조: claudedocs/TOKEN_REFRESH_IMPROVEMENT_PLAN.md
+  /// 참조: docs/BackendAPI.md - POST /auth/refresh
+  ///
   /// 🚨 중요: Interceptor가 적용되지 않은 독립적인 Dio 인스턴스 생성!
+  ///
+  /// **백엔드 API 스펙**:
+  /// - 경로: POST /auth/refresh
+  /// - Request Body: { "studentId": "21000000" }
+  /// - Response: LoginResponse { accessToken, refreshToken, user }
   ///
   /// Returns:
   /// - 새로운 Access Token (성공 시)
-  /// - null (Refresh Token 없음, 만료, 또는 네트워크 에러)
+  /// - null (studentId 없음 또는 네트워크 에러)
   ///
   /// Throws:
   /// - DioException: API 호출 실패 (상위에서 처리)
   Future<String?> _refreshAccessToken() async {
     try {
-      final refreshToken = await _tokenRepository.getRefreshToken();
-      if (refreshToken == null) {
-        debugPrint('[AuthInterceptor] No refresh token available');
+      // studentId 조회 (백엔드 API 스펙: studentId로 refresh 요청)
+      final studentId = await _tokenRepository.getStudentId();
+      if (studentId == null) {
+        debugPrint('[AuthInterceptor] No studentId available for refresh');
         return null;
       }
 
@@ -132,20 +149,21 @@ class AuthInterceptor extends Interceptor {
         ),
       );
 
+      // 백엔드 API 스펙대로 요청
       final response = await refreshDio.post(
-        '/api/auth/refresh',
-        data: {'refresh_token': refreshToken},
+        '/auth/refresh',
+        data: {'studentId': studentId},
       );
 
-      // 응답 검증
-      if (response.data == null || response.data['access_token'] == null) {
+      // 응답 검증 (LoginResponse 스펙: accessToken 필드)
+      if (response.data == null || response.data['accessToken'] == null) {
         debugPrint(
-          '[AuthInterceptor] Invalid refresh response: missing access_token',
+          '[AuthInterceptor] Invalid refresh response: missing accessToken',
         );
         return null;
       }
 
-      return response.data['access_token'] as String;
+      return response.data['accessToken'] as String;
     } on DioException catch (e) {
       // Dio 관련 에러는 상위로 전달 (onError에서 처리)
       debugPrint(

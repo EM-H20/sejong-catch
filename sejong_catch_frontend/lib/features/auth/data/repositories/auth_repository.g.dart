@@ -25,7 +25,7 @@ final authApiProvider = AutoDisposeProvider<AuthApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthApiRef = AutoDisposeProviderRef<AuthApi>;
-String _$authRepositoryHash() => r'7527a6295a303a08856bd56a2b7a6dfa233e5c33';
+String _$authRepositoryHash() => r'91301b1242a3f3077a88e874d5d0fde584c13038';
 
 /// 인증 Repository
 ///

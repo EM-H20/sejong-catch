@@ -37,6 +37,9 @@ class AppRoutes {
   static const String consoleRules = '/console/rules';
   static const String consoleStats = '/console/stats';
 
+  // 🛡️ 관리자 페이지 (booth_manager, admin 전용)
+  static const String admin = '/admin';
+
   // 📊 라우트 그룹 정의 (권한 가드용)
   static const List<String> mainAppRoutes = [
     home,
@@ -52,6 +55,7 @@ class AppRoutes {
     console,
     consoleRules,
     consoleStats,
+    admin,
   ];
 
   static const List<String> guestOnlyRoutes = [

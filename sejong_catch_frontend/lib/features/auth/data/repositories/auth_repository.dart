@@ -6,6 +6,7 @@ import '../../../../core/services/token_storage_service.dart';
 import '../../../../core/services/onboarding_service.dart';
 import '../datasources/auth_api.dart';
 import '../models/request/login_request.dart';
+import '../models/request/logout_request.dart';
 import '../models/response/login_response.dart';
 
 part 'auth_repository.g.dart';
@@ -28,13 +29,25 @@ class AuthRepository extends _$AuthRepository {
   /// 🔧 **개발/프로덕션 자동 전환**
   /// - Mock 모드: --dart-define=USE_MOCK_AUTH=true
   /// - Real 모드: --dart-define=USE_MOCK_AUTH=false
+  ///
+  /// **토큰 갱신 지원**:
+  /// 로그인 성공 시 studentId를 SecureStorage에 저장하여
+  /// 나중에 토큰 갱신 시 사용 (백엔드 API 스펙)
   Future<LoginResponse> login(String studentId, String password) async {
     // 🔥 컴파일 타임 상수로 분기 (launch.json 설정 반영!)
+    LoginResponse response;
     if (EnvConfig.useMockAuth) {
-      return _mockLogin(studentId, password);
+      response = await _mockLogin(studentId, password);
     } else {
-      return _realLogin(studentId, password);
+      response = await _realLogin(studentId, password);
     }
+
+    // ✅ 로그인 성공 시 studentId 저장 (토큰 갱신에 필요)
+    // 참조: claudedocs/TOKEN_REFRESH_IMPROVEMENT_PLAN.md
+    final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
+    await tokenStorage.saveStudentId(studentId);
+
+    return response;
   }
 
   /// Mock 로그인 (개발 전용) - 백엔드 응답 구조와 일치!
@@ -103,27 +116,33 @@ class AuthRepository extends _$AuthRepository {
   /// 로그아웃
   ///
   /// **동작**:
-  /// 1. 토큰 삭제 (FlutterSecureStorage)
-  /// 2. SharedPreferences 모든 데이터 삭제 (온보딩 상태 포함)
-  /// 3. API 로그아웃 호출 (선택적, Mock 모드에서는 스킵)
+  /// 1. refreshToken 먼저 읽기 (삭제 전에!)
+  /// 2. 토큰 삭제 (FlutterSecureStorage)
+  /// 3. SharedPreferences 모든 데이터 삭제 (온보딩 상태 포함)
+  /// 4. API 로그아웃 호출 (refreshToken 전달, Mock 모드에서는 스킵)
   ///
   /// **Mock/Real 모드 모두 지원**
   Future<void> logout() async {
-    // 1. 토큰 삭제
     final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
+
+    // 1. refreshToken 먼저 읽기 (삭제 전에!)
+    final refreshToken = await tokenStorage.getRefreshToken();
+
+    // 2. 토큰 삭제
     await tokenStorage.clearTokens();
 
-    // 2. SharedPreferences 전체 삭제 (온보딩 상태 초기화)
+    // 3. SharedPreferences 전체 삭제 (온보딩 상태 초기화)
     final onboardingService = ref.read(onboardingServiceProvider);
     await onboardingService.clearAllLocalData();
 
-    // 3. API 로그아웃 호출 (Real 모드일 때만)
-    if (!EnvConfig.useMockAuth) {
+    // 4. API 로그아웃 호출 (Real 모드 + refreshToken 있을 때만)
+    if (!EnvConfig.useMockAuth && refreshToken != null) {
       try {
         final api = ref.read(authApiProvider);
-        await api.logout();
+        await api.logout(LogoutRequest(refreshToken: refreshToken));
       } catch (e) {
         // API 로그아웃 실패해도 로컬 데이터는 이미 삭제됨
+        // 서버에서 토큰 무효화 실패해도 클라이언트는 이미 로그아웃 상태
       }
     }
   }

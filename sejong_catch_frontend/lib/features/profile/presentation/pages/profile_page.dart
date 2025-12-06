@@ -9,6 +9,7 @@ import 'package:sejong_catch_frontend/core/widgets/app_divider.dart';
 import 'package:sejong_catch_frontend/features/auth/presentation/controllers/login_controller.dart';
 import 'package:sejong_catch_frontend/features/auth/presentation/controllers/auth_state_controller.dart';
 import 'package:sejong_catch_frontend/features/auth/data/models/response/login_response.dart';
+import 'package:sejong_catch_frontend/features/auth/data/models/user_role.dart';
 
 /// 👤 프로필 페이지 - 사용자 정보 및 설정
 ///
@@ -359,6 +360,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   /// ⚙️ 설정 섹션
   Widget _buildSettingsSection() {
+    final authState = ref.watch(authStateControllerProvider);
+    final userRole = UserRole.fromString(authState.currentUser?.role);
+
     return Container(
       margin: AppSpacing.screenHorizontal,
       decoration: BoxDecoration(
@@ -383,6 +387,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ),
 
           AppDivider.thin(),
+
+          // 🔐 관리자 전용: 부스 관리 메뉴
+          if (userRole.canCreateQueue) ...[
+            _buildSettingTile(
+              icon: Icons.admin_panel_settings,
+              label: '부스 관리',
+              subtitle: userRole.isAdmin ? '관리자 전체 권한' : '내 부스 관리',
+              highlightColor: AppColors.brandCrimson,
+              onTap: () {
+                context.push('/admin');
+              },
+            ),
+            AppDivider.thin(),
+          ],
 
           // 알림 설정
           _buildSettingTile(
@@ -441,7 +459,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    String? subtitle,
+    Color? highlightColor,
   }) {
+    final iconColor = highlightColor ?? AppColors.textSecondary;
+    final bgColor = highlightColor?.withValues(alpha: 0.1) ?? AppColors.surface;
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -451,26 +474,42 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: bgColor,
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Icon(icon, size: 20.sp, color: AppColors.textSecondary),
+              child: Icon(icon, size: 20.sp, color: iconColor),
             ),
             AppSpacing.horizontalSpaceLG,
             Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500,
+                      color: highlightColor ?? AppColors.textPrimary,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    SizedBox(height: 2.h),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             Icon(
               Icons.chevron_right,
               size: 20.sp,
-              color: AppColors.textTertiary,
+              color: highlightColor ?? AppColors.textTertiary,
             ),
           ],
         ),

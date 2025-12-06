@@ -21,6 +21,7 @@ class TokenRepositoryImpl implements TokenRepository {
   /// Storage key 상수
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
+  static const _studentIdKey = 'student_id';
 
   TokenRepositoryImpl(this._storage);
 
@@ -100,6 +101,7 @@ class TokenRepositoryImpl implements TokenRepository {
       await Future.wait([
         _storage.delete(key: _accessTokenKey),
         _storage.delete(key: _refreshTokenKey),
+        _storage.delete(key: _studentIdKey),
       ]);
     } on PlatformException catch (e) {
       // iOS Keychain, Android KeyStore 에러
@@ -110,6 +112,40 @@ class TokenRepositoryImpl implements TokenRepository {
     } catch (e) {
       // 예상치 못한 에러
       debugPrint('[TokenRepository] Unexpected error clearing tokens: $e');
+    }
+  }
+
+  @override
+  Future<String?> getStudentId() async {
+    try {
+      return await _storage.read(key: _studentIdKey);
+    } on PlatformException catch (e) {
+      // iOS Keychain, Android KeyStore 에러
+      debugPrint(
+        '[TokenRepository] Platform error reading studentId: ${e.code} - ${e.message}',
+      );
+      return null;
+    } catch (e) {
+      // 예상치 못한 에러
+      debugPrint('[TokenRepository] Unexpected error reading studentId: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<void> saveStudentId(String studentId) async {
+    try {
+      await _storage.write(key: _studentIdKey, value: studentId);
+    } on PlatformException catch (e) {
+      // iOS Keychain, Android KeyStore 에러
+      debugPrint(
+        '[TokenRepository] Platform error saving studentId: ${e.code} - ${e.message}',
+      );
+      rethrow; // 저장 실패는 상위에서 처리해야 함
+    } catch (e) {
+      // 예상치 못한 에러
+      debugPrint('[TokenRepository] Unexpected error saving studentId: $e');
+      rethrow;
     }
   }
 }

@@ -4,29 +4,38 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../../data/models/response/my_queue_item.dart';
+import '../../../data/models/response/my_queue_status.dart';
+import '../../../data/models/response/booth.dart';
 
-/// 🎫 내 큐 카드 위젯
+/// 🎫 내 대기 상태 카드 위젯
 ///
 /// 내가 참여한 큐의 정보를 보여주는 크림슨 그라디언트 카드입니다.
-/// - 큐 이름
-/// - 내 순번 (크게 강조!)
-/// - 현재 순번, 앞 대기 인원, 예상 대기 시간
+/// - 부스 이름, 마스터(타입) 이름
+/// - 내 티켓 번호 (크게 강조!)
+/// - 내 앞 대기 인원, 현재 상태
 /// - 줄서기 포기 버튼
 ///
+/// **API 모델: MyQueueStatus**
 /// **디자인 토큰 100% 사용!**
 class MyQueueCard extends StatelessWidget {
-  final MyQueueItem myQueue;
+  final MyQueueStatus myStatus;
+  final Booth? booth; // 부스 정보 (제목 표시용)
   final VoidCallback onCancel;
+  final String? masterName; // 부스 타입(마스터) 이름
 
   const MyQueueCard({
     super.key,
-    required this.myQueue,
+    required this.myStatus,
+    this.booth,
     required this.onCancel,
+    this.masterName,
   });
 
   @override
   Widget build(BuildContext context) {
+    // 상태별 색상 결정
+    final (statusColor, statusText) = _getStatusInfo();
+
     return Container(
       padding: AppSpacing.modalPadding,
       decoration: BoxDecoration(
@@ -46,15 +55,61 @@ class MyQueueCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // 큐 이름
-          Text(
-            myQueue.name,
-            style: AppTextStyles.headingBold22,
+          // 부스 이름 + 마스터 타입 + 상태
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      booth?.title ?? '부스',
+                      style: AppTextStyles.headingBold22.copyWith(
+                        color: AppColors.pureWhite,
+                      ),
+                    ),
+                    if (masterName != null) ...[
+                      SizedBox(height: 4.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.category_outlined,
+                            size: 14.sp,
+                            color: AppColors.pureWhite.withValues(alpha: 0.8),
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            masterName!,
+                            style: AppTextStyles.captionMedium11.copyWith(
+                              color: AppColors.pureWhite.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: AppColors.pureWhite.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Text(
+                  statusText,
+                  style: AppTextStyles.captionBold12.copyWith(
+                    color: statusColor,
+                  ),
+                ),
+              ),
+            ],
           ),
 
           AppSpacing.verticalSpaceXXL,
 
-          // 내 번호 (크게)
+          // 내 티켓 번호 (크게)
           Container(
             padding: EdgeInsets.all(28.w),
             decoration: BoxDecoration(
@@ -76,7 +131,7 @@ class MyQueueCard extends StatelessWidget {
                 ),
                 SizedBox(height: 12.h),
                 Text(
-                  '#${myQueue.myNumber}',
+                  '#${myStatus.ticketNo}',
                   style: AppTextStyles.displayBold56,
                 ),
               ],
@@ -95,45 +150,97 @@ class MyQueueCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMyQueueStat('현재 번호', '#${myQueue.currentNumber}'),
+                _buildMyQueueStat('내 순서', '#${myStatus.position}'),
                 Container(
                   width: 1.5,
                   height: 48.h,
                   color: AppColors.pureWhite.withValues(alpha: 0.3),
                 ),
-                _buildMyQueueStat('내 앞 대기', '${myQueue.peopleAhead}명'),
+                _buildMyQueueStat('내 앞 대기', '${myStatus.teamsAhead}팀'),
                 Container(
                   width: 1.5,
                   height: 48.h,
                   color: AppColors.pureWhite.withValues(alpha: 0.3),
                 ),
-                _buildMyQueueStat('예상 대기', '${myQueue.estimatedWait}분'),
+                _buildMyQueueStat(
+                  '예상 대기',
+                  '${(myStatus.teamsAhead * (booth?.avgWaitMinutes ?? 10))}분',
+                ),
               ],
             ),
           ),
 
-          AppSpacing.verticalSpaceLG,
+          // 대기 중 상태일 때만 포기 버튼 표시
+          if (myStatus.state == 'WAITING') ...[
+            AppSpacing.verticalSpaceLG,
 
-          // 포기 버튼
-          TextButton.icon(
-            onPressed: onCancel,
-            icon: Icon(
-              Icons.close,
-              size: 16.sp,
-              color: AppColors.pureWhite.withValues(alpha: 0.9),
-            ),
-            label: Text(
-              '줄서기 포기',
-              style: AppTextStyles.bodyMedium14.copyWith(
+            // 포기 버튼
+            TextButton.icon(
+              onPressed: onCancel,
+              icon: Icon(
+                Icons.close,
+                size: 16.sp,
                 color: AppColors.pureWhite.withValues(alpha: 0.9),
-                decoration: TextDecoration.underline,
-                decorationColor: AppColors.pureWhite.withValues(alpha: 0.9),
+              ),
+              label: Text(
+                '줄서기 포기',
+                style: AppTextStyles.bodyMedium14.copyWith(
+                  color: AppColors.pureWhite.withValues(alpha: 0.9),
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.pureWhite.withValues(alpha: 0.9),
+                ),
               ),
             ),
-          ),
+          ],
+
+          // 입장 중 상태
+          if (myStatus.state == 'IN_SERVICE') ...[
+            AppSpacing.verticalSpaceLG,
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    size: 20.sp,
+                    color: AppColors.pureWhite,
+                  ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    '지금 입장하세요! 🎉',
+                    style: AppTextStyles.bodyBold14.copyWith(
+                      color: AppColors.pureWhite,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  /// 상태 정보 반환 (색상, 텍스트)
+  /// API state: WAITING | IN_SERVICE | COMPLETED | CANCELED
+  (Color, String) _getStatusInfo() {
+    switch (myStatus.state) {
+      case 'WAITING':
+        return (AppColors.pureWhite, '대기중');
+      case 'IN_SERVICE':
+        return (AppColors.success, '입장중');
+      case 'COMPLETED':
+        return (AppColors.textTertiary, '완료');
+      case 'CANCELED':
+        return (AppColors.error, '취소됨');
+      default:
+        return (AppColors.pureWhite, '알 수 없음');
+    }
   }
 
   /// 📊 내 큐 통계 아이템

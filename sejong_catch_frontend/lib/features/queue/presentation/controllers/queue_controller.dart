@@ -1,125 +1,224 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/config/env_config.dart';
+import '../../data/models/response/booth.dart';
+import '../../data/models/response/booth_manager.dart';
+import '../../data/models/response/booth_master.dart';
 import '../models/queue_state.dart';
-import '../../data/models/response/queue_item.dart';
 import '../../data/repositories/queue_repository.dart';
 
 part 'queue_controller.g.dart';
 
 /// 큐 페이지 컨트롤러
 ///
-/// 큐 목록, 내 대기열, 큐 참여/포기 등의 상태와 비즈니스 로직을 관리합니다.
-/// Repository 패턴을 사용하여 Mock/Real 모드를 분리합니다.
+/// 부스 목록 조회, 대기열 등록/취소, 관리자 기능 등을 담당합니다.
+/// Repository 패턴을 사용하여 Mock/Real 모드를 자동 분기합니다.
 @riverpod
 class QueueController extends _$QueueController {
   @override
   QueueState build() {
-    // 🚧 Real 모드: API 미구현 상태 → 개발 중 표시
-    if (!EnvConfig.useMockAuth) {
-      return const QueueState(isUnderDevelopment: true);
-    }
-
-    // 🧪 Mock 모드: 초기 데이터 로드
+    // 초기 데이터 로드
     _loadInitialData();
     return const QueueState(isLoading: true);
   }
 
-  /// 초기 데이터 로드
+  /// 초기 데이터 로드 (부스 목록 + 부스 타입 목록)
   Future<void> _loadInitialData() async {
     try {
       final repository = ref.read(queueRepositoryProvider);
-      final queues = await repository.getQueues();
-      final myQueues = await repository.getMyQueues();
+
+      // 병렬로 부스 목록과 부스 타입 조회
+      final results = await Future.wait([
+        repository.getBooths(),
+        repository.getBoothMasters(),
+      ]);
 
       state = state.copyWith(
         isLoading: false,
-        allQueues: queues,
-        myQueues: myQueues,
+        booths: (results[0] as List).cast<Booth>(),
+        boothMasters: (results[1] as List).cast<BoothMaster>(),
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎯 UI 상태 관리
+  // ═══════════════════════════════════════════════════════════════════════════
 
   /// 탭 변경
   void changeTab(int index) {
     state = state.copyWith(currentTabIndex: index);
   }
 
+  /// 부스 선택 (관리자 뷰)
+  void selectBooth(String? boothId) {
+    state = state.copyWith(selectedBoothId: boothId);
+  }
+
+  /// 에러 초기화
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎫 학생용 기능
+  // 📋 부스 조회
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// 큐 참여
-  Future<void> joinQueue(String queueId) async {
+  /// 부스 목록 새로고침
+  Future<void> refreshBooths({String? status}) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final repository = ref.read(queueRepositoryProvider);
-      final myQueue = await repository.joinQueue(queueId);
+      final booths = await repository.getBooths(status: status);
 
-      // 내 대기열에 추가 + 전체 큐 목록 갱신
-      final updatedQueues = await repository.getQueues();
       state = state.copyWith(
         isLoading: false,
-        allQueues: updatedQueues,
-        myQueues: [...state.myQueues, myQueue],
+        booths: booths,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
     }
   }
 
-  /// 큐 포기
-  Future<void> cancelQueue(String queueId) async {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎫 대기열 (학생용)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 대기열 등록
+  Future<bool> enqueue(String boothId) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final repository = ref.read(queueRepositoryProvider);
-      await repository.cancelQueue(queueId);
+      final result = await repository.enqueue(boothId);
 
-      final updatedMyQueues =
-          state.myQueues.where((q) => q.id != queueId).toList();
-      state = state.copyWith(isLoading: false, myQueues: updatedMyQueues);
+      // 내 대기 상태 업데이트
+      final updatedStatuses = Map<String, dynamic>.from(state.myQueueStatuses);
+      final myStatus = await repository.getMyStatus(boothId);
+      updatedStatuses[boothId] = myStatus;
+
+      state = state.copyWith(
+        isLoading: false,
+        myQueueStatuses: Map.from(updatedStatuses),
+      );
+
+      return result.mode == 'IN_SERVICE'; // 즉시 입장 여부 반환
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+      return false;
     }
   }
 
+  /// 대기 취소
+  Future<void> cancelQueue(String boothId) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      await repository.cancel(boothId);
+
+      // 내 대기 상태에서 제거
+      final updatedStatuses = Map<String, dynamic>.from(state.myQueueStatuses);
+      updatedStatuses.remove(boothId);
+
+      state = state.copyWith(
+        isLoading: false,
+        myQueueStatuses: Map.from(updatedStatuses),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
+
+  /// 내 대기 상태 조회
+  Future<void> fetchMyStatus(String boothId) async {
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      final myStatus = await repository.getMyStatus(boothId);
+
+      final updatedStatuses = Map<String, dynamic>.from(state.myQueueStatuses);
+      updatedStatuses[boothId] = myStatus;
+
+      state = state.copyWith(myQueueStatuses: Map.from(updatedStatuses));
+    } catch (e) {
+      // 대기 정보 없음 → 에러 무시 (정상 케이스)
+    }
+  }
+
+  /// 모든 대기 중인 부스의 상태 새로고침
+  Future<void> refreshMyStatuses() async {
+    final repository = ref.read(queueRepositoryProvider);
+    final updatedStatuses = <String, dynamic>{};
+
+    for (final boothId in state.myQueueStatuses.keys) {
+      try {
+        final myStatus = await repository.getMyStatus(boothId);
+        updatedStatuses[boothId] = myStatus;
+      } catch (e) {
+        // 대기 종료됨 → 목록에서 제거
+      }
+    }
+
+    state = state.copyWith(myQueueStatuses: Map.from(updatedStatuses));
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎛️ 운영자 전용 기능
+  // 🎛️ 부스 관리 (관리자용)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// 큐 생성
-  Future<void> createQueue({
-    required String name,
-    required String type,
-    required int avgWaitTime,
+  /// 부스 생성
+  Future<bool> createBooth({
+    required String masterId,
+    required String title,
+    int? seatCount,
+    int? avgWaitMinutes,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final repository = ref.read(queueRepositoryProvider);
-      final newQueue = await repository.createQueue(
-        name: name,
-        type: type,
-        avgWaitTime: avgWaitTime,
+      final newBooth = await repository.createBooth(
+        masterId: masterId,
+        title: title,
+        seatCount: seatCount,
+        avgWaitMinutes: avgWaitMinutes,
       );
 
       state = state.copyWith(
         isLoading: false,
-        allQueues: [...state.allQueues, newQueue],
+        booths: [...state.booths, newBooth],
       );
+      return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+      return false;
     }
   }
 
-  /// 📣 다음 대기자 호출
-  Future<bool> callNextInQueue(String queueId) async {
+  /// 부스 상태 변경
+  Future<bool> updateBoothStatus(String boothId, String status) async {
     try {
       final repository = ref.read(queueRepositoryProvider);
-      final updatedQueue = await repository.callNext(queueId);
+      final updatedBooth = await repository.updateBoothStatus(boothId, status);
 
-      _updateQueueInList(updatedQueue);
+      final updatedBooths = state.booths.map((b) {
+        return b.id == boothId ? updatedBooth : b;
+      }).toList();
+
+      state = state.copyWith(booths: updatedBooths);
       return true;
     } catch (e) {
       state = state.copyWith(error: e.toString());
@@ -127,92 +226,76 @@ class QueueController extends _$QueueController {
     }
   }
 
-  /// ⏸️ 큐 일시정지
-  Future<bool> pauseQueue(String queueId) async {
-    try {
-      final repository = ref.read(queueRepositoryProvider);
-      final updatedQueue = await repository.pauseQueue(queueId);
-
-      _updateQueueInList(updatedQueue);
-      return true;
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-      return false;
-    }
-  }
-
-  /// ▶️ 큐 재개
-  Future<bool> resumeQueue(String queueId) async {
-    try {
-      final repository = ref.read(queueRepositoryProvider);
-      final updatedQueue = await repository.resumeQueue(queueId);
-
-      _updateQueueInList(updatedQueue);
-      return true;
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-      return false;
-    }
-  }
-
-  /// 🛑 큐 마감
-  Future<bool> closeQueue(String queueId) async {
-    try {
-      final repository = ref.read(queueRepositoryProvider);
-      final updatedQueue = await repository.closeQueue(queueId);
-
-      _updateQueueInList(updatedQueue);
-      return true;
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-      return false;
-    }
-  }
-
-  /// 🗑️ 큐 삭제
-  Future<bool> deleteQueue(String queueId) async {
-    try {
-      final repository = ref.read(queueRepositoryProvider);
-      await repository.deleteQueue(queueId);
-
-      final updatedQueues =
-          state.allQueues.where((q) => q.id != queueId).toList();
-      state = state.copyWith(allQueues: updatedQueues);
-      return true;
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-      return false;
-    }
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 📋 공통 기능
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /// 큐 목록 새로고침
-  Future<void> refreshQueues() async {
+  /// 대기 목록 조회 (관리자)
+  Future<void> fetchQueueList(String boothId) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final repository = ref.read(queueRepositoryProvider);
-      final queues = await repository.getQueues();
-      final myQueues = await repository.getMyQueues();
+      final entries = await repository.getQueueList(boothId);
 
       state = state.copyWith(
         isLoading: false,
-        allQueues: queues,
-        myQueues: myQueues,
+        queueEntries: entries,
+        selectedBoothId: boothId,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
     }
   }
 
-  /// 🔄 큐 목록에서 특정 큐 업데이트 (헬퍼)
-  void _updateQueueInList(QueueItem updatedQueue) {
-    final updatedQueues = state.allQueues.map((q) {
-      return q.id == updatedQueue.id ? updatedQueue : q;
-    }).toList();
+  /// 다음 팀 입장 (관리자)
+  Future<bool> rotateQueue(String boothId) async {
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      await repository.rotateQueue(boothId);
 
-    state = state.copyWith(allQueues: updatedQueues);
+      // 대기 목록 새로고침
+      await fetchQueueList(boothId);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 👨‍💼 부스 관리자 관리 (Admin)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 부스 관리자 목록 조회
+  Future<List<BoothManager>> fetchBoothManagers(String boothId) async {
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      return await repository.getBoothManagers(boothId);
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return [];
+    }
+  }
+
+  /// 부스 관리자 추가
+  Future<BoothManager?> addBoothManager(String boothId, String userId) async {
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      return await repository.addBoothManager(boothId, userId);
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return null;
+    }
+  }
+
+  /// 부스 관리자 삭제
+  Future<bool> removeBoothManager(String boothId, String userId) async {
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      await repository.removeBoothManager(boothId, userId);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
   }
 }

@@ -2,19 +2,22 @@
 ///
 /// **역할 계층**:
 /// - `student`: 일반 학생 (기본값)
-/// - `operator`: 큐 운영자 (큐 생성/관리 가능)
+/// - `boothManager`: 부스 관리자 (부스 생성/관리 가능)
 /// - `admin`: 관리자 (모든 권한)
+///
+/// **백엔드 DB**:
+/// `role` enum('student','booth_manager','admin')
 ///
 /// **사용 예시**:
 /// ```dart
 /// final role = UserRole.fromString(user.role);
 /// if (role.canCreateQueue) {
-///   // 큐 생성 버튼 표시
+///   // 부스 생성 버튼 표시
 /// }
 /// ```
 enum UserRole {
   student('student'),
-  operator('operator'),
+  boothManager('booth_manager'),
   admin('admin');
 
   final String value;
@@ -34,10 +37,10 @@ enum UserRole {
     );
   }
 
-  /// 🎫 큐 생성 권한 확인
+  /// 🎫 부스 생성/관리 권한 확인
   ///
-  /// **허용 역할**: operator, admin
-  bool get canCreateQueue => this == operator || this == admin;
+  /// **허용 역할**: boothManager, admin
+  bool get canCreateQueue => this == boothManager || this == admin;
 
   /// 🛡️ 관리자 권한 확인
   ///
@@ -49,8 +52,8 @@ enum UserRole {
     switch (this) {
       case UserRole.student:
         return '학생';
-      case UserRole.operator:
-        return '운영자';
+      case UserRole.boothManager:
+        return '부스 관리자';
       case UserRole.admin:
         return '관리자';
     }
