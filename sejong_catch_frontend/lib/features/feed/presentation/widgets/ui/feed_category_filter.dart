@@ -41,10 +41,7 @@ class FeedCategoryFilter extends StatelessWidget {
 
           return GestureDetector(
             onTap: () => onCategoryChanged(category),
-            child: _CategoryChip(
-              label: category,
-              isSelected: isSelected,
-            ),
+            child: _CategoryChip(label: category, isSelected: isSelected),
           );
         },
       ),
@@ -57,10 +54,7 @@ class _CategoryChip extends StatelessWidget {
   final String label;
   final bool isSelected;
 
-  const _CategoryChip({
-    required this.label,
-    required this.isSelected,
-  });
+  const _CategoryChip({required this.label, required this.isSelected});
 
   @override
   Widget build(BuildContext context) {

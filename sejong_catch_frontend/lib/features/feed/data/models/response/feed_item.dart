@@ -101,7 +101,8 @@ class FeedItem with _$FeedItem {
       viewCount: 1234,
       priority: priority,
       isBookmarked: false,
-      content: '''
+      content:
+          '''
 # $title
 
 ## 개요

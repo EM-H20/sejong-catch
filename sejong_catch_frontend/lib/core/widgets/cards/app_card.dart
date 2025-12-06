@@ -422,7 +422,9 @@ class AppCard extends StatelessWidget {
       margin: AppSpacing.symmetric(horizontal: 8),
       child: Text(
         '•',
-        style: AppTextStyles.bodyRegular12.copyWith(color: AppColors.textSecondary),
+        style: AppTextStyles.bodyRegular12.copyWith(
+          color: AppColors.textSecondary,
+        ),
       ),
     );
   }

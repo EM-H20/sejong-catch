@@ -43,18 +43,16 @@ class SearchController extends _$SearchController {
     }
 
     // 로딩 시작
-    state = state.copyWith(
-      query: query,
-      isSearching: true,
-      error: null,
-    );
+    state = state.copyWith(query: query, isSearching: true, error: null);
 
     try {
       // 1. Repository를 통한 검색
       final repository = ref.read(searchRepositoryProvider.notifier);
       final results = await repository.search(
         query: query,
-        category: state.selectedCategory != '전체' ? state.selectedCategory : null,
+        category: state.selectedCategory != '전체'
+            ? state.selectedCategory
+            : null,
         timeRange: state.selectedTimeRange,
         viewsRangePreset: state.selectedViewsRange,
       );
@@ -79,18 +77,16 @@ class SearchController extends _$SearchController {
     if (query.trim().isEmpty) return;
 
     // 로딩 시작
-    state = state.copyWith(
-      query: query,
-      isSearching: true,
-      error: null,
-    );
+    state = state.copyWith(query: query, isSearching: true, error: null);
 
     try {
       // 1. Repository를 통한 검색
       final repository = ref.read(searchRepositoryProvider.notifier);
       final results = await repository.search(
         query: query,
-        category: state.selectedCategory != '전체' ? state.selectedCategory : null,
+        category: state.selectedCategory != '전체'
+            ? state.selectedCategory
+            : null,
         timeRange: state.selectedTimeRange,
         viewsRangePreset: state.selectedViewsRange,
       );

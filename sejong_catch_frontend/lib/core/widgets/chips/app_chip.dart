@@ -58,10 +58,7 @@ class AppChip extends StatelessWidget {
   ///
   /// **표시 형식**: "N일 전", "오늘", "방금"
   /// **isUrgent**: 7일 이내 게시글은 강조 표시
-  factory AppChip.dDay({
-    required int daysLeft,
-    bool isUrgent = false,
-  }) {
+  factory AppChip.dDay({required int daysLeft, bool isUrgent = false}) {
     // 경과일에 따른 표시 텍스트
     String label;
     if (daysLeft == 0) {
@@ -89,9 +86,7 @@ class AppChip extends StatelessWidget {
   }
 
   /// 👁️ 조회수 칩
-  factory AppChip.viewCount({
-    required int count,
-  }) {
+  factory AppChip.viewCount({required int count}) {
     return AppChip(
       icon: Icons.visibility_outlined,
       label: _formatNumber(count),
@@ -194,8 +189,4 @@ class AppChip extends StatelessWidget {
 }
 
 /// 칩 크기 옵션
-enum AppChipSize {
-  small,
-  medium,
-  large,
-}
+enum AppChipSize { small, medium, large }

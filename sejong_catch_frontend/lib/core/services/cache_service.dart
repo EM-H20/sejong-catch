@@ -19,16 +19,13 @@ class CrawlerCache {
   final List<CrawlerResult> data;
   final DateTime timestamp;
 
-  const CrawlerCache({
-    required this.data,
-    required this.timestamp,
-  });
+  const CrawlerCache({required this.data, required this.timestamp});
 
   /// JSON으로 변환 (SharedPreferences 저장용)
   Map<String, dynamic> toJson() => {
-        'data': data.map((item) => item.toJson()).toList(),
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'data': data.map((item) => item.toJson()).toList(),
+    'timestamp': timestamp.toIso8601String(),
+  };
 
   /// JSON에서 복원
   factory CrawlerCache.fromJson(Map<String, dynamic> json) {
@@ -97,15 +94,9 @@ class CacheService extends _$CacheService {
   Future<void> setCrawlerCache(List<CrawlerResult> data) async {
     try {
       final prefs = await ref.read(sharedPreferencesProvider.future);
-      final cache = CrawlerCache(
-        data: data,
-        timestamp: DateTime.now(),
-      );
+      final cache = CrawlerCache(data: data, timestamp: DateTime.now());
 
-      await prefs.setString(
-        _crawlerCacheKey,
-        jsonEncode(cache.toJson()),
-      );
+      await prefs.setString(_crawlerCacheKey, jsonEncode(cache.toJson()));
     } catch (e) {
       // 저장 실패 시 무시 (다음 요청 시 API 호출)
       return;

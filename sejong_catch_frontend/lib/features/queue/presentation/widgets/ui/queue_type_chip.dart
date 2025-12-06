@@ -52,10 +52,7 @@ class QueueTypeChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.w,
-          vertical: 10.h,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: isSelected
               ? color.withValues(alpha: 0.15)
@@ -97,64 +94,59 @@ class QueueTypeChips {
   static QueueTypeChip food({
     required bool isSelected,
     required VoidCallback onTap,
-  }) =>
-      QueueTypeChip(
-        type: 'food',
-        label: '음식',
-        icon: Icons.restaurant_rounded,
-        isSelected: isSelected,
-        onTap: onTap,
-      );
+  }) => QueueTypeChip(
+    type: 'food',
+    label: '음식',
+    icon: Icons.restaurant_rounded,
+    isSelected: isSelected,
+    onTap: onTap,
+  );
 
   /// 음료 큐
   static QueueTypeChip drink({
     required bool isSelected,
     required VoidCallback onTap,
-  }) =>
-      QueueTypeChip(
-        type: 'drink',
-        label: '음료',
-        icon: Icons.local_cafe_rounded,
-        isSelected: isSelected,
-        onTap: onTap,
-      );
+  }) => QueueTypeChip(
+    type: 'drink',
+    label: '음료',
+    icon: Icons.local_cafe_rounded,
+    isSelected: isSelected,
+    onTap: onTap,
+  );
 
   /// 게임 큐
   static QueueTypeChip game({
     required bool isSelected,
     required VoidCallback onTap,
-  }) =>
-      QueueTypeChip(
-        type: 'game',
-        label: '게임',
-        icon: Icons.sports_esports_rounded,
-        isSelected: isSelected,
-        onTap: onTap,
-      );
+  }) => QueueTypeChip(
+    type: 'game',
+    label: '게임',
+    icon: Icons.sports_esports_rounded,
+    isSelected: isSelected,
+    onTap: onTap,
+  );
 
   /// 포토 큐
   static QueueTypeChip photo({
     required bool isSelected,
     required VoidCallback onTap,
-  }) =>
-      QueueTypeChip(
-        type: 'photo',
-        label: '포토',
-        icon: Icons.photo_camera_rounded,
-        isSelected: isSelected,
-        onTap: onTap,
-      );
+  }) => QueueTypeChip(
+    type: 'photo',
+    label: '포토',
+    icon: Icons.photo_camera_rounded,
+    isSelected: isSelected,
+    onTap: onTap,
+  );
 
   /// 기타 큐
   static QueueTypeChip other({
     required bool isSelected,
     required VoidCallback onTap,
-  }) =>
-      QueueTypeChip(
-        type: 'other',
-        label: '기타',
-        icon: Icons.more_horiz_rounded,
-        isSelected: isSelected,
-        onTap: onTap,
-      );
+  }) => QueueTypeChip(
+    type: 'other',
+    label: '기타',
+    icon: Icons.more_horiz_rounded,
+    isSelected: isSelected,
+    onTap: onTap,
+  );
 }

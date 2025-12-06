@@ -13,9 +13,10 @@ class QueueEntry with _$QueueEntry {
   const factory QueueEntry({
     required String id,
     required String boothId,
-    String? visitorId, // nullable: 서버에서 null일 수 있음
+    @JsonKey(name: 'userId') String? visitorId, // API는 userId로 반환 (nullable)
     required int ticketNo,
-    @Default('WAITING') String state, // WAITING | IN_SERVICE | COMPLETED | CANCELED
+    @Default('WAITING')
+    String state, // WAITING | IN_SERVICE | COMPLETED | CANCELED
     @FlexibleDateTimeConverter() required DateTime joinedAt,
   }) = _QueueEntry;
 

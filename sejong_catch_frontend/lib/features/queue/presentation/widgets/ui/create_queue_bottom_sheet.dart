@@ -23,8 +23,13 @@ class CreateQueueBottomSheet extends StatefulWidget {
   final List<BoothMaster> boothMasters;
 
   /// 부스 생성 콜백 (masterId, title, seatCount, avgWaitMinutes)
-  final Function(String masterId, String title, int seatCount, int avgWaitMinutes)
-      onCreate;
+  final Function(
+    String masterId,
+    String title,
+    int seatCount,
+    int avgWaitMinutes,
+  )
+  onCreate;
 
   const CreateQueueBottomSheet({
     super.key,
@@ -36,8 +41,13 @@ class CreateQueueBottomSheet extends StatefulWidget {
   static Future<void> show(
     BuildContext context, {
     required List<BoothMaster> boothMasters,
-    required Function(String masterId, String title, int seatCount, int avgWaitMinutes)
-        onCreate,
+    required Function(
+      String masterId,
+      String title,
+      int seatCount,
+      int avgWaitMinutes,
+    )
+    onCreate,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -114,9 +124,7 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
         ),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(24.r),
-          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -140,28 +148,19 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
                 AppSpacing.verticalSpaceLG,
 
                 // 제목
-                Text(
-                  '새 부스 만들기',
-                  style: AppTextStyles.headingBold20,
-                ),
+                Text('새 부스 만들기', style: AppTextStyles.headingBold20),
 
                 AppSpacing.verticalSpaceXL,
 
                 // 🏷️ 부스 타입 선택 (드롭다운)
-                Text(
-                  '부스 타입',
-                  style: AppTextStyles.labelMedium14,
-                ),
+                Text('부스 타입', style: AppTextStyles.labelMedium14),
                 AppSpacing.verticalSpaceSM,
                 _buildBoothMasterDropdown(),
 
                 AppSpacing.verticalSpaceXL,
 
                 // 부스 이름 입력
-                Text(
-                  '부스 이름',
-                  style: AppTextStyles.labelMedium14,
-                ),
+                Text('부스 이름', style: AppTextStyles.labelMedium14),
                 AppSpacing.verticalSpaceSM,
                 AppTextField(
                   controller: _titleController,
@@ -178,10 +177,7 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '좌석 수',
-                            style: AppTextStyles.labelMedium14,
-                          ),
+                          Text('좌석 수', style: AppTextStyles.labelMedium14),
                           AppSpacing.verticalSpaceSM,
                           AppTextField(
                             controller: _seatCountController,
@@ -197,10 +193,7 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '평균 대기 (분)',
-                            style: AppTextStyles.labelMedium14,
-                          ),
+                          Text('평균 대기 (분)', style: AppTextStyles.labelMedium14),
                           AppSpacing.verticalSpaceSM,
                           AppTextField(
                             controller: _waitTimeController,
@@ -224,8 +217,8 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
                     onPressed: _canCreate ? _handleCreate : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.brandCrimson,
-                      disabledBackgroundColor:
-                          AppColors.brandCrimson.withValues(alpha: 0.3),
+                      disabledBackgroundColor: AppColors.brandCrimson
+                          .withValues(alpha: 0.3),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.r),
@@ -263,8 +256,11 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
         ),
         child: Row(
           children: [
-            Icon(Icons.warning_amber_rounded,
-                color: AppColors.warning, size: 20.sp),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.warning,
+              size: 20.sp,
+            ),
             AppSpacing.horizontalSpaceSM,
             Expanded(
               child: Text(
@@ -309,10 +305,7 @@ class _CreateQueueBottomSheetState extends State<CreateQueueBottomSheet> {
           items: widget.boothMasters.map((master) {
             return DropdownMenuItem<BoothMaster>(
               value: master,
-              child: Text(
-                master.name,
-                style: AppTextStyles.bodyMedium14,
-              ),
+              child: Text(master.name, style: AppTextStyles.bodyMedium14),
             );
           }).toList(),
           onChanged: (value) {

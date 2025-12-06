@@ -26,24 +26,21 @@ class AuthState with _$AuthState {
   factory AuthState.loading() => const AuthState(isLoading: true);
 
   /// 로그인됨 상태
-  factory AuthState.authenticated(UserDto user) => AuthState(
-        isAuthenticated: true,
-        currentUser: user,
-        isLoading: false,
-      );
+  factory AuthState.authenticated(UserDto user) =>
+      AuthState(isAuthenticated: true, currentUser: user, isLoading: false);
 
   /// 로그아웃됨 상태
   factory AuthState.unauthenticated() => const AuthState(
-        isAuthenticated: false,
-        currentUser: null,
-        isLoading: false,
-      );
+    isAuthenticated: false,
+    currentUser: null,
+    isLoading: false,
+  );
 
   /// 에러 상태
   factory AuthState.error(String message) => AuthState(
-        isAuthenticated: false,
-        currentUser: null,
-        isLoading: false,
-        error: message,
-      );
+    isAuthenticated: false,
+    currentUser: null,
+    isLoading: false,
+    error: message,
+  );
 }

@@ -23,8 +23,8 @@ QueueEntry _$QueueEntryFromJson(Map<String, dynamic> json) {
 mixin _$QueueEntry {
   String get id => throw _privateConstructorUsedError;
   String get boothId => throw _privateConstructorUsedError;
-  String? get visitorId =>
-      throw _privateConstructorUsedError; // nullable: 서버에서 null일 수 있음
+  @JsonKey(name: 'userId')
+  String? get visitorId => throw _privateConstructorUsedError; // API는 userId로 반환 (nullable)
   int get ticketNo => throw _privateConstructorUsedError;
   String get state =>
       throw _privateConstructorUsedError; // WAITING | IN_SERVICE | COMPLETED | CANCELED
@@ -51,7 +51,7 @@ abstract class $QueueEntryCopyWith<$Res> {
   $Res call({
     String id,
     String boothId,
-    String? visitorId,
+    @JsonKey(name: 'userId') String? visitorId,
     int ticketNo,
     String state,
     @FlexibleDateTimeConverter() DateTime joinedAt,
@@ -124,7 +124,7 @@ abstract class _$$QueueEntryImplCopyWith<$Res>
   $Res call({
     String id,
     String boothId,
-    String? visitorId,
+    @JsonKey(name: 'userId') String? visitorId,
     int ticketNo,
     String state,
     @FlexibleDateTimeConverter() DateTime joinedAt,
@@ -189,7 +189,7 @@ class _$QueueEntryImpl implements _QueueEntry {
   const _$QueueEntryImpl({
     required this.id,
     required this.boothId,
-    this.visitorId,
+    @JsonKey(name: 'userId') this.visitorId,
     required this.ticketNo,
     this.state = 'WAITING',
     @FlexibleDateTimeConverter() required this.joinedAt,
@@ -203,8 +203,9 @@ class _$QueueEntryImpl implements _QueueEntry {
   @override
   final String boothId;
   @override
+  @JsonKey(name: 'userId')
   final String? visitorId;
-  // nullable: 서버에서 null일 수 있음
+  // API는 userId로 반환 (nullable)
   @override
   final int ticketNo;
   @override
@@ -266,7 +267,7 @@ abstract class _QueueEntry implements QueueEntry {
   const factory _QueueEntry({
     required final String id,
     required final String boothId,
-    final String? visitorId,
+    @JsonKey(name: 'userId') final String? visitorId,
     required final int ticketNo,
     final String state,
     @FlexibleDateTimeConverter() required final DateTime joinedAt,
@@ -280,7 +281,8 @@ abstract class _QueueEntry implements QueueEntry {
   @override
   String get boothId;
   @override
-  String? get visitorId; // nullable: 서버에서 null일 수 있음
+  @JsonKey(name: 'userId')
+  String? get visitorId; // API는 userId로 반환 (nullable)
   @override
   int get ticketNo;
   @override

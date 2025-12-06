@@ -47,7 +47,9 @@ class EnvConfig {
     // ignore: avoid_print
     print('╠════════════════════════════════════════════╣');
     // ignore: avoid_print
-    print('║  USE_MOCK_AUTH: $useMockAuth${useMockAuth ? ' (Mock 모드)' : ' (Real 모드)'}');
+    print(
+      '║  USE_MOCK_AUTH: $useMockAuth${useMockAuth ? ' (Mock 모드)' : ' (Real 모드)'}',
+    );
     // ignore: avoid_print
     print('║  BACKEND_URL: $backendUrl');
     // ignore: avoid_print

@@ -21,9 +21,9 @@ class FilterBottomSheet extends ConsumerWidget {
 
   /// 카테고리 목록 (동적 생성: '전체' + 크롤러 10개 카테고리)
   static List<String> get _categories => [
-        '전체',
-        ...CrawlerCategory.allCategories,
-      ];
+    '전체',
+    ...CrawlerCategory.allCategories,
+  ];
 
   /// 시간 범위 목록
   static const List<String> _timeRanges = [
@@ -62,10 +62,7 @@ class FilterBottomSheet extends ConsumerWidget {
           // 헤더
           Row(
             children: [
-              Text(
-                '고급 필터',
-                style: AppTextStyles.headingSemiBold20,
-              ),
+              Text('고급 필터', style: AppTextStyles.headingSemiBold20),
               const Spacer(),
               IconButton(
                 icon: Icon(Icons.close, color: AppColors.textSecondary),
@@ -77,10 +74,7 @@ class FilterBottomSheet extends ConsumerWidget {
           AppSpacing.verticalSpaceXXL,
 
           // 카테고리
-          Text(
-            '카테고리',
-            style: AppTextStyles.titleSemiBold16,
-          ),
+          Text('카테고리', style: AppTextStyles.titleSemiBold16),
           AppSpacing.verticalSpaceMD,
           Wrap(
             spacing: AppSpacing.sm,
@@ -122,10 +116,7 @@ class FilterBottomSheet extends ConsumerWidget {
           AppSpacing.verticalSpaceXXL,
 
           // 시간 범위
-          Text(
-            '시간 범위',
-            style: AppTextStyles.titleSemiBold16,
-          ),
+          Text('시간 범위', style: AppTextStyles.titleSemiBold16),
           AppSpacing.verticalSpaceMD,
           Wrap(
             spacing: AppSpacing.sm,
@@ -167,10 +158,7 @@ class FilterBottomSheet extends ConsumerWidget {
           AppSpacing.verticalSpaceXXL,
 
           // 조회수 범위
-          Text(
-            '조회수 범위',
-            style: AppTextStyles.titleSemiBold16,
-          ),
+          Text('조회수 범위', style: AppTextStyles.titleSemiBold16),
           AppSpacing.verticalSpaceMD,
           Wrap(
             spacing: AppSpacing.sm,

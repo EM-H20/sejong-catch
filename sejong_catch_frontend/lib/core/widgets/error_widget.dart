@@ -8,6 +8,7 @@
 /// ✅ ScreenUtil 반응형 적용
 
 library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -83,7 +84,9 @@ class AppErrorWidget extends StatelessWidget {
                 icon: Icon(Icons.refresh, size: 18.sp, color: AppColors.white),
                 label: Text(
                   retryText ?? '다시 시도',
-                  style: AppTextStyles.labelMedium14.copyWith(color: AppColors.white),
+                  style: AppTextStyles.labelMedium14.copyWith(
+                    color: AppColors.white,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.brandCrimson,

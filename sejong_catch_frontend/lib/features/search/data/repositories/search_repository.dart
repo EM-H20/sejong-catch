@@ -209,8 +209,10 @@ class SearchRepository extends _$SearchRepository {
       }).toList();
 
       // 5. 최신순 정렬
-      feedItems.sort((a, b) =>
-          (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
+      feedItems.sort(
+        (a, b) =>
+            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)),
+      );
 
       return feedItems;
     } catch (e) {

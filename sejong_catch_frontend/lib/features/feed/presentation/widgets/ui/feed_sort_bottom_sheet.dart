@@ -93,10 +93,7 @@ class _SortOption extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 18.w,
-          vertical: 16.h,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
         child: Row(
           children: [
             // 라디오 버튼
@@ -137,11 +134,7 @@ class _SortOption extends StatelessWidget {
 
             // 체크 아이콘 (선택 시)
             if (isSelected)
-              Icon(
-                Icons.check,
-                size: 20.sp,
-                color: AppColors.brandCrimson,
-              ),
+              Icon(Icons.check, size: 20.sp, color: AppColors.brandCrimson),
           ],
         ),
       ),

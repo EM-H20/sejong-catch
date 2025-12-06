@@ -134,7 +134,9 @@ class FeedRepository extends _$FeedRepository {
     // 카테고리 필터링
     List<FeedItem> filteredItems = allItems;
     if (category != null && category != '전체') {
-      filteredItems = allItems.where((item) => item.category == category).toList();
+      filteredItems = allItems
+          .where((item) => item.category == category)
+          .toList();
     }
 
     // 정렬 적용
@@ -192,7 +194,9 @@ class FeedRepository extends _$FeedRepository {
     // 3. 카테고리 필터링 (로컬)
     List<FeedItem> filteredItems = feedItems;
     if (category != null && category != '전체') {
-      filteredItems = feedItems.where((item) => item.category == category).toList();
+      filteredItems = feedItems
+          .where((item) => item.category == category)
+          .toList();
     }
 
     // 4. 정렬 적용 (로컬)
@@ -227,14 +231,20 @@ class FeedRepository extends _$FeedRepository {
     switch (sortType) {
       case FeedSortType.latest:
         // 최신순: 최근 게시물 먼저 (createdAt 내림차순)
-        itemsCopy.sort((a, b) =>
-            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
+        itemsCopy.sort(
+          (a, b) => (b.createdAt ?? DateTime(0)).compareTo(
+            a.createdAt ?? DateTime(0),
+          ),
+        );
         break;
 
       case FeedSortType.oldest:
         // 오래된순: 오래된 게시물 먼저 (createdAt 오름차순)
-        itemsCopy.sort((a, b) =>
-            (a.createdAt ?? DateTime(0)).compareTo(b.createdAt ?? DateTime(0)));
+        itemsCopy.sort(
+          (a, b) => (a.createdAt ?? DateTime(0)).compareTo(
+            b.createdAt ?? DateTime(0),
+          ),
+        );
         break;
 
       case FeedSortType.mostViewed:

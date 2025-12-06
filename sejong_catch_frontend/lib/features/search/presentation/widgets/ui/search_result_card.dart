@@ -12,11 +12,7 @@ import '../../../../../core/theme/app_spacing.dart';
 /// ✅ AppColors, AppSpacing, AppShadows 100% 사용
 /// ✅ ScreenUtil (.w, .h, .sp, .r) 필수
 class SearchResultCard extends StatelessWidget {
-  const SearchResultCard({
-    required this.title,
-    required this.onTap,
-    super.key,
-  });
+  const SearchResultCard({required this.title, required this.onTap, super.key});
 
   final String title;
   final VoidCallback onTap;

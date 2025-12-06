@@ -22,7 +22,8 @@ MyQueueStatus _$MyQueueStatusFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$MyQueueStatus {
   String get boothId => throw _privateConstructorUsedError;
-  String get visitorId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'userId')
+  String get visitorId => throw _privateConstructorUsedError; // API는 userId로 반환
   int get ticketNo => throw _privateConstructorUsedError;
   String get state =>
       throw _privateConstructorUsedError; // WAITING | IN_SERVICE | COMPLETED | CANCELED
@@ -48,7 +49,7 @@ abstract class $MyQueueStatusCopyWith<$Res> {
   @useResult
   $Res call({
     String boothId,
-    String visitorId,
+    @JsonKey(name: 'userId') String visitorId,
     int ticketNo,
     String state,
     int teamsAhead,
@@ -121,7 +122,7 @@ abstract class _$$MyQueueStatusImplCopyWith<$Res>
   @useResult
   $Res call({
     String boothId,
-    String visitorId,
+    @JsonKey(name: 'userId') String visitorId,
     int ticketNo,
     String state,
     int teamsAhead,
@@ -186,7 +187,7 @@ class __$$MyQueueStatusImplCopyWithImpl<$Res>
 class _$MyQueueStatusImpl implements _MyQueueStatus {
   const _$MyQueueStatusImpl({
     required this.boothId,
-    required this.visitorId,
+    @JsonKey(name: 'userId') required this.visitorId,
     required this.ticketNo,
     required this.state,
     required this.teamsAhead,
@@ -199,7 +200,9 @@ class _$MyQueueStatusImpl implements _MyQueueStatus {
   @override
   final String boothId;
   @override
+  @JsonKey(name: 'userId')
   final String visitorId;
+  // API는 userId로 반환
   @override
   final int ticketNo;
   @override
@@ -261,7 +264,7 @@ class _$MyQueueStatusImpl implements _MyQueueStatus {
 abstract class _MyQueueStatus implements MyQueueStatus {
   const factory _MyQueueStatus({
     required final String boothId,
-    required final String visitorId,
+    @JsonKey(name: 'userId') required final String visitorId,
     required final int ticketNo,
     required final String state,
     required final int teamsAhead,
@@ -274,7 +277,8 @@ abstract class _MyQueueStatus implements MyQueueStatus {
   @override
   String get boothId;
   @override
-  String get visitorId;
+  @JsonKey(name: 'userId')
+  String get visitorId; // API는 userId로 반환
   @override
   int get ticketNo;
   @override

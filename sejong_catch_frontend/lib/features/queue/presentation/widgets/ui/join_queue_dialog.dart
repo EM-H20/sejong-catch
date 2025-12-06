@@ -32,10 +32,7 @@ class JoinQueueDialog extends StatelessWidget {
   }) {
     return showDialog(
       context: context,
-      builder: (context) => JoinQueueDialog(
-        booth: booth,
-        onConfirm: onConfirm,
-      ),
+      builder: (context) => JoinQueueDialog(booth: booth, onConfirm: onConfirm),
     );
   }
 
@@ -80,10 +77,7 @@ class JoinQueueDialog extends StatelessWidget {
 
             // 부스 이름
             Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 10.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12.r),
@@ -107,11 +101,7 @@ class JoinQueueDialog extends StatelessWidget {
                   value: '${booth.seatCount}석',
                   color: AppColors.trustAcademic,
                 ),
-                Container(
-                  width: 1.5,
-                  height: 40.h,
-                  color: AppColors.divider,
-                ),
+                Container(width: 1.5, height: 40.h, color: AppColors.divider),
                 _buildInfoItem(
                   icon: Icons.timer_outlined,
                   label: '예상 시간',

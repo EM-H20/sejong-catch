@@ -12,10 +12,7 @@ import '../../../../../core/theme/app_spacing.dart';
 /// ✅ AppColors, AppSpacing, AppShadows 100% 사용
 /// ✅ ScreenUtil (.w, .h, .sp, .r) 필수
 class FilterButton extends StatelessWidget {
-  const FilterButton({
-    required this.onTap,
-    super.key,
-  });
+  const FilterButton({required this.onTap, super.key});
 
   final VoidCallback onTap;
 
@@ -28,17 +25,10 @@ class FilterButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: AppColors.divider,
-            width: 1.5,
-          ),
+          border: Border.all(color: AppColors.divider, width: 1.5),
           boxShadow: AppShadows.basic,
         ),
-        child: Icon(
-          Icons.tune,
-          size: 20.sp,
-          color: AppColors.textSecondary,
-        ),
+        child: Icon(Icons.tune, size: 20.sp, color: AppColors.textSecondary),
       ),
     );
   }

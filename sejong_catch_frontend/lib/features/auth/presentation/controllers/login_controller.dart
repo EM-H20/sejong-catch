@@ -60,7 +60,9 @@ class LoginController extends _$LoginController {
       );
 
       // 🔥 3. AuthStateController에 사용자 정보 저장
-      final authStateController = ref.read(authStateControllerProvider.notifier);
+      final authStateController = ref.read(
+        authStateControllerProvider.notifier,
+      );
       await authStateController.setAuthenticated(response.user);
 
       // 4. 성공 상태로 업데이트
@@ -70,10 +72,7 @@ class LoginController extends _$LoginController {
       // TODO: 홈 화면으로 네비게이션 (context.go('/feed'))
     } on AuthException catch (e) {
       // 🔥 커스텀 인증 예외 처리 (auth_exceptions.dart에서 정의한 메시지 그대로 표시)
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message,
-      );
+      state = state.copyWith(isLoading: false, error: e.message);
     } on DioException catch (e) {
       // 네트워크 에러 처리
       String errorMessage = '로그인에 실패했어요. 학번과 비밀번호를 확인해주세요.';
@@ -120,7 +119,9 @@ class LoginController extends _$LoginController {
       await authRepository.logout();
 
       // 🔥 2. AuthStateController 상태 초기화 (사용자 정보 삭제)
-      final authStateController = ref.read(authStateControllerProvider.notifier);
+      final authStateController = ref.read(
+        authStateControllerProvider.notifier,
+      );
       await authStateController.setUnauthenticated();
 
       // 3. State 초기화
@@ -130,7 +131,9 @@ class LoginController extends _$LoginController {
       return true;
     } catch (e) {
       // 에러 발생 시에도 State는 초기화 (로컬 삭제가 더 중요)
-      final authStateController = ref.read(authStateControllerProvider.notifier);
+      final authStateController = ref.read(
+        authStateControllerProvider.notifier,
+      );
       await authStateController.setUnauthenticated();
       state = const LoginState();
       return false;

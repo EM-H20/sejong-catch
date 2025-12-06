@@ -21,12 +21,15 @@ BoothManager _$BoothManagerFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$BoothManager {
-  String get id => throw _privateConstructorUsedError;
+  String get id =>
+      throw _privateConstructorUsedError; // 백엔드: boothObjectId → 프론트: boothId로 매핑
+  @JsonKey(name: 'boothObjectId')
   String get boothId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
-  DateTime get updatedAt =>
-      throw _privateConstructorUsedError; // 조인된 사용자 정보 (API 응답에 포함될 수 있음)
+  @FlexibleDateTimeConverter()
+  DateTime get createdAt => throw _privateConstructorUsedError; // updatedAt은 백엔드에 없지만 UI에서 사용할 수 있도록 nullable로 유지
+  @NullableFlexibleDateTimeConverter()
+  DateTime? get updatedAt => throw _privateConstructorUsedError; // 조인된 사용자 정보 (API 응답에 포함될 수 있음)
   String? get userName => throw _privateConstructorUsedError;
   String? get userEmail => throw _privateConstructorUsedError;
 
@@ -49,10 +52,10 @@ abstract class $BoothManagerCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String boothId,
+    @JsonKey(name: 'boothObjectId') String boothId,
     String userId,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @FlexibleDateTimeConverter() DateTime createdAt,
+    @NullableFlexibleDateTimeConverter() DateTime? updatedAt,
     String? userName,
     String? userEmail,
   });
@@ -77,7 +80,7 @@ class _$BoothManagerCopyWithImpl<$Res, $Val extends BoothManager>
     Object? boothId = null,
     Object? userId = null,
     Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? updatedAt = freezed,
     Object? userName = freezed,
     Object? userEmail = freezed,
   }) {
@@ -99,10 +102,10 @@ class _$BoothManagerCopyWithImpl<$Res, $Val extends BoothManager>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            updatedAt: null == updatedAt
+            updatedAt: freezed == updatedAt
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
             userName: freezed == userName
                 ? _value.userName
                 : userName // ignore: cast_nullable_to_non_nullable
@@ -128,10 +131,10 @@ abstract class _$$BoothManagerImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String boothId,
+    @JsonKey(name: 'boothObjectId') String boothId,
     String userId,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @FlexibleDateTimeConverter() DateTime createdAt,
+    @NullableFlexibleDateTimeConverter() DateTime? updatedAt,
     String? userName,
     String? userEmail,
   });
@@ -155,7 +158,7 @@ class __$$BoothManagerImplCopyWithImpl<$Res>
     Object? boothId = null,
     Object? userId = null,
     Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? updatedAt = freezed,
     Object? userName = freezed,
     Object? userEmail = freezed,
   }) {
@@ -177,10 +180,10 @@ class __$$BoothManagerImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        updatedAt: null == updatedAt
+        updatedAt: freezed == updatedAt
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
         userName: freezed == userName
             ? _value.userName
             : userName // ignore: cast_nullable_to_non_nullable
@@ -199,10 +202,10 @@ class __$$BoothManagerImplCopyWithImpl<$Res>
 class _$BoothManagerImpl implements _BoothManager {
   const _$BoothManagerImpl({
     required this.id,
-    required this.boothId,
+    @JsonKey(name: 'boothObjectId') required this.boothId,
     required this.userId,
-    required this.createdAt,
-    required this.updatedAt,
+    @FlexibleDateTimeConverter() required this.createdAt,
+    @NullableFlexibleDateTimeConverter() this.updatedAt,
     this.userName,
     this.userEmail,
   });
@@ -212,14 +215,19 @@ class _$BoothManagerImpl implements _BoothManager {
 
   @override
   final String id;
+  // 백엔드: boothObjectId → 프론트: boothId로 매핑
   @override
+  @JsonKey(name: 'boothObjectId')
   final String boothId;
   @override
   final String userId;
   @override
+  @FlexibleDateTimeConverter()
   final DateTime createdAt;
+  // updatedAt은 백엔드에 없지만 UI에서 사용할 수 있도록 nullable로 유지
   @override
-  final DateTime updatedAt;
+  @NullableFlexibleDateTimeConverter()
+  final DateTime? updatedAt;
   // 조인된 사용자 정보 (API 응답에 포함될 수 있음)
   @override
   final String? userName;
@@ -279,10 +287,10 @@ class _$BoothManagerImpl implements _BoothManager {
 abstract class _BoothManager implements BoothManager {
   const factory _BoothManager({
     required final String id,
-    required final String boothId,
+    @JsonKey(name: 'boothObjectId') required final String boothId,
     required final String userId,
-    required final DateTime createdAt,
-    required final DateTime updatedAt,
+    @FlexibleDateTimeConverter() required final DateTime createdAt,
+    @NullableFlexibleDateTimeConverter() final DateTime? updatedAt,
     final String? userName,
     final String? userEmail,
   }) = _$BoothManagerImpl;
@@ -291,15 +299,18 @@ abstract class _BoothManager implements BoothManager {
       _$BoothManagerImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // 백엔드: boothObjectId → 프론트: boothId로 매핑
   @override
+  @JsonKey(name: 'boothObjectId')
   String get boothId;
   @override
   String get userId;
   @override
-  DateTime get createdAt;
+  @FlexibleDateTimeConverter()
+  DateTime get createdAt; // updatedAt은 백엔드에 없지만 UI에서 사용할 수 있도록 nullable로 유지
   @override
-  DateTime get updatedAt; // 조인된 사용자 정보 (API 응답에 포함될 수 있음)
+  @NullableFlexibleDateTimeConverter()
+  DateTime? get updatedAt; // 조인된 사용자 정보 (API 응답에 포함될 수 있음)
   @override
   String? get userName;
   @override

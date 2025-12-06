@@ -10,7 +10,7 @@ part 'my_queue_status.g.dart';
 class MyQueueStatus with _$MyQueueStatus {
   const factory MyQueueStatus({
     required String boothId,
-    required String visitorId,
+    @JsonKey(name: 'userId') required String visitorId, // API는 userId로 반환
     required int ticketNo,
     required String state, // WAITING | IN_SERVICE | COMPLETED | CANCELED
     required int teamsAhead,

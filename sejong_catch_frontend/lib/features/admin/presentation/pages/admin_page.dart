@@ -97,8 +97,8 @@ class _AdminPageState extends ConsumerState<AdminPage>
       body: queueState.isLoading
           ? const LoadingWidget()
           : queueState.error != null
-              ? AppErrorWidget(message: queueState.error!)
-              : _buildBody(queueState.booths, userRole),
+          ? AppErrorWidget(message: queueState.error!)
+          : _buildBody(queueState.booths, userRole),
     );
   }
 
@@ -165,7 +165,9 @@ class _AdminPageState extends ConsumerState<AdminPage>
             labelStyle: TextStyle(
               fontSize: 13.sp,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              color: isSelected ? AppColors.brandCrimson : AppColors.textSecondary,
+              color: isSelected
+                  ? AppColors.brandCrimson
+                  : AppColors.textSecondary,
             ),
             side: BorderSide(
               color: isSelected ? AppColors.brandCrimson : AppColors.divider,
@@ -254,10 +256,7 @@ class _AdminPageState extends ConsumerState<AdminPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        booth.title,
-                        style: AppTextStyles.titleSemiBold18,
-                      ),
+                      Text(booth.title, style: AppTextStyles.titleSemiBold18),
                       if (masterName != null) ...[
                         SizedBox(height: 4.h),
                         Row(
@@ -289,7 +288,10 @@ class _AdminPageState extends ConsumerState<AdminPage>
                 ),
                 // 상태 배지
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 6.h,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20.r),
@@ -424,10 +426,7 @@ class _AdminPageState extends ConsumerState<AdminPage>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
-        title: Text(
-          '부스 상태 변경',
-          style: AppTextStyles.headingBold20,
-        ),
+        title: Text('부스 상태 변경', style: AppTextStyles.headingBold20),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -466,9 +465,7 @@ class _AdminPageState extends ConsumerState<AdminPage>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  success
-                      ? '부스 상태가 $label(으)로 변경되었어요'
-                      : '상태 변경에 실패했어요',
+                  success ? '부스 상태가 $label(으)로 변경되었어요' : '상태 변경에 실패했어요',
                 ),
                 backgroundColor: success ? color : AppColors.error,
               ),
@@ -493,10 +490,7 @@ class _AdminPageState extends ConsumerState<AdminPage>
             Container(
               width: 12.w,
               height: 12.w,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             SizedBox(width: 12.w),
             Text(
@@ -508,8 +502,7 @@ class _AdminPageState extends ConsumerState<AdminPage>
               ),
             ),
             const Spacer(),
-            if (isSelected)
-              Icon(Icons.check_circle, size: 20.sp, color: color),
+            if (isSelected) Icon(Icons.check_circle, size: 20.sp, color: color),
           ],
         ),
       ),
@@ -556,7 +549,15 @@ class _QueueListBottomSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueState = ref.watch(queueControllerProvider);
-    final entries = queueState.queueEntries;
+    final allEntries = queueState.queueEntries;
+
+    // 🛡️ 방어 로직: 백엔드에서 COMPLETED/CANCELED가 포함되어 와도 UI에서 필터링
+    final entries = allEntries
+        .where((e) => e.state == 'WAITING' || e.state == 'IN_SERVICE')
+        .toList();
+
+    // 다음 팀 입장 가능 여부: WAITING 상태가 있어야 함
+    final hasWaitingEntries = entries.any((e) => e.state == 'WAITING');
 
     return Container(
       constraints: BoxConstraints(
@@ -623,12 +624,12 @@ class _QueueListBottomSheet extends ConsumerWidget {
             child: queueState.isLoading
                 ? const Center(child: LoadingWidget())
                 : entries.isEmpty
-                    ? _buildEmptyState()
-                    : _buildQueueList(entries),
+                ? _buildEmptyState()
+                : _buildQueueList(entries),
           ),
 
-          // 다음 팀 입장 버튼
-          if (entries.isNotEmpty) _buildRotateButton(context, ref),
+          // 다음 팀 입장 버튼: WAITING 상태가 있을 때만 표시
+          if (hasWaitingEntries) _buildRotateButton(context, ref),
         ],
       ),
     );
@@ -764,10 +765,10 @@ class _QueueListBottomSheet extends ConsumerWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success ? '다음 팀이 입장했어요! 🎉' : '입장 처리에 실패했어요',
-                    ),
-                    backgroundColor: success ? AppColors.success : AppColors.error,
+                    content: Text(success ? '다음 팀이 입장했어요! 🎉' : '입장 처리에 실패했어요'),
+                    backgroundColor: success
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                 );
               }
@@ -779,7 +780,11 @@ class _QueueListBottomSheet extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12.r),
               ),
             ),
-            icon: Icon(Icons.arrow_forward, color: AppColors.pureWhite, size: 20.sp),
+            icon: Icon(
+              Icons.arrow_forward,
+              color: AppColors.pureWhite,
+              size: 20.sp,
+            ),
             label: Text(
               '다음 팀 입장',
               style: AppTextStyles.buttonSemiBold15.copyWith(
@@ -933,17 +938,11 @@ class _ManagerListBottomSheetState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              '취소',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
+            child: Text('취소', style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              '삭제',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: Text('삭제', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -1101,8 +1100,8 @@ class _ManagerListBottomSheetState
             child: _isLoading
                 ? const Center(child: LoadingWidget())
                 : _managers.isEmpty
-                    ? _buildEmptyState()
-                    : _buildManagerList(),
+                ? _buildEmptyState()
+                : _buildManagerList(),
           ),
         ],
       ),

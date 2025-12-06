@@ -64,8 +64,8 @@ class _QueuePageState extends ConsumerState<QueuePage>
       body: state.isLoading
           ? const LoadingWidget()
           : state.error != null
-              ? AppErrorWidget(message: state.error!)
-              : _buildBody(),
+          ? AppErrorWidget(message: state.error!)
+          : _buildBody(),
       // 🔐 운영자/관리자만 FAB 표시
       floatingActionButton: _canCreateBooth(authState.currentUser?.role)
           ? _buildFAB()
@@ -187,15 +187,17 @@ class _QueuePageState extends ConsumerState<QueuePage>
           final boothId = myStatuses.keys.elementAt(index);
           final myStatus = myStatuses[boothId]!;
           final booth = state.booths.cast<Booth?>().firstWhere(
-                (b) => b?.id == boothId,
-                orElse: () => null,
-              );
+            (b) => b?.id == boothId,
+            orElse: () => null,
+          );
 
           return MyQueueCard(
             myStatus: myStatus,
             booth: booth,
             onCancel: () => _handleCancelQueue(myStatus, booth),
-            masterName: booth != null ? state.getMasterName(booth.masterId) : null,
+            masterName: booth != null
+                ? state.getMasterName(booth.masterId)
+                : null,
           );
         },
       ),
@@ -211,8 +213,14 @@ class _QueuePageState extends ConsumerState<QueuePage>
     final role = UserRole.fromString(authState.currentUser?.role);
 
     if (role.canCreateQueue) {
-      // 🎛️ 운영자/관리자 → 부스 관리 바텀시트
-      ManageQueueBottomSheet.show(context, booth: booth);
+      // 🎛️ 운영자/관리자 → 부스 관리 바텀시트 (줄서기도 가능!)
+      ManageQueueBottomSheet.show(
+        context,
+        booth: booth,
+        onJoinQueue: booth.status == 'OPERATING'
+            ? () => _handleJoinQueue(booth)
+            : null,
+      );
     } else {
       // 🎫 학생 → 줄서기 다이얼로그
       if (booth.status == 'OPERATING') {
@@ -234,28 +242,47 @@ class _QueuePageState extends ConsumerState<QueuePage>
   }
 
   /// ✅ 대기열 등록 (enqueue)
+  ///
+  /// **에러 처리**:
+  /// - 409: 이미 대기 중 → 스낵바로 안내
+  /// - 기타 에러 → 스낵바로 표시
   Future<void> _handleJoinQueue(Booth booth) async {
-    final isImmediate =
-        await ref.read(queueControllerProvider.notifier).enqueue(booth.id);
+    final notifier = ref.read(queueControllerProvider.notifier);
+    final isImmediate = await notifier.enqueue(booth.id);
 
-    if (mounted) {
-      if (isImmediate) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${booth.title} 즉시 입장! 🎉'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${booth.title}에 줄서기 완료! 🎉'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
+    if (!mounted) return;
 
-      // 내 대기열 탭으로 이동
+    // 에러 체크: state.error가 있으면 실패한 것
+    final queueState = ref.read(queueControllerProvider);
+    if (queueState.error != null) {
+      // 🚨 에러 발생 → 스낵바로 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(queueState.error!),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      // 에러 클리어
+      notifier.clearError();
+      return;
+    }
+
+    // ✅ 성공!
+    if (isImmediate) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${booth.title} 즉시 입장! 🎉'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${booth.title}에 줄서기 완료! 🎉'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      // WAITING일 때만 내 대기열 탭으로 이동
       _tabController.animateTo(1);
     }
   }
@@ -300,13 +327,14 @@ class _QueuePageState extends ConsumerState<QueuePage>
       context,
       boothMasters: state.boothMasters,
       onCreate: (masterId, title, seatCount, avgWaitMinutes) async {
-        final success =
-            await ref.read(queueControllerProvider.notifier).createBooth(
-                  masterId: masterId,
-                  title: title,
-                  seatCount: seatCount,
-                  avgWaitMinutes: avgWaitMinutes,
-                );
+        final success = await ref
+            .read(queueControllerProvider.notifier)
+            .createBooth(
+              masterId: masterId,
+              title: title,
+              seatCount: seatCount,
+              avgWaitMinutes: avgWaitMinutes,
+            );
 
         if (mounted && success) {
           ScaffoldMessenger.of(context).showSnackBar(

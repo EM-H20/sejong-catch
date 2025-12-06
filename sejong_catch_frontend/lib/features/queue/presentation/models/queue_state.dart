@@ -72,7 +72,10 @@ class QueueState with _$QueueState {
   /// masterId로 부스 타입(마스터) 이름 조회 (기본값 포함)
   ///
   /// 찾지 못하면 기본값(defaultName)을 반환합니다.
-  String getMasterNameOrDefault(String masterId, {String defaultName = '알 수 없음'}) {
+  String getMasterNameOrDefault(
+    String masterId, {
+    String defaultName = '알 수 없음',
+  }) {
     return getMasterName(masterId) ?? defaultName;
   }
 }

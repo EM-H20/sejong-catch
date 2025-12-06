@@ -113,11 +113,7 @@ class AppBadge extends StatelessWidget {
         badgeColor = AppColors.textSecondary;
     }
 
-    return AppBadge.filled(
-      label: category,
-      color: badgeColor,
-      size: size,
-    );
+    return AppBadge.filled(label: category, color: badgeColor, size: size);
   }
 
   /// 🏆 우선순위 배지
@@ -302,8 +298,4 @@ enum AppBadgeStyle {
 }
 
 /// 배지 크기
-enum AppBadgeSize {
-  small,
-  medium,
-  large,
-}
+enum AppBadgeSize { small, medium, large }

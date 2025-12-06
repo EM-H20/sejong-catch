@@ -86,10 +86,7 @@ class CancelQueueDialog extends StatelessWidget {
 
             // 부스 이름 및 내 번호
             Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 12.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12.r),
@@ -138,11 +135,7 @@ class CancelQueueDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 18.sp,
-                    color: AppColors.error,
-                  ),
+                  Icon(Icons.info_outline, size: 18.sp, color: AppColors.error),
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(

@@ -12,6 +12,7 @@ import '../../controllers/queue_controller.dart';
 ///
 /// 운영자/관리자가 부스를 관리하는 바텀시트입니다.
 /// - 📣 다음 대기자 호출 (rotate 기능!)
+/// - 🎫 나도 줄서기 (관리자도 줄 설 수 있음!)
 /// - ⏸️ 준비중 / ▶️ 운영중 상태 변경
 /// - 🛑 종료
 ///
@@ -19,22 +20,26 @@ import '../../controllers/queue_controller.dart';
 /// **디자인 토큰 100% 사용!**
 class ManageQueueBottomSheet extends ConsumerStatefulWidget {
   final Booth booth;
+  final VoidCallback? onJoinQueue;
 
   const ManageQueueBottomSheet({
     super.key,
     required this.booth,
+    this.onJoinQueue,
   });
 
   /// 바텀시트 표시 헬퍼 메서드
   static Future<void> show(
     BuildContext context, {
     required Booth booth,
+    VoidCallback? onJoinQueue,
   }) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ManageQueueBottomSheet(booth: booth),
+      builder: (context) =>
+          ManageQueueBottomSheet(booth: booth, onJoinQueue: onJoinQueue),
     );
   }
 
@@ -104,8 +109,8 @@ class _ManageQueueBottomSheetState
           backgroundColor: newStatus == 'OPERATING'
               ? AppColors.success
               : newStatus == 'ENDED'
-                  ? AppColors.error
-                  : AppColors.warning,
+              ? AppColors.error
+              : AppColors.warning,
         ),
       );
       Navigator.of(context).pop();
@@ -128,9 +133,7 @@ class _ManageQueueBottomSheetState
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24.r),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
       child: SafeArea(
         child: Padding(
@@ -198,8 +201,8 @@ class _ManageQueueBottomSheetState
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.brandCrimson,
-                      disabledBackgroundColor:
-                          AppColors.brandCrimson.withValues(alpha: 0.3),
+                      disabledBackgroundColor: AppColors.brandCrimson
+                          .withValues(alpha: 0.3),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.r),
@@ -207,6 +210,41 @@ class _ManageQueueBottomSheetState
                     ),
                   ),
                 ),
+                AppSpacing.verticalSpaceSM,
+
+                // 🎫 나도 줄서기 버튼 (관리자도 줄 설 수 있음!)
+                if (widget.onJoinQueue != null)
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48.h,
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              Navigator.of(context).pop();
+                              widget.onJoinQueue?.call();
+                            },
+                      icon: Icon(
+                        Icons.person_add_alt_1_rounded,
+                        size: 20.sp,
+                        color: AppColors.brandCrimson,
+                      ),
+                      label: Text(
+                        '나도 줄서기',
+                        style: AppTextStyles.buttonMedium15.copyWith(
+                          color: AppColors.brandCrimson,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: AppColors.brandCrimson.withValues(alpha: 0.5),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                    ),
+                  ),
                 AppSpacing.verticalSpaceMD,
               ],
 

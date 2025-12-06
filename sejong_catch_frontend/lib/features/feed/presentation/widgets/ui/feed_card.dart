@@ -23,11 +23,7 @@ class FeedCard extends StatelessWidget {
   /// 카드 탭 콜백
   final VoidCallback onTap;
 
-  const FeedCard({
-    super.key,
-    required this.item,
-    required this.onTap,
-  });
+  const FeedCard({super.key, required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

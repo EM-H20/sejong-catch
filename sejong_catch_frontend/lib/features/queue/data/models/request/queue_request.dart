@@ -8,9 +8,7 @@ part 'queue_request.g.dart';
 /// enqueue, cancel, me-status, list, rotate 등에서 사용
 @freezed
 class BoothIdRequest with _$BoothIdRequest {
-  const factory BoothIdRequest({
-    required String boothId,
-  }) = _BoothIdRequest;
+  const factory BoothIdRequest({required String boothId}) = _BoothIdRequest;
 
   factory BoothIdRequest.fromJson(Map<String, dynamic> json) =>
       _$BoothIdRequestFromJson(json);

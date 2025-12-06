@@ -9,7 +9,7 @@ part of 'my_queue_status.dart';
 _$MyQueueStatusImpl _$$MyQueueStatusImplFromJson(Map<String, dynamic> json) =>
     _$MyQueueStatusImpl(
       boothId: json['boothId'] as String,
-      visitorId: json['visitorId'] as String,
+      visitorId: json['userId'] as String,
       ticketNo: (json['ticketNo'] as num).toInt(),
       state: json['state'] as String,
       teamsAhead: (json['teamsAhead'] as num).toInt(),
@@ -19,7 +19,7 @@ _$MyQueueStatusImpl _$$MyQueueStatusImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$MyQueueStatusImplToJson(_$MyQueueStatusImpl instance) =>
     <String, dynamic>{
       'boothId': instance.boothId,
-      'visitorId': instance.visitorId,
+      'userId': instance.visitorId,
       'ticketNo': instance.ticketNo,
       'state': instance.state,
       'teamsAhead': instance.teamsAhead,

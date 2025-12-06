@@ -9,9 +9,8 @@ part 'crawler_result.g.dart';
 /// **사용 모드**: USE_CRAWLER=true 일 때만 사용
 @freezed
 class CrawlerResultsResponse with _$CrawlerResultsResponse {
-  const factory CrawlerResultsResponse({
-    required List<CrawlerResult> data,
-  }) = _CrawlerResultsResponse;
+  const factory CrawlerResultsResponse({required List<CrawlerResult> data}) =
+      _CrawlerResultsResponse;
 
   factory CrawlerResultsResponse.fromJson(Map<String, dynamic> json) =>
       _$CrawlerResultsResponseFromJson(json);
@@ -77,11 +76,11 @@ class CrawlerCategory {
   /// **예시**: `일반공지` → `notice1`
   static String fromDisplayName(String displayName) {
     return categoryMap.entries
-            .firstWhere(
-              (entry) => entry.value == displayName,
-              orElse: () => const MapEntry('notice1', '일반공지'),
-            )
-            .key;
+        .firstWhere(
+          (entry) => entry.value == displayName,
+          orElse: () => const MapEntry('notice1', '일반공지'),
+        )
+        .key;
   }
 
   /// 모든 카테고리 목록 (UI 필터용)

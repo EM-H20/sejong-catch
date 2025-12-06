@@ -303,8 +303,9 @@ class QueueRepository {
 
     _mockQueueEntries.add(entry);
 
-    final waitingCount =
-        _mockQueueEntries.where((e) => e.boothId == boothId).length;
+    final waitingCount = _mockQueueEntries
+        .where((e) => e.boothId == boothId)
+        .length;
     final remainingSeats = booth.seatCount - waitingCount;
 
     return EnqueueResult(
@@ -391,7 +392,14 @@ class QueueRepository {
 
   Future<List<QueueEntry>> _mockGetQueueList(String boothId) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _mockQueueEntries.where((e) => e.boothId == boothId).toList();
+    // WAITING, IN_SERVICE 상태만 반환 (COMPLETED, CANCELED 제외)
+    return _mockQueueEntries
+        .where(
+          (e) =>
+              e.boothId == boothId &&
+              (e.state == 'WAITING' || e.state == 'IN_SERVICE'),
+        )
+        .toList();
   }
 
   Future<void> _mockRotateQueue(String boothId) async {
@@ -495,11 +503,7 @@ class QueueRepository {
       api.getBooths(status: 'ENDED'),
     ]);
 
-    return [
-      ...results[0].data,
-      ...results[1].data,
-      ...results[2].data,
-    ];
+    return [...results[0].data, ...results[1].data, ...results[2].data];
   }
 
   Future<Booth> _realGetBooth(String boothId) async {

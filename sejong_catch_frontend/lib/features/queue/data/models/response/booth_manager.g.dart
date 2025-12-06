@@ -9,10 +9,12 @@ part of 'booth_manager.dart';
 _$BoothManagerImpl _$$BoothManagerImplFromJson(Map<String, dynamic> json) =>
     _$BoothManagerImpl(
       id: json['id'] as String,
-      boothId: json['boothId'] as String,
+      boothId: json['boothObjectId'] as String,
       userId: json['userId'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: const FlexibleDateTimeConverter().fromJson(json['createdAt']),
+      updatedAt: const NullableFlexibleDateTimeConverter().fromJson(
+        json['updatedAt'],
+      ),
       userName: json['userName'] as String?,
       userEmail: json['userEmail'] as String?,
     );
@@ -20,10 +22,12 @@ _$BoothManagerImpl _$$BoothManagerImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$BoothManagerImplToJson(_$BoothManagerImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'boothId': instance.boothId,
+      'boothObjectId': instance.boothId,
       'userId': instance.userId,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
+      'createdAt': const FlexibleDateTimeConverter().toJson(instance.createdAt),
+      'updatedAt': const NullableFlexibleDateTimeConverter().toJson(
+        instance.updatedAt,
+      ),
       'userName': instance.userName,
       'userEmail': instance.userEmail,
     };

@@ -42,9 +42,7 @@ class SearchPage extends ConsumerWidget {
             AppDivider.thin(),
 
             // 검색 결과, 로딩, 에러, 또는 최근 검색어
-            Expanded(
-              child: _buildContent(context, ref, state),
-            ),
+            Expanded(child: _buildContent(context, ref, state)),
           ],
         ),
       ),
@@ -52,11 +50,7 @@ class SearchPage extends ConsumerWidget {
   }
 
   /// 📱 메인 컨텐츠 (상태에 따라 다른 UI)
-  Widget _buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    SearchState state,
-  ) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, SearchState state) {
     // 로딩 중
     if (state.isSearching) {
       return const LoadingWidget();
@@ -147,10 +141,7 @@ class SearchPage extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '최근 검색어',
-                style: AppTextStyles.headingSemiBold20,
-              ),
+              Text('최근 검색어', style: AppTextStyles.headingSemiBold20),
               TextButton(
                 onPressed: () {
                   ref
@@ -185,10 +176,7 @@ class SearchPage extends ConsumerWidget {
                   color: AppColors.textTertiary,
                   size: 20.sp,
                 ),
-                title: Text(
-                  keyword,
-                  style: AppTextStyles.bodyRegular14,
-                ),
+                title: Text(keyword, style: AppTextStyles.bodyRegular14),
                 trailing: IconButton(
                   icon: Icon(
                     Icons.close,

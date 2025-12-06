@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../models/request/booth_master_request.dart';
 import '../models/request/booth_request.dart';
 import '../models/request/queue_request.dart';
 import '../models/response/booth.dart';
@@ -29,6 +30,23 @@ abstract class QueueApi {
   /// 부스 타입 목록 조회 🔒
   @GET('/catch/booth-masters')
   Future<BoothMasterListResponse> getBoothMasters();
+
+  /// 부스 타입 생성 🔒 (admin only)
+  @POST('/catch/booth-masters')
+  Future<BoothMasterResponse> createBoothMaster(
+    @Body() CreateBoothMasterRequest request,
+  );
+
+  /// 부스 타입 수정 🔒 (admin only)
+  @PATCH('/catch/booth-masters/{id}')
+  Future<BoothMasterResponse> updateBoothMaster(
+    @Path('id') String id,
+    @Body() UpdateBoothMasterRequest request,
+  );
+
+  /// 부스 타입 삭제 🔒 (admin only)
+  @DELETE('/catch/booth-masters/{id}')
+  Future<void> deleteBoothMaster(@Path('id') String id);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 🏪 부스 API
@@ -130,6 +148,19 @@ class BoothMasterListResponse {
       data: (json['data'] as List<dynamic>)
           .map((e) => BoothMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
+    );
+  }
+}
+
+/// 부스 타입 단일 응답 래퍼 (생성/수정용)
+class BoothMasterResponse {
+  final BoothMaster data;
+
+  BoothMasterResponse({required this.data});
+
+  factory BoothMasterResponse.fromJson(Map<String, dynamic> json) {
+    return BoothMasterResponse(
+      data: BoothMaster.fromJson(json['data'] as Map<String, dynamic>),
     );
   }
 }

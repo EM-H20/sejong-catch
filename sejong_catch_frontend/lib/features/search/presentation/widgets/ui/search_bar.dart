@@ -16,10 +16,7 @@ import 'filter_button.dart';
 /// ✅ ConsumerStatefulWidget으로 Riverpod + TextEditingController 관리
 /// ✅ AppColors, AppSpacing 100% 사용
 class SearchBarWidget extends ConsumerStatefulWidget {
-  const SearchBarWidget({
-    required this.onShowFilter,
-    super.key,
-  });
+  const SearchBarWidget({required this.onShowFilter, super.key});
 
   final VoidCallback onShowFilter;
 
@@ -93,18 +90,18 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget> {
                           ),
                         )
                       : (state.query.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.clear,
-                                color: AppColors.textSecondary,
-                                size: 20.sp,
-                              ),
-                              onPressed: () {
-                                _textController.clear();
-                                controller.clearSearch();
-                              },
-                            )
-                          : null),
+                            ? IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: AppColors.textSecondary,
+                                  size: 20.sp,
+                                ),
+                                onPressed: () {
+                                  _textController.clear();
+                                  controller.clearSearch();
+                                },
+                              )
+                            : null),
                   border: InputBorder.none,
                   contentPadding: AppSpacing.symmetric(
                     horizontal: AppSpacing.lg,

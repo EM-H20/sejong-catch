@@ -38,7 +38,9 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: FutureBuilder<FeedItem>(
-        future: ref.read(feedRepositoryProvider.notifier).getFeedDetail(widget.id),
+        future: ref
+            .read(feedRepositoryProvider.notifier)
+            .getFeedDetail(widget.id),
         builder: (context, snapshot) {
           // 로딩 중
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -51,9 +53,16 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: AppColors.error),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64.sp,
+                    color: AppColors.error,
+                  ),
                   AppSpacing.verticalSpaceLG,
-                  Text('데이터를 불러올 수 없어요', style: AppTextStyles.headingSemiBold20),
+                  Text(
+                    '데이터를 불러올 수 없어요',
+                    style: AppTextStyles.headingSemiBold20,
+                  ),
                   AppSpacing.verticalSpaceSM,
                   Text(
                     snapshot.error.toString(),
@@ -76,7 +85,10 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
           final feedItem = snapshot.data;
           if (feedItem == null) {
             return Center(
-              child: Text('피드를 찾을 수 없어요', style: AppTextStyles.headingSemiBold20),
+              child: Text(
+                '피드를 찾을 수 없어요',
+                style: AppTextStyles.headingSemiBold20,
+              ),
             );
           }
 
@@ -122,10 +134,7 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
                   // 📅 정보 칩 (D-Day, 조회수)
                   Row(
                     children: [
-                      AppChip.dDay(
-                        daysLeft: feedItem.dDay,
-                        isUrgent: isUrgent,
-                      ),
+                      AppChip.dDay(daysLeft: feedItem.dDay, isUrgent: isUrgent),
                       AppSpacing.horizontalSpaceSM,
                       AppChip.viewCount(count: feedItem.viewCount),
                       AppSpacing.horizontalSpaceSM,
@@ -147,7 +156,8 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
                   AppSpacing.verticalSpace(40),
 
                   // 📄 본문 내용 (크롤러 모드에서는 표시 안 함)
-                  if (feedItem.content != null && feedItem.content!.isNotEmpty) ...[
+                  if (feedItem.content != null &&
+                      feedItem.content!.isNotEmpty) ...[
                     _buildContentSection(feedItem),
                     AppSpacing.verticalSpace(40),
                   ],
@@ -184,7 +194,8 @@ class _FeedDetailPageState extends ConsumerState<FeedDetailPage> {
           icon: Icon(Icons.share_outlined, size: 24.sp),
           color: AppColors.textSecondary,
           onPressed: () async {
-            final shareText = '''
+            final shareText =
+                '''
 ${feedItem.title}
 
 ${feedItem.description}
@@ -195,10 +206,7 @@ ${feedItem.description}
             try {
               // share_plus 패키지 사용 (SharePlus.instance.share 권장)
               await SharePlus.instance.share(
-                ShareParams(
-                  text: shareText,
-                  subject: feedItem.title,
-                ),
+                ShareParams(text: shareText, subject: feedItem.title),
               );
             } catch (e) {
               if (context.mounted) {
@@ -273,7 +281,9 @@ ${feedItem.description}
         AppSpacing.horizontalSpaceSM,
         Text(
           '$label:',
-          style: AppTextStyles.bodyRegular14.copyWith(fontWeight: FontWeight.w500),
+          style: AppTextStyles.bodyRegular14.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
         AppSpacing.horizontalSpaceSM,
         Expanded(
@@ -371,7 +381,9 @@ ${feedItem.description}
             AppSpacing.horizontalSpaceSM,
             Text(
               label,
-              style: AppTextStyles.buttonSemiBold16.copyWith(color: buttonColor),
+              style: AppTextStyles.buttonSemiBold16.copyWith(
+                color: buttonColor,
+              ),
             ),
           ],
         ),

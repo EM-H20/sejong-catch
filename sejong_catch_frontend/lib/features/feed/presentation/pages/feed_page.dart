@@ -45,12 +45,7 @@ class FeedPage extends ConsumerWidget {
         backgroundColor: AppColors.white,
         elevation: 0,
         title: Row(
-          children: [
-            Text(
-              '세종 캐치',
-              style: AppTextStyles.headingBold20,
-            ),
-          ],
+          children: [Text('세종 캐치', style: AppTextStyles.headingBold20)],
         ),
         actions: [
           IconButton(
@@ -92,12 +87,14 @@ class FeedPage extends ConsumerWidget {
     FeedSortType sortType,
   ) {
     return FutureBuilder<List<FeedItem>>(
-      future: ref.read(feedRepositoryProvider.notifier).getFeedList(
-        category: selectedCategory == '전체' ? null : selectedCategory,
-        sortType: sortType,
-        page: 1,
-        limit: 100, // 첫 페이지는 많이 가져오기 (로컬 필터링용)
-      ),
+      future: ref
+          .read(feedRepositoryProvider.notifier)
+          .getFeedList(
+            category: selectedCategory == '전체' ? null : selectedCategory,
+            sortType: sortType,
+            page: 1,
+            limit: 100, // 첫 페이지는 많이 가져오기 (로컬 필터링용)
+          ),
       builder: (context, snapshot) {
         // 로딩 중
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -112,10 +109,7 @@ class FeedPage extends ConsumerWidget {
               children: [
                 Icon(Icons.error_outline, size: 64.sp, color: AppColors.error),
                 AppSpacing.verticalSpaceLG,
-                Text(
-                  '데이터를 불러올 수 없어요',
-                  style: AppTextStyles.headingSemiBold20,
-                ),
+                Text('데이터를 불러올 수 없어요', style: AppTextStyles.headingSemiBold20),
                 AppSpacing.verticalSpaceSM,
                 Text(
                   snapshot.error.toString(),
@@ -194,10 +188,7 @@ class FeedPage extends ConsumerWidget {
             style: AppTextStyles.headingSemiBold20,
           ),
           AppSpacing.verticalSpaceSM,
-          Text(
-            '다른 카테고리를 확인해보세요',
-            style: AppTextStyles.bodyRegular14,
-          ),
+          Text('다른 카테고리를 확인해보세요', style: AppTextStyles.bodyRegular14),
         ],
       ),
     );

@@ -116,16 +116,11 @@ class QueueCard extends StatelessWidget {
           ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 12.w,
-            vertical: 6.h,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           decoration: BoxDecoration(
             color: statusColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: statusColor.withValues(alpha: 0.3),
-            ),
+            border: Border.all(color: statusColor.withValues(alpha: 0.3)),
           ),
           child: Text(
             statusText,

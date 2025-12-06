@@ -7,8 +7,8 @@ part 'login_response.g.dart';
 @freezed
 class LoginResponse with _$LoginResponse {
   const factory LoginResponse({
-    required String accessToken,   // camelCase
-    required String refreshToken,  // camelCase
+    required String accessToken, // camelCase
+    required String refreshToken, // camelCase
     required UserDto user,
   }) = _LoginResponse;
 
