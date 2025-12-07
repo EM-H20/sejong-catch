@@ -221,21 +221,22 @@ class QueueRepository {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// Mock 부스 타입 데이터
+  /// ID는 UUID 형식 (Real API와 동일하게 백엔드에서 생성되는 형태로 시뮬레이션)
   static final List<BoothMaster> _mockBoothMasters = [
     BoothMaster(
-      id: 'master-1',
+      id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
       name: '음식',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     ),
     BoothMaster(
-      id: 'master-2',
+      id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
       name: '게임',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     ),
     BoothMaster(
-      id: 'master-3',
+      id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
       name: '포토존',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -255,8 +256,13 @@ class QueueRepository {
       throw Exception('이미 존재하는 부스 타입 이름입니다');
     }
 
+    // UUID 형식 ID 생성 (Real API처럼 백엔드에서 생성되는 형태 시뮬레이션)
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final uuid =
+        '${timestamp.toRadixString(16).padLeft(8, '0')}-mock-${timestamp % 10000}-uuid-${name.hashCode.abs().toRadixString(16).padLeft(12, '0')}';
+
     final newMaster = BoothMaster(
-      id: 'master-${DateTime.now().millisecondsSinceEpoch}',
+      id: uuid,
       name: name,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -304,10 +310,11 @@ class QueueRepository {
   }
 
   /// Mock 부스 데이터
+  /// masterId는 위의 _mockBoothMasters와 연결됨
   static final List<Booth> _mockBooths = [
     Booth(
-      id: 'booth-1',
-      masterId: 'master-1',
+      id: 'd4e5f6a7-b8c9-0123-def0-123456789abc',
+      masterId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', // 음식
       title: '🍗 치킨부스',
       seatCount: 4,
       avgWaitMinutes: 15,
@@ -316,8 +323,8 @@ class QueueRepository {
       updatedAt: DateTime.now(),
     ),
     Booth(
-      id: 'booth-2',
-      masterId: 'master-1',
+      id: 'e5f6a7b8-c9d0-1234-ef01-23456789abcd',
+      masterId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', // 음식
       title: '🍺 주점',
       seatCount: 6,
       avgWaitMinutes: 10,
@@ -326,8 +333,8 @@ class QueueRepository {
       updatedAt: DateTime.now(),
     ),
     Booth(
-      id: 'booth-3',
-      masterId: 'master-2',
+      id: 'f6a7b8c9-d0e1-2345-0123-456789abcdef',
+      masterId: 'b2c3d4e5-f6a7-8901-bcde-f12345678901', // 게임
       title: '🎮 게임존',
       seatCount: 2,
       avgWaitMinutes: 20,
@@ -336,8 +343,8 @@ class QueueRepository {
       updatedAt: DateTime.now(),
     ),
     Booth(
-      id: 'booth-4',
-      masterId: 'master-2',
+      id: 'a7b8c9d0-e1f2-3456-1234-56789abcdef0',
+      masterId: 'b2c3d4e5-f6a7-8901-bcde-f12345678901', // 게임
       title: '📸 포토존',
       seatCount: 1,
       avgWaitMinutes: 5,
@@ -507,20 +514,21 @@ class QueueRepository {
   }
 
   /// Mock 부스 관리자 데이터
+  /// boothId는 위의 _mockBooths와 연결됨
   static final List<BoothManager> _mockBoothManagers = [
     BoothManager(
-      id: 'manager-1',
-      boothId: 'booth-1',
-      userId: 'user-1',
+      id: 'b8c9d0e1-f2a3-4567-2345-6789abcdef01',
+      boothId: 'd4e5f6a7-b8c9-0123-def0-123456789abc', // 치킨부스
+      userId: 'c9d0e1f2-a3b4-5678-3456-789abcdef012',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       userName: '김관리',
       userEmail: '20211234@sju.ac.kr',
     ),
     BoothManager(
-      id: 'manager-2',
-      boothId: 'booth-1',
-      userId: 'user-2',
+      id: 'd0e1f2a3-b4c5-6789-4567-89abcdef0123',
+      boothId: 'd4e5f6a7-b8c9-0123-def0-123456789abc', // 치킨부스
+      userId: 'e1f2a3b4-c5d6-7890-5678-9abcdef01234',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       userName: '이운영',

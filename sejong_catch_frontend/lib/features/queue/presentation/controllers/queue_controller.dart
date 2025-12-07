@@ -399,6 +399,8 @@ class QueueController extends _$QueueController {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// 부스 타입 생성
+  ///
+  /// ✅ 실패 시 error를 전역 state에 저장하지 않음 (UI에서 스낵바로 처리)
   Future<bool> createBoothMaster(String name) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -411,12 +413,15 @@ class QueueController extends _$QueueController {
       );
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      // 🚨 error 저장 안 함! (스낵바로 알림, 전역 에러 오염 방지)
+      state = state.copyWith(isLoading: false);
       return false;
     }
   }
 
   /// 부스 타입 수정
+  ///
+  /// ✅ 실패 시 error를 전역 state에 저장하지 않음 (UI에서 스낵바로 처리)
   Future<bool> updateBoothMaster(String id, String name) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -430,12 +435,16 @@ class QueueController extends _$QueueController {
       state = state.copyWith(isLoading: false, boothMasters: updatedList);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      // 🚨 error 저장 안 함! (스낵바로 알림, 전역 에러 오염 방지)
+      state = state.copyWith(isLoading: false);
       return false;
     }
   }
 
   /// 부스 타입 삭제
+  ///
+  /// ✅ 실패 시 error를 전역 state에 저장하지 않음 (UI에서 스낵바로 처리)
+  /// 삭제 실패 원인: FK 제약조건 (이 타입을 사용하는 부스 존재)
   Future<bool> deleteBoothMaster(String id) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -447,7 +456,8 @@ class QueueController extends _$QueueController {
       state = state.copyWith(isLoading: false, boothMasters: updatedList);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      // 🚨 error 저장 안 함! (스낵바로 알림, 전역 에러 오염 방지)
+      state = state.copyWith(isLoading: false);
       return false;
     }
   }

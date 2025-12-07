@@ -43,7 +43,11 @@ class _BoothMasterManagementPageState
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // ✅ 페이지 이탈 시 에러 상태 클리어 (관리자 대시보드에 에러 전파 방지)
+            ref.read(queueControllerProvider.notifier).clearError();
+            context.pop();
+          },
         ),
         title: Text('부스 타입 관리', style: AppTextStyles.headingBold20),
         centerTitle: true,
@@ -131,10 +135,12 @@ class _BoothMasterManagementPageState
   /// 생성 다이얼로그
   void _showCreateDialog(BuildContext context) {
     final controller = TextEditingController();
+    // ✅ async gap 문제 해결: ScaffoldMessenger 미리 캡처
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text('새 부스 타입', style: AppTextStyles.titleSemiBold18),
         content: TextField(
           controller: controller,
@@ -155,7 +161,7 @@ class _BoothMasterManagementPageState
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               '취소',
               style: AppTextStyles.bodyMedium14.copyWith(
@@ -168,14 +174,14 @@ class _BoothMasterManagementPageState
               final name = controller.text.trim();
               if (name.isEmpty) return;
 
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
 
               final success = await ref
                   .read(queueControllerProvider.notifier)
                   .createBoothMaster(name);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text(
                       success ? '부스 타입이 추가되었어요! 🎉' : '추가에 실패했어요 😢',
@@ -202,10 +208,12 @@ class _BoothMasterManagementPageState
   /// 수정 다이얼로그
   void _showEditDialog(BuildContext context, BoothMaster master) {
     final controller = TextEditingController(text: master.name);
+    // ✅ async gap 문제 해결: ScaffoldMessenger 미리 캡처
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text('부스 타입 수정', style: AppTextStyles.titleSemiBold18),
         content: TextField(
           controller: controller,
@@ -226,7 +234,7 @@ class _BoothMasterManagementPageState
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               '취소',
               style: AppTextStyles.bodyMedium14.copyWith(
@@ -238,18 +246,18 @@ class _BoothMasterManagementPageState
             onPressed: () async {
               final name = controller.text.trim();
               if (name.isEmpty || name == master.name) {
-                Navigator.pop(context);
+                Navigator.pop(dialogContext);
                 return;
               }
 
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
 
               final success = await ref
                   .read(queueControllerProvider.notifier)
                   .updateBoothMaster(master.id, name);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text(success ? '수정 완료! ✏️' : '수정에 실패했어요 😢'),
                     backgroundColor: success
@@ -273,9 +281,12 @@ class _BoothMasterManagementPageState
 
   /// 삭제 확인 다이얼로그
   void _showDeleteConfirm(BuildContext context, BoothMaster master) {
+    // ✅ async gap 문제 해결: ScaffoldMessenger 미리 캡처
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text('정말 삭제할까요?', style: AppTextStyles.titleSemiBold18),
         content: Text(
           '"${master.name}" 타입을 삭제하면\n이 타입의 부스를 더 이상 만들 수 없어요.',
@@ -285,7 +296,7 @@ class _BoothMasterManagementPageState
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               '취소',
               style: AppTextStyles.bodyMedium14.copyWith(
@@ -295,14 +306,14 @@ class _BoothMasterManagementPageState
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
 
               final success = await ref
                   .read(queueControllerProvider.notifier)
                   .deleteBoothMaster(master.id);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text(
                       success
@@ -383,7 +394,7 @@ class _BoothMasterCard extends StatelessWidget {
                 Text(master.name, style: AppTextStyles.titleBold16),
                 AppSpacing.verticalSpaceXS,
                 Text(
-                  'ID: ${master.id.substring(0, 8)}...',
+                  'ID: ${master.id.length > 8 ? '${master.id.substring(0, 8)}...' : master.id}',
                   style: AppTextStyles.bodyRegular12.copyWith(
                     color: AppColors.textTertiary,
                   ),

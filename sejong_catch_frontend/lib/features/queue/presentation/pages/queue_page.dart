@@ -128,9 +128,12 @@ class _QueuePageState extends ConsumerState<QueuePage>
   }
 
   /// 📋 전체 부스 탭
+  ///
+  /// ✅ ENDED 상태 부스는 표시하지 않음 (PREPARING, OPERATING만 표시)
   Widget _buildAllBoothsTab() {
     final state = ref.watch(queueControllerProvider);
-    final booths = state.booths;
+    // 🚫 ENDED 부스 필터링 - 종료된 부스는 일반 사용자에게 보이지 않음
+    final booths = state.booths.where((b) => b.status != 'ENDED').toList();
 
     if (booths.isEmpty) {
       return const AppEmptyWidget(
