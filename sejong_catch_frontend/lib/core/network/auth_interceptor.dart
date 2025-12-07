@@ -7,18 +7,31 @@
 /// ✅ 별도 Dio 인스턴스로 무한 루프 방지
 /// ✅ Refresh Token 만료 시 자동 로그아웃
 /// ✅ 에러 핸들링 및 재시도 로직
+/// ✅ Completer 패턴으로 동시 요청 시 중복 refresh 방지
 
 library;
 
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../repositories/token_repository.dart';
 import '../services/auth_event_service.dart';
 
+/// 토큰 갱신 결과 (accessToken + refreshToken)
+class _RefreshResult {
+  final String accessToken;
+  final String? refreshToken;
+
+  const _RefreshResult({required this.accessToken, this.refreshToken});
+}
+
 class AuthInterceptor extends Interceptor {
   final Dio _dio;
   final TokenRepository _tokenRepository;
   final String _baseUrl;
+
+  /// 🔒 동시성 제어: 중복 refresh 방지용 Completer
+  Completer<_RefreshResult?>? _refreshCompleter;
 
   AuthInterceptor(this._dio, this._tokenRepository, this._baseUrl);
 
@@ -60,15 +73,22 @@ class AuthInterceptor extends Interceptor {
         !err.requestOptions.path.contains('/auth/refresh')) {
       try {
         // 🔥 핵심: 별도 Dio 인스턴스로 refresh 요청 (무한 루프 방지!)
-        final newAccessToken = await _refreshAccessToken();
+        // 🔒 동시성 제어: 이미 진행 중인 refresh가 있으면 대기
+        final refreshResult = await _refreshAccessToken();
 
-        if (newAccessToken != null) {
-          // 토큰 저장
-          await _tokenRepository.saveAccessToken(newAccessToken);
+        if (refreshResult != null) {
+          // 토큰 저장 (accessToken + refreshToken 모두!)
+          await _tokenRepository.saveAccessToken(refreshResult.accessToken);
+          if (refreshResult.refreshToken != null) {
+            await _tokenRepository.saveRefreshToken(
+              refreshResult.refreshToken!,
+            );
+            debugPrint('[AuthInterceptor] Both tokens refreshed successfully');
+          }
 
           // 원래 요청 재시도
           err.requestOptions.headers['Authorization'] =
-              'Bearer $newAccessToken';
+              'Bearer ${refreshResult.accessToken}';
           final response = await _dio.fetch(err.requestOptions);
           return handler.resolve(response);
         } else {
@@ -118,6 +138,7 @@ class AuthInterceptor extends Interceptor {
   /// 참조: docs/BackendAPI.md - POST /auth/refresh
   ///
   /// 🚨 중요: Interceptor가 적용되지 않은 독립적인 Dio 인스턴스 생성!
+  /// 🔒 동시성 제어: Completer 패턴으로 중복 refresh 방지
   ///
   /// **백엔드 API 스펙**:
   /// - 경로: POST /auth/refresh
@@ -125,17 +146,27 @@ class AuthInterceptor extends Interceptor {
   /// - Response: LoginResponse { accessToken, refreshToken, user }
   ///
   /// Returns:
-  /// - 새로운 Access Token (성공 시)
+  /// - _RefreshResult (accessToken + refreshToken) (성공 시)
   /// - null (studentId 없음 또는 네트워크 에러)
   ///
   /// Throws:
   /// - DioException: API 호출 실패 (상위에서 처리)
-  Future<String?> _refreshAccessToken() async {
+  Future<_RefreshResult?> _refreshAccessToken() async {
+    // 🔒 이미 refresh 진행 중이면 결과 대기 (중복 API 호출 방지!)
+    if (_refreshCompleter != null) {
+      debugPrint('[AuthInterceptor] Waiting for existing refresh request...');
+      return _refreshCompleter!.future;
+    }
+
+    // 새로운 refresh 시작
+    _refreshCompleter = Completer<_RefreshResult?>();
+
     try {
       // studentId 조회 (백엔드 API 스펙: studentId로 refresh 요청)
       final studentId = await _tokenRepository.getStudentId();
       if (studentId == null) {
         debugPrint('[AuthInterceptor] No studentId available for refresh');
+        _refreshCompleter!.complete(null);
         return null;
       }
 
@@ -160,22 +191,34 @@ class AuthInterceptor extends Interceptor {
         debugPrint(
           '[AuthInterceptor] Invalid refresh response: missing accessToken',
         );
+        _refreshCompleter!.complete(null);
         return null;
       }
 
-      return response.data['accessToken'] as String;
+      final result = _RefreshResult(
+        accessToken: response.data['accessToken'] as String,
+        refreshToken: response.data['refreshToken'] as String?,
+      );
+
+      _refreshCompleter!.complete(result);
+      return result;
     } on DioException catch (e) {
       // Dio 관련 에러는 상위로 전달 (onError에서 처리)
       debugPrint(
         '[AuthInterceptor] Refresh API failed: ${e.type} - ${e.message}',
       );
+      _refreshCompleter!.completeError(e);
       rethrow;
     } catch (e) {
       // Storage 에러 등 예상치 못한 에러
       debugPrint(
         '[AuthInterceptor] Unexpected error in _refreshAccessToken: $e',
       );
+      _refreshCompleter!.complete(null);
       return null;
+    } finally {
+      // refresh 완료 후 Completer 초기화 (다음 refresh 가능하게)
+      _refreshCompleter = null;
     }
   }
 }

@@ -16,6 +16,13 @@ abstract class AuthApi {
   Future<LoginResponse> login(@Body() LoginRequest request);
 
   /// 토큰 갱신 (백엔드 API 스펙: POST /auth/refresh)
+  ///
+  /// ⚠️ **주의**: 이 메서드는 직접 호출하지 마세요!
+  /// AuthInterceptor가 401 에러 시 자동으로 토큰 갱신을 처리합니다.
+  /// 참조: lib/core/network/auth_interceptor.dart
+  ///
+  /// **Request Body**: `{ "studentId": "21000000" }`
+  /// **Response**: LoginResponse { accessToken, refreshToken, user }
   @POST('/auth/refresh')
   Future<HttpResponse<dynamic>> refresh(@Body() Map<String, String> body);
 

@@ -106,12 +106,9 @@ class AuthRepository extends _$AuthRepository {
     return await api.login(request);
   }
 
-  /// 토큰 갱신
-  Future<String> refreshToken(String refreshToken) async {
-    final api = ref.read(authApiProvider);
-    final response = await api.refresh({'refresh_token': refreshToken});
-    return response.data['access_token'] as String;
-  }
+  // ❌ refreshToken() 메서드 제거됨
+  // 토큰 갱신은 AuthInterceptor에서 자동 처리
+  // 참조: lib/core/network/auth_interceptor.dart
 
   /// 로그아웃
   ///
