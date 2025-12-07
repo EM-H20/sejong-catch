@@ -39,6 +39,7 @@ class AppRoutes {
 
   // 🛡️ 관리자 페이지 (booth_manager, admin 전용)
   static const String admin = '/admin';
+  static const String boothMasterManagement = '/admin/booth-masters';
 
   // 📊 라우트 그룹 정의 (권한 가드용)
   static const List<String> mainAppRoutes = [
@@ -56,6 +57,7 @@ class AppRoutes {
     consoleRules,
     consoleStats,
     admin,
+    boothMasterManagement,
   ];
 
   static const List<String> guestOnlyRoutes = [

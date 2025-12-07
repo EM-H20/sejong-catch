@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_shadows.dart';
@@ -125,6 +126,21 @@ class _AdminPageState extends ConsumerState<AdminPage>
       ),
       backgroundColor: AppColors.white,
       elevation: 0,
+      // 🏷️ admin만 부스 타입 관리 버튼 표시
+      actions: userRole.isAdmin
+          ? [
+              IconButton(
+                icon: Icon(
+                  Icons.category_outlined,
+                  color: AppColors.brandCrimson,
+                  size: 24.sp,
+                ),
+                tooltip: '부스 타입 관리',
+                onPressed: () => context.push(AppRoutes.boothMasterManagement),
+              ),
+              SizedBox(width: 8.w),
+            ]
+          : null,
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(48.h),
         child: _buildStatusFilter(),

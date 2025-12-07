@@ -162,10 +162,7 @@ class MyQueueCard extends StatelessWidget {
                   height: 48.h,
                   color: AppColors.pureWhite.withValues(alpha: 0.3),
                 ),
-                _buildMyQueueStat(
-                  '예상 대기',
-                  _calculateWaitTime(),
-                ),
+                _buildMyQueueStat('예상 대기', _calculateWaitTime()),
               ],
             ),
           ),

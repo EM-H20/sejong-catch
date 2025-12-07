@@ -13,6 +13,7 @@ import '../../features/queue/presentation/pages/queue_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/admin/presentation/pages/admin_page.dart';
+import '../../features/queue/presentation/pages/booth_master_management_page.dart';
 import '../services/token_storage_service.dart';
 import '../theme/app_spacing.dart';
 
@@ -117,6 +118,13 @@ class AppRouter {
           path: AppRoutes.admin,
           name: 'admin',
           builder: (context, state) => const AdminPage(),
+        ),
+
+        // 🏷️ 부스 타입 관리 페이지 (admin 전용)
+        GoRoute(
+          path: AppRoutes.boothMasterManagement,
+          name: 'booth_master_management',
+          builder: (context, state) => const BoothMasterManagementPage(),
         ),
       ],
 

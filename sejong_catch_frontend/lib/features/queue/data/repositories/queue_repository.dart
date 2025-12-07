@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/config/env_config.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../datasources/queue_api.dart';
+import '../models/request/booth_master_request.dart';
 import '../models/request/booth_request.dart';
 import '../models/request/queue_request.dart';
 import '../models/response/booth.dart';
@@ -46,6 +47,33 @@ class QueueRepository {
       return _mockGetBoothMasters();
     } else {
       return _realGetBoothMasters();
+    }
+  }
+
+  /// 부스 타입 생성 🔒 (admin only)
+  Future<BoothMaster> createBoothMaster(String name) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockCreateBoothMaster(name);
+    } else {
+      return _realCreateBoothMaster(name);
+    }
+  }
+
+  /// 부스 타입 수정 🔒 (admin only)
+  Future<BoothMaster> updateBoothMaster(String id, String name) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockUpdateBoothMaster(id, name);
+    } else {
+      return _realUpdateBoothMaster(id, name);
+    }
+  }
+
+  /// 부스 타입 삭제 🔒 (admin only)
+  Future<void> deleteBoothMaster(String id) async {
+    if (EnvConfig.useMockAuth) {
+      return _mockDeleteBoothMaster(id);
+    } else {
+      return _realDeleteBoothMaster(id);
     }
   }
 
@@ -217,6 +245,62 @@ class QueueRepository {
   Future<List<BoothMaster>> _mockGetBoothMasters() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return List.from(_mockBoothMasters);
+  }
+
+  Future<BoothMaster> _mockCreateBoothMaster(String name) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // 이름 중복 체크
+    if (_mockBoothMasters.any((m) => m.name == name)) {
+      throw Exception('이미 존재하는 부스 타입 이름입니다');
+    }
+
+    final newMaster = BoothMaster(
+      id: 'master-${DateTime.now().millisecondsSinceEpoch}',
+      name: name,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    _mockBoothMasters.add(newMaster);
+    return newMaster;
+  }
+
+  Future<BoothMaster> _mockUpdateBoothMaster(String id, String name) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final index = _mockBoothMasters.indexWhere((m) => m.id == id);
+    if (index == -1) throw Exception('부스 타입을 찾을 수 없습니다');
+
+    // 다른 부스 타입과 이름 중복 체크
+    if (_mockBoothMasters.any((m) => m.id != id && m.name == name)) {
+      throw Exception('이미 존재하는 부스 타입 이름입니다');
+    }
+
+    final updated = BoothMaster(
+      id: _mockBoothMasters[index].id,
+      name: name,
+      createdAt: _mockBoothMasters[index].createdAt,
+      updatedAt: DateTime.now(),
+    );
+
+    _mockBoothMasters[index] = updated;
+    return updated;
+  }
+
+  Future<void> _mockDeleteBoothMaster(String id) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    // 존재 여부 확인
+    final exists = _mockBoothMasters.any((m) => m.id == id);
+    if (!exists) throw Exception('부스 타입을 찾을 수 없습니다');
+
+    // 해당 타입을 사용하는 부스가 있는지 확인
+    if (_mockBooths.any((b) => b.masterId == id)) {
+      throw Exception('이 타입을 사용하는 부스가 있어서 삭제할 수 없습니다');
+    }
+
+    _mockBoothMasters.removeWhere((m) => m.id == id);
   }
 
   /// Mock 부스 데이터
@@ -484,6 +568,28 @@ class QueueRepository {
     final api = ref.read(queueApiProvider);
     final response = await api.getBoothMasters();
     return response.data;
+  }
+
+  Future<BoothMaster> _realCreateBoothMaster(String name) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.createBoothMaster(
+      CreateBoothMasterRequest(name: name),
+    );
+    return response.data;
+  }
+
+  Future<BoothMaster> _realUpdateBoothMaster(String id, String name) async {
+    final api = ref.read(queueApiProvider);
+    final response = await api.updateBoothMaster(
+      id,
+      UpdateBoothMasterRequest(name: name),
+    );
+    return response.data;
+  }
+
+  Future<void> _realDeleteBoothMaster(String id) async {
+    final api = ref.read(queueApiProvider);
+    await api.deleteBoothMaster(id);
   }
 
   Future<List<Booth>> _realGetBooths({String? status}) async {

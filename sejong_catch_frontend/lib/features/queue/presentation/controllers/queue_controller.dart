@@ -393,4 +393,62 @@ class QueueController extends _$QueueController {
       return false;
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🏷️ 부스 타입 관리 (Admin)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// 부스 타입 생성
+  Future<bool> createBoothMaster(String name) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      final newMaster = await repository.createBoothMaster(name);
+
+      state = state.copyWith(
+        isLoading: false,
+        boothMasters: [...state.boothMasters, newMaster],
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  /// 부스 타입 수정
+  Future<bool> updateBoothMaster(String id, String name) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      final updatedMaster = await repository.updateBoothMaster(id, name);
+
+      final updatedList = state.boothMasters.map((m) {
+        return m.id == id ? updatedMaster : m;
+      }).toList();
+
+      state = state.copyWith(isLoading: false, boothMasters: updatedList);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  /// 부스 타입 삭제
+  Future<bool> deleteBoothMaster(String id) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repository = ref.read(queueRepositoryProvider);
+      await repository.deleteBoothMaster(id);
+
+      final updatedList = state.boothMasters.where((m) => m.id != id).toList();
+
+      state = state.copyWith(isLoading: false, boothMasters: updatedList);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
 }
