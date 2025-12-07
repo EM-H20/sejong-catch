@@ -164,7 +164,7 @@ class MyQueueCard extends StatelessWidget {
                 ),
                 _buildMyQueueStat(
                   '예상 대기',
-                  '${(myStatus.teamsAhead * (booth?.avgWaitMinutes ?? 10))}분',
+                  _calculateWaitTime(),
                 ),
               ],
             ),
@@ -224,6 +224,24 @@ class MyQueueCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// 예상 대기 시간 계산
+  ///
+  /// - IN_SERVICE: 이용 중이므로 "이용 중" 표시
+  /// - WAITING + teamsAhead=0: 다음 차례! (현재 이용 중인 팀 시간만큼 대기)
+  /// - WAITING + teamsAhead>0: (teamsAhead + 1) * avgWaitMinutes
+  String _calculateWaitTime() {
+    final avgMinutes = booth?.avgWaitMinutes ?? 10;
+
+    if (myStatus.state == 'IN_SERVICE') {
+      return '이용 중';
+    }
+
+    // WAITING 상태: 내 앞 대기팀 + 현재 이용 중인 팀(1) 고려
+    // teamsAhead=0이어도 현재 IN_SERVICE 팀이 끝나야 하므로 최소 avgMinutes
+    final waitMinutes = (myStatus.teamsAhead + 1) * avgMinutes;
+    return '$waitMinutes분';
   }
 
   /// 상태 정보 반환 (색상, 텍스트)
