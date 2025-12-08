@@ -69,6 +69,8 @@ class AuthStateController extends _$AuthStateController {
   /// 세션 만료 처리
   ///
   /// 순환 호출 방지를 위해 플래그로 중복 호출 차단
+  /// 🔥 세션 만료 메시지를 AuthState.error에 저장하여
+  /// AuthNotifier → GoRouter → AuthPage에서 표시 가능
   Future<void> _handleSessionExpired(String? message) async {
     if (_isLoggingOut) {
       debugPrint('[AuthStateController] Already logging out, skipping');
@@ -78,9 +80,11 @@ class AuthStateController extends _$AuthStateController {
     _isLoggingOut = true;
 
     try {
-      await setUnauthenticated();
-      // TODO: 토스트 메시지 표시 (message 활용)
-      debugPrint('[AuthStateController] Session expired: $message');
+      // 🔥 세션 만료 메시지와 함께 로그아웃 상태로 전환
+      await setUnauthenticatedWithMessage(
+        message ?? '세션이 만료되었습니다. 다시 로그인해주세요.',
+      );
+      debugPrint('[AuthStateController] 🔴 Session expired: $message');
     } finally {
       _isLoggingOut = false;
     }
@@ -160,6 +164,7 @@ class AuthStateController extends _$AuthStateController {
   /// **동작**:
   /// 1. AuthState를 로그아웃 상태로 전환
   /// 2. SharedPreferences에서 UserDto 삭제
+  /// 3. FlutterSecureStorage에서 토큰 삭제
   ///
   /// **사용 예시**:
   /// ```dart
@@ -175,9 +180,49 @@ class AuthStateController extends _$AuthStateController {
       // 2. SharedPreferences에서 삭제
       final userStorage = ref.read(userStorageServiceProvider.notifier);
       await userStorage.clearUser();
+
+      // 3. 토큰도 삭제 (setUnauthenticatedWithMessage와 동일한 동작 보장)
+      final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
+      await tokenStorage.clearTokens();
+
+      debugPrint('[AuthStateController] 🔴 Unauthenticated (로그아웃 완료)');
     } catch (e) {
       // 삭제 실패해도 상태는 로그아웃으로 전환
       state = AuthState.unauthenticated();
+      debugPrint('[AuthStateController] ⚠️ Error during logout: $e');
+    }
+  }
+
+  /// 🔥 세션 만료 시 메시지와 함께 로그아웃 상태로 전환
+  ///
+  /// **동작**:
+  /// 1. AuthState.error(message)로 상태 전환 (isAuthenticated: false)
+  /// 2. SharedPreferences에서 UserDto 삭제
+  /// 3. AuthNotifier가 이 상태 변화 감지 → GoRouter redirect 트리거
+  /// 4. AuthPage에서 error 메시지 표시 가능
+  ///
+  /// **사용처**:
+  /// - _handleSessionExpired() (세션 만료 이벤트 처리)
+  Future<void> setUnauthenticatedWithMessage(String message) async {
+    try {
+      // 1. 에러 메시지와 함께 상태 업데이트
+      state = AuthState.error(message);
+
+      // 2. SharedPreferences에서 삭제
+      final userStorage = ref.read(userStorageServiceProvider.notifier);
+      await userStorage.clearUser();
+
+      // 3. 토큰도 삭제
+      final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
+      await tokenStorage.clearTokens();
+
+      debugPrint(
+        '[AuthStateController] 🔴 Unauthenticated with message: $message',
+      );
+    } catch (e) {
+      // 삭제 실패해도 상태는 로그아웃으로 전환
+      state = AuthState.error(message);
+      debugPrint('[AuthStateController] ⚠️ Error during logout: $e');
     }
   }
 
