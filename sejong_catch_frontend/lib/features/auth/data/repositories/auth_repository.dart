@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/env_config.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/services/token_storage_service.dart';
-import '../../../../core/services/onboarding_service.dart';
 import '../datasources/auth_api.dart';
 import '../models/request/login_request.dart';
 import '../models/request/logout_request.dart';
@@ -113,33 +112,28 @@ class AuthRepository extends _$AuthRepository {
   /// 로그아웃
   ///
   /// **동작**:
-  /// 1. refreshToken 먼저 읽기 (삭제 전에!)
-  /// 2. 토큰 삭제 (FlutterSecureStorage)
-  /// 3. SharedPreferences 모든 데이터 삭제 (온보딩 상태 포함)
-  /// 4. API 로그아웃 호출 (refreshToken 전달, Mock 모드에서는 스킵)
+  /// 1. refreshToken 먼저 읽기 (API 호출용)
+  /// 2. API 로그아웃 호출 (Real 모드에서만)
+  ///
+  /// **주의**:
+  /// 토큰/사용자정보 삭제는 AuthStateController.setUnauthenticated()에서 처리!
+  /// (중복 호출 방지를 위해 여기서는 삭제하지 않음)
   ///
   /// **Mock/Real 모드 모두 지원**
   Future<void> logout() async {
     final tokenStorage = ref.read(tokenStorageServiceProvider.notifier);
 
-    // 1. refreshToken 먼저 읽기 (삭제 전에!)
+    // 1. refreshToken 읽기 (API 호출용, 삭제는 AuthStateController에서!)
     final refreshToken = await tokenStorage.getRefreshToken();
 
-    // 2. 토큰 삭제
-    await tokenStorage.clearTokens();
-
-    // 3. SharedPreferences 전체 삭제 (온보딩 상태 초기화)
-    final onboardingService = ref.read(onboardingServiceProvider);
-    await onboardingService.clearAllLocalData();
-
-    // 4. API 로그아웃 호출 (Real 모드 + refreshToken 있을 때만)
+    // 2. API 로그아웃 호출 (Real 모드 + refreshToken 있을 때만)
     if (!EnvConfig.useMockAuth && refreshToken != null) {
       try {
         final api = ref.read(authApiProvider);
         await api.logout(LogoutRequest(refreshToken: refreshToken));
       } catch (e) {
-        // API 로그아웃 실패해도 로컬 데이터는 이미 삭제됨
-        // 서버에서 토큰 무효화 실패해도 클라이언트는 이미 로그아웃 상태
+        // API 로그아웃 실패해도 로컬 로그아웃은 진행됨
+        // (AuthStateController.setUnauthenticated()에서 처리)
       }
     }
   }
