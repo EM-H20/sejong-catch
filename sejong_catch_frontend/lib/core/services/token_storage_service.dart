@@ -7,9 +7,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'token_storage_service.g.dart';
 
 /// FlutterSecureStorage Provider
+///
+/// **보안 설정**:
+/// - Android: EncryptedSharedPreferences 사용
+/// - iOS: Keychain, first_unlock 접근성
 @riverpod
 FlutterSecureStorage secureStorage(Ref ref) {
-  return const FlutterSecureStorage();
+  return const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 }
 
 /// 토큰 저장 서비스

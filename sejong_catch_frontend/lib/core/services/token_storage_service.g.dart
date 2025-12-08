@@ -6,9 +6,13 @@ part of 'token_storage_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$secureStorageHash() => r'273dc403a965c1f24962aaf4d40776611a26f8b8';
+String _$secureStorageHash() => r'c3d90388f6d1bb7c95a29ceeda2e56c57deb1ecb';
 
 /// FlutterSecureStorage Provider
+///
+/// **보안 설정**:
+/// - Android: EncryptedSharedPreferences 사용
+/// - iOS: Keychain, first_unlock 접근성
 ///
 /// Copied from [secureStorage].
 @ProviderFor(secureStorage)

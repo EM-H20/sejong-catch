@@ -1,36 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../config/api_config.dart';
-import '../repositories/token_repository.dart';
-import '../repositories/token_repository_impl.dart';
+import '../services/token_storage_service.dart';
+import '../services/token_storage_adapter.dart';
 import 'auth_interceptor.dart';
 
 part 'dio_provider.g.dart';
 
-/// FlutterSecureStorage Provider
-@riverpod
-FlutterSecureStorage secureStorage(Ref ref) {
-  return const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
-}
-
-/// TokenRepository Provider
-@riverpod
-TokenRepository tokenRepository(Ref ref) {
-  final storage = ref.watch(secureStorageProvider);
-  return TokenRepositoryImpl(storage);
-}
-
 /// Dio 인스턴스 Provider
+///
+/// **DRY 원칙 적용**:
+/// TokenStorageService → TokenStorageAdapter → AuthInterceptor
+/// 토큰 저장 로직은 TokenStorageService에만 존재!
 @riverpod
 Dio dio(Ref ref) {
-  final tokenRepository = ref.watch(tokenRepositoryProvider);
+  // TokenStorageService를 TokenRepository 인터페이스로 래핑
+  final tokenService = ref.read(tokenStorageServiceProvider.notifier);
+  final tokenRepository = TokenStorageAdapter(tokenService);
 
   final dio = Dio(
     BaseOptions(
