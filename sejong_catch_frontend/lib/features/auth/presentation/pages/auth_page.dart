@@ -8,6 +8,7 @@ import 'package:sejong_catch_frontend/core/theme/app_text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/services/onboarding_service.dart';
+import '../../../../core/config/app_router.dart';
 import '../controllers/login_controller.dart';
 
 /// 세종 캐치 로그인 화면
@@ -25,6 +26,55 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   final _studentIdController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // 🔥 세션 만료 메시지 확인 및 표시
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkSessionExpiredMessage();
+    });
+  }
+
+  /// 🔥 세션 만료 시 스낵바로 메시지 표시
+  void _checkSessionExpiredMessage() {
+    final authNotifier = AppRouter.authNotifier;
+    if (authNotifier != null && authNotifier.sessionExpired) {
+      final message = authNotifier.sessionExpiredMessage ?? '세션이 만료되었습니다.';
+
+      // 스낵바 표시
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.info_outline, color: AppColors.white, size: 20.sp),
+                AppSpacing.horizontalSpaceSM,
+                Expanded(
+                  child: Text(
+                    message,
+                    style: AppTextStyles.bodyRegular14.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.warning,
+            behavior: SnackBarBehavior.floating,
+            margin: AppSpacing.screenPadding,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+
+      // 플래그 초기화 (다시 표시되지 않도록)
+      authNotifier.clearSessionExpired();
+    }
+  }
 
   @override
   void dispose() {
