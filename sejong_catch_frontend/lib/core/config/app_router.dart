@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app_routes.dart';
+import 'auth_notifier.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
+import '../../features/auth/presentation/controllers/auth_state_controller.dart';
 import '../../features/home/presentation/home_shell.dart';
 import '../../features/feed/presentation/pages/feed_page.dart';
 import '../../features/feed/presentation/pages/feed_detail_page.dart';
@@ -27,10 +29,24 @@ class AppRouter {
   // 🚫 인스턴스 생성 방지
   AppRouter._();
 
+  /// 🔐 AuthNotifier 인스턴스 (GoRouter refresh용)
+  /// main.dart에서 dispose 호출 필요
+  static AuthNotifier? _authNotifier;
+  static AuthNotifier? get authNotifier => _authNotifier;
+
   // 🎯 GoRouter 인스턴스 생성 (ProviderContainer 필요)
   static GoRouter createRouter(ProviderContainer container) {
+    // 🔥 AuthNotifier 생성 (Riverpod → GoRouter 브릿지)
+    _authNotifier = AuthNotifier(container);
+
+    // 🚀 AuthStateController 강제 초기화 (lazy initialization 방지!)
+    // 이렇게 하면 앱 시작 시 바로 auth event 구독이 시작됨
+    container.read(authStateControllerProvider);
+
     return GoRouter(
       initialLocation: AppRoutes.feed, // 앱 시작 시 피드 시도 → redirect에서 상태별 자동 라우팅
+      // 🔥 인증 상태 변화 시 자동 redirect 트리거!
+      refreshListenable: _authNotifier,
 
       routes: [
         // 🏠 메인 앱 ShellRoute - BottomNavigationBar 포함
@@ -132,34 +148,52 @@ class AppRouter {
       redirect: (context, state) async {
         final currentPath = state.uri.path;
 
-        // ✅ 로그인 페이지나 온보딩 페이지는 리디렉션 하지 않음 (무한 루프 방지)
-        if (currentPath == AppRoutes.auth ||
-            currentPath == AppRoutes.onboarding) {
+        // 1️⃣ AuthStateController 상태 확인 (Riverpod 기반 인증 상태)
+        final authState = container.read(authStateControllerProvider);
+        final isAuthenticated = authState.isAuthenticated;
+
+        debugPrint(
+          '[AppRouter] redirect 체크 - path: $currentPath, isAuthenticated: $isAuthenticated',
+        );
+
+        // ✅ 로그인 페이지 처리
+        if (currentPath == AppRoutes.auth) {
+          // 이미 인증된 상태면 피드로 이동
+          if (isAuthenticated) {
+            debugPrint('[AppRouter] 🟢 이미 로그인됨 → /feed로 이동');
+            return AppRoutes.feed;
+          }
+          // 인증 안 된 상태면 로그인 페이지 유지
           return null;
         }
 
-        // 1️⃣ 인증 상태 확인 (토큰 존재 여부 체크)
+        // ✅ 온보딩 페이지는 항상 허용
+        if (currentPath == AppRoutes.onboarding) {
+          return null;
+        }
+
+        // 2️⃣ 인증 상태 확인 (토큰 존재 여부 + Riverpod 상태 체크)
         try {
           final tokenStorage = container.read(
             tokenStorageServiceProvider.notifier,
           );
           final accessToken = await tokenStorage.getAccessToken();
 
-          // 토큰이 없으면 → 로그인 페이지로 (온보딩은 로그인 후)
-          // (이미 125-129줄에서 auth 경로는 리디렉션 방지됨)
-          if (accessToken == null || accessToken.isEmpty) {
+          // 🔴 인증 안 됨 (토큰 없음 OR AuthState가 false)
+          if (accessToken == null || accessToken.isEmpty || !isAuthenticated) {
+            debugPrint('[AppRouter] 🔴 인증 안 됨 → /auth로 이동');
             return AppRoutes.auth;
           }
 
-          // ✅ 토큰 있음 → 인증된 상태, 계속 진행
-          // TODO: 2️⃣ 온보딩 완료 여부 확인 (SharedPreferences)
-          // TODO: 3️⃣ 권한별 접근 제한 구현 (role guard)
+          // ✅ 토큰 있음 + 인증 상태 → 계속 진행
+          // TODO: 온보딩 완료 여부 확인 (SharedPreferences)
+          // TODO: 권한별 접근 제한 구현 (role guard)
 
           return null;
         } catch (e) {
           // Storage 에러 등 예외 발생 시 → 안전하게 로그인으로 이동
-          debugPrint('[AppRouter] Error during redirect: $e');
-          return currentPath == AppRoutes.auth ? null : AppRoutes.auth;
+          debugPrint('[AppRouter] ⚠️ redirect 에러: $e');
+          return AppRoutes.auth;
         }
       },
 
