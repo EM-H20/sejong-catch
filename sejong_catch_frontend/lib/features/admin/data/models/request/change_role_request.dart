@@ -7,7 +7,7 @@ part 'change_role_request.g.dart';
 @freezed
 class ChangeRoleRequest with _$ChangeRoleRequest {
   const factory ChangeRoleRequest({
-    required String role, // "student" | "admin"
+    required String role, // "student" | "booth_manager" | "admin"
   }) = _ChangeRoleRequest;
 
   factory ChangeRoleRequest.fromJson(Map<String, dynamic> json) =>
