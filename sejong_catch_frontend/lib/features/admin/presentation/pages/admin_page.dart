@@ -913,13 +913,13 @@ class _ManagerListBottomSheetState
       return;
     }
 
-    final result = await ref
+    final success = await ref
         .read(queueControllerProvider.notifier)
         .addBoothManager(widget.booth.id, userId);
 
     if (!mounted) return;
 
-    if (result != null) {
+    if (success) {
       _userIdController.clear();
       await _loadManagers();
       if (!mounted) return;

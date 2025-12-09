@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/models/response/booth.dart';
@@ -362,23 +363,43 @@ class QueueController extends _$QueueController {
 
   /// 부스 관리자 목록 조회
   Future<List<BoothManager>> fetchBoothManagers(String boothId) async {
+    debugPrint('👨‍💼 [fetchBoothManagers] 호출됨: boothId=$boothId');
     try {
       final repository = ref.read(queueRepositoryProvider);
-      return await repository.getBoothManagers(boothId);
-    } catch (e) {
+      final managers = await repository.getBoothManagers(boothId);
+      debugPrint('👨‍💼 [fetchBoothManagers] 받은 관리자 목록: ${managers.length}명');
+      for (final m in managers) {
+        debugPrint(
+          '  - id=${m.id}, userId=${m.userId}, createdAt=${m.createdAt}',
+        );
+      }
+      return managers;
+    } catch (e, stackTrace) {
+      debugPrint('🚨 [fetchBoothManagers] 에러 발생: $e');
+      debugPrint('🚨 [fetchBoothManagers] 스택트레이스: $stackTrace');
       state = state.copyWith(error: e.toString());
       return [];
     }
   }
 
   /// 부스 관리자 추가
-  Future<BoothManager?> addBoothManager(String boothId, String userId) async {
+  ///
+  /// 백엔드가 201 반환하면 성공으로 처리 (응답 파싱 실패해도 실제로는 추가됨)
+  Future<bool> addBoothManager(String boothId, String userId) async {
     try {
       final repository = ref.read(queueRepositoryProvider);
-      return await repository.addBoothManager(boothId, userId);
+      await repository.addBoothManager(boothId, userId);
+      return true;
     } catch (e) {
-      state = state.copyWith(error: e.toString());
-      return null;
+      // 🔍 DioException이 아닌 파싱 에러면 성공으로 처리
+      // (백엔드가 createdAt을 이상하게 보내서 파싱 실패하지만 실제로는 추가됨)
+      final errorStr = e.toString();
+      if (errorStr.contains('type') && errorStr.contains('not a subtype')) {
+        debugPrint('⚠️ [addBoothManager] 파싱 에러지만 추가는 성공한 것으로 처리: $e');
+        return true;
+      }
+      state = state.copyWith(error: errorStr);
+      return false;
     }
   }
 
