@@ -32,6 +32,9 @@ class QueueState with _$QueueState {
     // 🎯 UI 상태
     @Default(0) int currentTabIndex, // 0: 전체 부스, 1: 내 대기열
     @Default(null) String? selectedBoothId, // 선택된 부스 (관리자 뷰)
+
+    // 🔐 booth_manager용: 내가 관리하는 부스 ID 목록
+    @Default([]) List<String> myManagedBoothIds,
   }) = _QueueState;
 
   const QueueState._();

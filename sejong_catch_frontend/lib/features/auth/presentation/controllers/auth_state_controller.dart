@@ -232,6 +232,10 @@ class AuthStateController extends _$AuthStateController {
   /// - 사용자가 프로필 페이지 새로고침할 때
   /// - 토큰 갱신 후 상태 재확인할 때
   ///
+  /// **참고**:
+  /// 현재는 로컬 캐시(SharedPreferences)에서 읽음.
+  /// 백엔드에 GET /users/me API가 구현되면 서버에서 최신 정보를 가져오도록 수정 필요.
+  ///
   /// **사용 예시**:
   /// ```dart
   /// final authStateController = ref.read(authStateControllerProvider.notifier);

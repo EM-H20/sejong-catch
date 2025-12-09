@@ -209,14 +209,25 @@ class _QueuePageState extends ConsumerState<QueuePage>
 
   /// 🎯 부스 탭 핸들러 (역할별 분기!)
   ///
-  /// **운영자/관리자**: 부스 관리 바텀시트 (다음 호출, 상태 변경 등)
-  /// **학생**: 줄서기 참여 다이얼로그
+  /// **admin**: 모든 부스 → 부스 관리 바텀시트
+  /// **booth_manager**:
+  ///   - 자기가 관리하는 부스 → 부스 관리 바텀시트
+  ///   - 나머지 부스 → 학생처럼 줄서기 다이얼로그
+  /// **student**: 모든 부스 → 줄서기 다이얼로그
   void _handleBoothTap(Booth booth) {
     final authState = ref.read(authStateControllerProvider);
+    final queueState = ref.read(queueControllerProvider);
     final role = UserRole.fromString(authState.currentUser?.role);
 
-    if (role.canCreateQueue) {
-      // 🎛️ 운영자/관리자 → 부스 관리 바텀시트 (줄서기도 가능!)
+    // 🔐 booth_manager인 경우: 자기가 관리하는 부스인지 확인
+    final isMyManagedBooth = role == UserRole.boothManager &&
+        queueState.myManagedBoothIds.contains(booth.id);
+
+    // admin 또는 (booth_manager + 자기 부스)인 경우 관리자 모드
+    final showManagerMode = role.isAdmin || isMyManagedBooth;
+
+    if (showManagerMode) {
+      // 🎛️ 관리자 모드 → 부스 관리 바텀시트 (줄서기도 가능!)
       ManageQueueBottomSheet.show(
         context,
         booth: booth,
@@ -225,7 +236,7 @@ class _QueuePageState extends ConsumerState<QueuePage>
             : null,
       );
     } else {
-      // 🎫 학생 → 줄서기 다이얼로그
+      // 🎫 학생 모드 → 줄서기 다이얼로그
       if (booth.status == 'OPERATING') {
         JoinQueueDialog.show(
           context,

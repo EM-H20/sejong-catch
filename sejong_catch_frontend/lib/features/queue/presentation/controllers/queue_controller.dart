@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../admin/data/datasources/admin_api.dart';
+import '../../../admin/data/models/request/change_role_request.dart';
+import '../../../auth/data/models/user_role.dart';
 import '../../data/models/response/booth.dart';
 import '../../data/models/response/booth_manager.dart';
 import '../../data/models/response/booth_master.dart';
@@ -40,9 +43,54 @@ class QueueController extends _$QueueController {
         booths: (results[0] as List).cast<Booth>(),
         boothMasters: (results[1] as List).cast<BoothMaster>(),
       );
+
+      // 🔐 booth_manager인 경우 내가 관리하는 부스 ID 목록 조회
+      final authState = ref.read(authStateControllerProvider);
+      final userRole = UserRole.fromString(authState.currentUser?.role);
+      if (userRole == UserRole.boothManager) {
+        await _fetchMyManagedBooths();
+      }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  /// 🔐 booth_manager용: 내가 관리하는 부스 ID 목록 조회
+  ///
+  /// 모든 부스를 순회하며 각 부스의 관리자 목록에 내가 포함되어 있는지 확인합니다.
+  /// catch_booth_managers 테이블 기반으로 필터링합니다.
+  Future<void> _fetchMyManagedBooths() async {
+    final authState = ref.read(authStateControllerProvider);
+    final currentUserId = authState.currentUser?.id;
+
+    if (currentUserId == null) {
+      debugPrint('⚠️ [_fetchMyManagedBooths] 현재 유저 ID가 없음');
+      return;
+    }
+
+    debugPrint('🔐 [_fetchMyManagedBooths] 내가 관리하는 부스 조회 시작: userId=$currentUserId');
+
+    final myBoothIds = <String>[];
+    final repository = ref.read(queueRepositoryProvider);
+
+    for (final booth in state.booths) {
+      try {
+        final managers = await repository.getBoothManagers(booth.id);
+        // 내가 이 부스의 관리자인지 확인
+        final isMyBooth = managers.any((m) => m.userId == currentUserId);
+        if (isMyBooth) {
+          myBoothIds.add(booth.id);
+          debugPrint('  ✅ ${booth.title} (${booth.id}) - 내가 관리자임!');
+        }
+      } catch (e) {
+        // 관리자 목록 조회 실패 시 무시 (권한 문제 등)
+        debugPrint('  ⚠️ ${booth.title} 관리자 목록 조회 실패: $e');
+      }
+    }
+
+    debugPrint('🔐 [_fetchMyManagedBooths] 내가 관리하는 부스: ${myBoothIds.length}개');
+
+    state = state.copyWith(myManagedBoothIds: myBoothIds);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -384,30 +432,70 @@ class QueueController extends _$QueueController {
 
   /// 부스 관리자 추가
   ///
-  /// 백엔드가 201 반환하면 성공으로 처리 (응답 파싱 실패해도 실제로는 추가됨)
+  /// 1. catch_booth_managers 테이블에 추가
+  /// 2. 유저 role을 booth_manager로 변경
   Future<bool> addBoothManager(String boothId, String userId) async {
+    bool managerAdded = false;
+
     try {
       final repository = ref.read(queueRepositoryProvider);
       await repository.addBoothManager(boothId, userId);
-      return true;
+      managerAdded = true;
     } catch (e) {
-      // 🔍 DioException이 아닌 파싱 에러면 성공으로 처리
-      // (백엔드가 createdAt을 이상하게 보내서 파싱 실패하지만 실제로는 추가됨)
+      // 🔍 파싱 에러면 성공으로 처리 (백엔드 버그 대응)
       final errorStr = e.toString();
       if (errorStr.contains('type') && errorStr.contains('not a subtype')) {
         debugPrint('⚠️ [addBoothManager] 파싱 에러지만 추가는 성공한 것으로 처리: $e');
-        return true;
+        managerAdded = true;
+      } else {
+        state = state.copyWith(error: errorStr);
+        return false;
       }
-      state = state.copyWith(error: errorStr);
-      return false;
     }
+
+    // 부스 관리자 추가 성공 시 role 변경
+    if (managerAdded) {
+      debugPrint('🔄 [addBoothManager] role 변경 시도: userId=$userId');
+      try {
+        final adminApi = ref.read(adminApiProvider);
+        debugPrint('🔄 [addBoothManager] PATCH /core/admin/users/$userId/role 호출...');
+        await adminApi.changeUserRole(
+          userId,
+          const ChangeRoleRequest(role: 'booth_manager'),
+        );
+        debugPrint('✅ [addBoothManager] role을 booth_manager로 변경 완료: $userId');
+      } catch (e, stackTrace) {
+        // role 변경 실패해도 부스 관리자 추가는 유지 (로그만 남김)
+        debugPrint('⚠️ [addBoothManager] role 변경 실패: $e');
+        debugPrint('⚠️ [addBoothManager] 스택트레이스: $stackTrace');
+      }
+    }
+
+    return managerAdded;
   }
 
   /// 부스 관리자 삭제
+  ///
+  /// 1. catch_booth_managers 테이블에서 삭제
+  /// 2. 유저 role을 student로 변경
   Future<bool> removeBoothManager(String boothId, String userId) async {
     try {
       final repository = ref.read(queueRepositoryProvider);
       await repository.removeBoothManager(boothId, userId);
+
+      // role을 student로 변경
+      try {
+        final adminApi = ref.read(adminApiProvider);
+        await adminApi.changeUserRole(
+          userId,
+          const ChangeRoleRequest(role: 'student'),
+        );
+        debugPrint('✅ [removeBoothManager] role을 student로 변경 완료: $userId');
+      } catch (e) {
+        // role 변경 실패해도 삭제는 유지 (로그만 남김)
+        debugPrint('⚠️ [removeBoothManager] role 변경 실패 (무시): $e');
+      }
+
       return true;
     } catch (e) {
       state = state.copyWith(error: e.toString());

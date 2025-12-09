@@ -26,6 +26,11 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
+  /// 🔄 Pull to Refresh - 사용자 정보 새로고침
+  Future<void> _onRefresh() async {
+    await ref.read(authStateControllerProvider.notifier).refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     // 🔥 AuthState에서 사용자 정보 가져오기
@@ -75,29 +80,34 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // 프로필 헤더
-            _buildProfileHeader(user),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: AppColors.brandCrimson,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              // 프로필 헤더
+              _buildProfileHeader(user),
 
-            AppSpacing.verticalSpaceLG,
+              AppSpacing.verticalSpaceLG,
 
-            // 내 정보
-            _buildMyInfoSection(user),
+              // 내 정보
+              _buildMyInfoSection(user),
 
-            AppSpacing.verticalSpaceLG,
+              AppSpacing.verticalSpaceLG,
 
-            // 설정 메뉴
-            _buildSettingsSection(),
+              // 설정 메뉴
+              _buildSettingsSection(),
 
-            AppSpacing.verticalSpaceLG,
+              AppSpacing.verticalSpaceLG,
 
-            // 로그아웃 버튼
-            _buildLogoutButton(),
+              // 로그아웃 버튼
+              _buildLogoutButton(),
 
-            AppSpacing.verticalSpaceHuge,
-          ],
+              AppSpacing.verticalSpaceHuge,
+            ],
+          ),
         ),
       ),
     );

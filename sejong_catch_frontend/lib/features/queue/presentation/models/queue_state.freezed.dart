@@ -30,7 +30,10 @@ mixin _$QueueState {
   String? get error => throw _privateConstructorUsedError; // 🎯 UI 상태
   int get currentTabIndex =>
       throw _privateConstructorUsedError; // 0: 전체 부스, 1: 내 대기열
-  String? get selectedBoothId => throw _privateConstructorUsedError;
+  String? get selectedBoothId =>
+      throw _privateConstructorUsedError; // 선택된 부스 (관리자 뷰)
+  // 🔐 booth_manager용: 내가 관리하는 부스 ID 목록
+  List<String> get myManagedBoothIds => throw _privateConstructorUsedError;
 
   /// Create a copy of QueueState
   /// with the given fields replaced by the non-null parameter values.
@@ -55,6 +58,7 @@ abstract class $QueueStateCopyWith<$Res> {
     String? error,
     int currentTabIndex,
     String? selectedBoothId,
+    List<String> myManagedBoothIds,
   });
 }
 
@@ -81,6 +85,7 @@ class _$QueueStateCopyWithImpl<$Res, $Val extends QueueState>
     Object? error = freezed,
     Object? currentTabIndex = null,
     Object? selectedBoothId = freezed,
+    Object? myManagedBoothIds = null,
   }) {
     return _then(
       _value.copyWith(
@@ -116,6 +121,10 @@ class _$QueueStateCopyWithImpl<$Res, $Val extends QueueState>
                 ? _value.selectedBoothId
                 : selectedBoothId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            myManagedBoothIds: null == myManagedBoothIds
+                ? _value.myManagedBoothIds
+                : myManagedBoothIds // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
           )
           as $Val,
     );
@@ -140,6 +149,7 @@ abstract class _$$QueueStateImplCopyWith<$Res>
     String? error,
     int currentTabIndex,
     String? selectedBoothId,
+    List<String> myManagedBoothIds,
   });
 }
 
@@ -165,6 +175,7 @@ class __$$QueueStateImplCopyWithImpl<$Res>
     Object? error = freezed,
     Object? currentTabIndex = null,
     Object? selectedBoothId = freezed,
+    Object? myManagedBoothIds = null,
   }) {
     return _then(
       _$QueueStateImpl(
@@ -200,6 +211,10 @@ class __$$QueueStateImplCopyWithImpl<$Res>
             ? _value.selectedBoothId
             : selectedBoothId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        myManagedBoothIds: null == myManagedBoothIds
+            ? _value._myManagedBoothIds
+            : myManagedBoothIds // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
       ),
     );
   }
@@ -217,10 +232,12 @@ class _$QueueStateImpl extends _QueueState {
     this.error = null,
     this.currentTabIndex = 0,
     this.selectedBoothId = null,
+    final List<String> myManagedBoothIds = const [],
   }) : _boothMasters = boothMasters,
        _booths = booths,
        _myQueueStatuses = myQueueStatuses,
        _queueEntries = queueEntries,
+       _myManagedBoothIds = myManagedBoothIds,
        super._();
 
   // 🏷️ 부스 타입 목록 (부스 생성 시 선택)
@@ -282,10 +299,23 @@ class _$QueueStateImpl extends _QueueState {
   @override
   @JsonKey()
   final String? selectedBoothId;
+  // 선택된 부스 (관리자 뷰)
+  // 🔐 booth_manager용: 내가 관리하는 부스 ID 목록
+  final List<String> _myManagedBoothIds;
+  // 선택된 부스 (관리자 뷰)
+  // 🔐 booth_manager용: 내가 관리하는 부스 ID 목록
+  @override
+  @JsonKey()
+  List<String> get myManagedBoothIds {
+    if (_myManagedBoothIds is EqualUnmodifiableListView)
+      return _myManagedBoothIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_myManagedBoothIds);
+  }
 
   @override
   String toString() {
-    return 'QueueState(boothMasters: $boothMasters, booths: $booths, myQueueStatuses: $myQueueStatuses, queueEntries: $queueEntries, isLoading: $isLoading, error: $error, currentTabIndex: $currentTabIndex, selectedBoothId: $selectedBoothId)';
+    return 'QueueState(boothMasters: $boothMasters, booths: $booths, myQueueStatuses: $myQueueStatuses, queueEntries: $queueEntries, isLoading: $isLoading, error: $error, currentTabIndex: $currentTabIndex, selectedBoothId: $selectedBoothId, myManagedBoothIds: $myManagedBoothIds)';
   }
 
   @override
@@ -312,7 +342,11 @@ class _$QueueStateImpl extends _QueueState {
             (identical(other.currentTabIndex, currentTabIndex) ||
                 other.currentTabIndex == currentTabIndex) &&
             (identical(other.selectedBoothId, selectedBoothId) ||
-                other.selectedBoothId == selectedBoothId));
+                other.selectedBoothId == selectedBoothId) &&
+            const DeepCollectionEquality().equals(
+              other._myManagedBoothIds,
+              _myManagedBoothIds,
+            ));
   }
 
   @override
@@ -326,6 +360,7 @@ class _$QueueStateImpl extends _QueueState {
     error,
     currentTabIndex,
     selectedBoothId,
+    const DeepCollectionEquality().hash(_myManagedBoothIds),
   );
 
   /// Create a copy of QueueState
@@ -347,6 +382,7 @@ abstract class _QueueState extends QueueState {
     final String? error,
     final int currentTabIndex,
     final String? selectedBoothId,
+    final List<String> myManagedBoothIds,
   }) = _$QueueStateImpl;
   const _QueueState._() : super._();
 
@@ -366,7 +402,10 @@ abstract class _QueueState extends QueueState {
   @override
   int get currentTabIndex; // 0: 전체 부스, 1: 내 대기열
   @override
-  String? get selectedBoothId;
+  String? get selectedBoothId; // 선택된 부스 (관리자 뷰)
+  // 🔐 booth_manager용: 내가 관리하는 부스 ID 목록
+  @override
+  List<String> get myManagedBoothIds;
 
   /// Create a copy of QueueState
   /// with the given fields replaced by the non-null parameter values.

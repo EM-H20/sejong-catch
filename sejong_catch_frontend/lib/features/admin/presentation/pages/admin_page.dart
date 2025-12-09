@@ -200,10 +200,22 @@ class _AdminPageState extends ConsumerState<AdminPage>
 
   /// 📄 메인 컨텐츠
   Widget _buildBody(List<Booth> booths, UserRole userRole) {
+    final queueState = ref.watch(queueControllerProvider);
+
+    // 🔐 booth_manager는 자신이 관리하는 부스만 표시
+    List<Booth> accessibleBooths;
+    if (userRole == UserRole.boothManager) {
+      final myManagedIds = queueState.myManagedBoothIds;
+      accessibleBooths = booths.where((b) => myManagedIds.contains(b.id)).toList();
+    } else {
+      // admin은 모든 부스 접근 가능
+      accessibleBooths = booths;
+    }
+
     // 상태별 필터링
     final filteredBooths = _selectedStatus == 'ALL'
-        ? booths
-        : booths.where((b) => b.status == _selectedStatus).toList();
+        ? accessibleBooths
+        : accessibleBooths.where((b) => b.status == _selectedStatus).toList();
 
     if (filteredBooths.isEmpty) {
       return Center(
@@ -341,12 +353,15 @@ class _AdminPageState extends ConsumerState<AdminPage>
                   ),
                 ),
                 SizedBox(width: 12.w),
-                // 대기열 관리 버튼
+                // 대기열 관리 버튼 (admin만 가능, booth_manager는 권한 없음)
                 Expanded(
                   child: _buildActionButton(
                     icon: Icons.people_outline,
                     label: '대기열 보기',
-                    onTap: () => _showQueueListDialog(booth),
+                    isDisabled: !userRole.isAdmin,
+                    onTap: userRole.isAdmin
+                        ? () => _showQueueListDialog(booth)
+                        : () => _showPermissionDeniedSnackBar(),
                   ),
                 ),
                 // 관리자만: 관리자 관리 버튼
@@ -375,8 +390,10 @@ class _AdminPageState extends ConsumerState<AdminPage>
     required String label,
     required VoidCallback onTap,
     Color? highlightColor,
+    bool isDisabled = false,
   }) {
-    final color = highlightColor ?? AppColors.textSecondary;
+    final baseColor = highlightColor ?? AppColors.textSecondary;
+    final color = isDisabled ? AppColors.textTertiary : baseColor;
 
     return InkWell(
       onTap: onTap,
@@ -384,7 +401,7 @@ class _AdminPageState extends ConsumerState<AdminPage>
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 8.h),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
+          color: color.withValues(alpha: isDisabled ? 0.04 : 0.08),
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: Row(
@@ -401,6 +418,20 @@ class _AdminPageState extends ConsumerState<AdminPage>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// 🚫 권한 없음 스낵바 표시
+  void _showPermissionDeniedSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('대기열 보기는 관리자만 가능해요 🔒'),
+        backgroundColor: AppColors.warning,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.r),
         ),
       ),
     );
